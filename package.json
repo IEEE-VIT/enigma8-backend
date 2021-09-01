@@ -1,0 +1,38 @@
+{
+  "name": "enigma8-backend",
+  "version": "1.0.0",
+  "description": "Backend for enigma 8",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon",
+    "prettier-format": "prettier --config .prettierrc '*.js' --write",
+    "lint": "eslint . --ext .js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IEEE-VIT/enigma8-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IEEE-VIT/enigma8-backend/issues"
+  },
+  "homepage": "https://github.com/IEEE-VIT/enigma8-backend#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "eslint": "^7.32.0",
+    "express": "^4.17.1",
+    "husky": "^7.0.2",
+    "mongoose": "^6.0.3",
+    "nodemon": "^2.0.12",
+    "prettier": "^2.3.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run prettier-format && npm run lint",
+      "pre-push": "",
+      "...": "..."
+    }
+  }
+}
