@@ -1,27 +1,36 @@
 require("dotenv").config();
 
 const express = require("express");
-//const cors = require("cors");
+const authorized = require("./middleware/auth");
 
 const mongoose = require("mongoose");
-const apiRoutes = require("./routes/api");
+const authorizedRoutes = require("./routes/authorized");
+const authRoutes = require("./routes/authentication");
 const app = express();
-
-const DB_URL = process.env.MONGO_URI;
+const DB_URL = process.env.DB_URI;
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+require("./config/passport");
 
-//app.use(cors());
-
-app.use("/api", apiRoutes);
-
+//connect to mongoDB
 mongoose
   .connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log("✅ Database Connected!");
+  })
+  .catch((err) => {
+    console.log("DB connect error:", err);
   });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log("🚀 Server Ready! at port: localhost", PORT);
+app.use("/auth", authRoutes);
+app.use("/authorized", authorized, authorizedRoutes);
+
+app.get("/", (req, res) => {
+  res.send("The server is running!");
+});
+
+app.listen(PORT, () => {
+  console.log("🚀 Server Ready! at port:", PORT);
+  console.log("Goto http://localhost:" + PORT);
 });
