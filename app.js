@@ -1,4 +1,4 @@
-require("dotenv").config();
+require('dotenv').config();
 
 const express = require("express");
 const authorized = require("./middleware/auth");
@@ -9,6 +9,8 @@ const authRoutes = require("./routes/authentication");
 const app = express();
 const DB_URL = process.env.DB_URI;
 const PORT = process.env.PORT || 3000;
+const response=require('./utils/responseButGeneric');
+
 
 app.use(express.json());
 require("./config/passport");
@@ -27,7 +29,8 @@ app.use("/auth", authRoutes);
 app.use("/authorized", authorized, authorizedRoutes);
 
 app.get("/", (req, res) => {
-  res.send("The server is running!");
+  response(res,true,"","The server is running!");
+  // res.send("The server is running!");
 });
 
 app.listen(PORT, () => {
