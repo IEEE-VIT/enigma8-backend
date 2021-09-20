@@ -22,12 +22,12 @@ router.get(
 );
 
 router.post("/generate_jwt_android_google", async (req, res) => {
-  if (!req.body.id_token) {
+  try {
+    const jwt = await verify(req.body.id_token);
+    res.json(jwt);
+  } catch (err) {
     res.json({ error: "Please provide id_token in the request body" });
-    return;
   }
-  const jwt = await verify(req.body.id_token);
-  res.json(jwt);
 });
 
 module.exports = router;

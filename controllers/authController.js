@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 async function verify(token) {
-  if (!token) return;
+  if (!token) throw err("Please provide a id_token");
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
