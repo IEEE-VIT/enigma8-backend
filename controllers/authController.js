@@ -6,13 +6,15 @@ const jwt = require("jsonwebtoken");
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 async function verify(token) {
-  if (!token) throw err("Please provide a id_token");
+  if (!token) throw "Please provide a id_token";
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
     const payload = ticket.getPayload();
+
+    if (!payload) throw "Invalid token";
 
     const userid = payload["sub"];
     const name = payload["name"];
@@ -30,7 +32,7 @@ async function verify(token) {
     }
     return { jwt: jwtToken };
   } catch (err) {
-    return err;
+    throw "Invalid Token";
   }
 }
 
