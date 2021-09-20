@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 
+const verify = require("../controllers/authController");
 //Google Auth
 router.get(
   "/google",
@@ -19,5 +20,14 @@ router.get(
     res.json({ JWT: req.user.jwt });
   }
 );
+
+router.post("/generate_jwt_android_google", async (req, res) => {
+  try {
+    const jwt = await verify(req.body.id_token);
+    res.json(jwt);
+  } catch (err) {
+    res.json({ error: err });
+  }
+});
 
 module.exports = router;

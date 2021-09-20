@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/IEEE-VIT/enigma8-backend#readme",
   "dependencies": {
+    "axios": "^0.21.4",
     "body-parser": "^1.19.0",
     "cookie-session": "^1.4.0",
     "dotenv": "^10.0.0",
@@ -30,6 +31,7 @@
     "husky": "^7.0.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.5",
+    "node-fetch": "^3.0.0",
     "nodemon": "^2.0.12",
     "passport": "^0.4.1",
     "passport-apple": "^2.0.1",
