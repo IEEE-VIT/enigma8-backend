@@ -1,4 +1,5 @@
 require("dotenv").config();
+const cors = require("cors");
 
 const express = require("express");
 const authorized = require("./middleware/auth");
@@ -11,6 +12,8 @@ const DB_URL = process.env.DB_URI;
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(cors());
+
 require("./config/passport");
 
 //connect to mongoDB
