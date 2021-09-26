@@ -5,8 +5,12 @@ const express = require("express");
 const authorized = require("./middleware/auth");
 
 const mongoose = require("mongoose");
+
+//routes imports
 const authorizedRoutes = require("./routes/authorized");
 const authRoutes = require("./routes/authentication");
+const staticRoutes = require("./routes/static");
+
 const app = express();
 const DB_URL = process.env.DB_URI;
 const PORT = process.env.PORT || 3000;
@@ -28,6 +32,7 @@ mongoose
 
 app.use("/auth", authRoutes);
 app.use("/authorized", authorized, authorizedRoutes);
+app.use("/static", staticRoutes);
 
 app.get("/", (req, res) => {
   res.send("The server is running!");

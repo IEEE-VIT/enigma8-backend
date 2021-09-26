@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const { response } = require("../config/responseSchema");
-router.get("/", async (req, res) => {
-  response(res, {
-    endpoint: "secured",
-    username: req.user.username,
-  });
+
+const getTimer = require("../controllers/timerController");
+
+router.get("/timer", async (req, res) => {
+  response(res, getTimer());
 });
 
 module.exports = router;
