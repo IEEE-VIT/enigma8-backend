@@ -7,13 +7,13 @@ const Powerup= require('./powerupModel')
 const journeySchema= new mongoose.Schema({
 
   user_id: {
-    type: mongoose.Schema.Types.String,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: 'User'
   },
 
   room_id: {
-    type: mongoose.Schema.Types.String,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: 'Room'
   },
@@ -23,31 +23,32 @@ const journeySchema= new mongoose.Schema({
     default: false
   },
 
-  question_1_id: {
+  question_1: {
     type: String,
     enum:['unlocked', 'locked', 'solved'],
     default:['locked']
   },
 
-  question_2_id: {
+  question_2: {
     type: String,
     enum:['unlocked', 'locked', 'solved'],
     default:['locked']
   },
 
-  question_3_id: {
+  question_3: {
     type: String,
     enum:['unlocked', 'locked', 'solved'],
     default:['locked']
   },
 
   powerup_id: {
-    type: mongoose.Schema.Types.String,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Powerup'
   },
 
   powerup_used: {
-    type: Boolean
+    type: Boolean,
+    default: false
   }
 });
 
