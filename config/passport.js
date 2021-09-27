@@ -37,7 +37,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/auth/google/redirect",
+      callbackURL: "/auth/web/google/redirect",
     },
     function (accessToken, refreshToken, profile, cb) {
       // check if user already exists in our own db
