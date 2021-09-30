@@ -4,8 +4,23 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema(
   {
     username: { type: String, unique: true },
-    oAuthId: String,
+
     email: { required: true, type: String, unique: true },
+    isCollegeStudent: {
+      type: "Boolean",
+    },
+    fcmToken: {
+      type: "String",
+    },
+    stars: {
+      type: "Number",
+    },
+    score: {
+      type: "Number",
+    },
+    outreach: {
+      type: "String",
+    },
   },
   { timestamps: true }
 );
