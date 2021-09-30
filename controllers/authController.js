@@ -17,17 +17,18 @@ async function verify(token) {
     if (!payload) throw "Invalid token";
 
     const userid = payload["sub"];
-    const name = payload["name"];
+    // const name = payload["name"];
+    const email = payload["email"];
 
-    const jwtToken = jwt.sign({ id: userid }, process.env.TOKEN_SECRET);
+    const jwtToken = jwt.sign({ email: email }, process.env.TOKEN_SECRET);
 
-    const currentUser = await User.findOne({ oAuthId: userid });
+    const currentUser = await User.findOne({ email: email });
 
     if (!currentUser) {
       // if not, create user in our db
       await new User({
         oAuthId: userid,
-        username: name,
+        email: email,
       }).save();
     }
     return { jwt: jwtToken };
