@@ -27,7 +27,6 @@ async function verify(token) {
     if (!currentUser) {
       // if not, create user in our db
       await new User({
-        oAuthId: userid,
         email: email,
       }).save();
     }

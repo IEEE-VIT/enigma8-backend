@@ -57,7 +57,6 @@ passport.use(
             process.env.TOKEN_SECRET
           );
           new User({
-            oAuthId: profile.id,
             email: profile._json.email,
           })
             .save()
