@@ -23,6 +23,11 @@ const userSchema = new Schema(
     outreach: {
       type: "String",
     },
+    usedPowerups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Powerups" }],
+    usedHints: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hints" }],
+    currentQuestios: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Questions" },
+    ],
   },
   { timestamps: true }
 );
