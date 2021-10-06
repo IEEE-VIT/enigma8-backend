@@ -17,15 +17,17 @@ router.get(
     session: false,
   }),
   function (req, res) {
-    response(res, { JWT: req.user.jwt });
+    res.redirect(
+      `${process.env.FRONTEND_URL}googlesuccessfulAuth?token=${req.user.jwt}&isNew=${req.user.isNew}`
+    );
   }
 );
 
 //generates a JWT
 router.post("/app/google", async (req, res) => {
   try {
-    const jwt = await verify(req.body.id_token);
-    response(res, { JWT: jwt });
+    const { jwt, isNew } = await verify(req.body.id_token);
+    response(res, { JWT: jwt, isNew: isNew });
   } catch (err) {
     response(res, {}, 400, JSON.stringify(err), false);
   }
