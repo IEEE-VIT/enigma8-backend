@@ -48,6 +48,7 @@ passport.use(
             { email: profile._json.email },
             process.env.TOKEN_SECRET
           );
+          profile.isNew = false;
 
           return cb(null, profile);
         } else {
@@ -62,6 +63,7 @@ passport.use(
             .save()
             .then((newUser) => {
               profile.jwt = jwtToken;
+              profile.isNew = true;
               return cb(null, profile);
             });
         }
