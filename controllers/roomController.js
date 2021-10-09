@@ -5,12 +5,12 @@ const { createUserSchema } = require("../config/requestSchema");
 
 const getRooms = async (req, res) => {
     try{
-        const userId = req.user.email;
+        const userId = req.user.id;
         const userRoms = await Journey.find({userId});
-        const rooms = await Room.find({});
+        const rooms = await Room.find();
         const userRooms = new Set(userRoms.roomId);
        
-        const data = [];
+        let data = [];
         rooms.forEach(item => {
             if(userRooms.has(item.roomId)){
                 let jou = userRoms.find(a => a.roomId == item.RoomId)
