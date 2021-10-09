@@ -1,6 +1,4 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-const Journey= require('./journeyModel');
 
 const powerupSchema= new mongoose.Schema({
 
@@ -19,13 +17,12 @@ const powerupSchema= new mongoose.Schema({
   },
 
   icon: {
-    type: String   //shouldn't it be a URL instead?
+    type: String 
   }
 }
 );
 
 const Powerup = mongoose.model('Powerup', powerupSchema);
-
 module.exports = Powerup;
 
 
