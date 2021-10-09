@@ -11,6 +11,7 @@ const authorizedRoutes = require("./routes/authorized");
 const authRoutes = require("./routes/authentication");
 const staticRoutes = require("./routes/static");
 const userRoutes = require("./routes/user");
+const transactRoutes = require("./routes/transact");
 
 const app = express();
 const DB_URL = process.env.DB_URI;
@@ -35,6 +36,8 @@ app.use("/auth", authRoutes);
 app.use("/authorized", authorized, authorizedRoutes);
 app.use("/static", staticRoutes);
 app.use("/user", authorized, userRoutes);
+app.use("/transact", authorized, transactRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("The server is running!");
