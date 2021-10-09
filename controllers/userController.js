@@ -1,7 +1,8 @@
 const User = require("../models/userModel");
+const Powerup = require("../models/powerupModel");
 const { createUserSchema } = require("../config/requestSchema");
 const { response } = require("../config/responseSchema");
-const createUser = async (req, res) => {
+exports.createUser = async (req, res) => {
   try {
     // const email = req.user.email;
     const data = { email: req.user.email, ...req.body };
@@ -36,4 +37,21 @@ const createUser = async (req, res) => {
     response(res, {}, 400, err.message, false);
   }
 };
-module.exports = createUser;
+
+exports.getPowerups = async (req, res) => {
+  try {
+    const email = req.user.email;
+
+    const allPowerUp = await Powerup.find({});
+    const user = await User.findOne({ email });
+    const usedPowerupsSet = new Set(user.usedPowerups);
+    const data = allPowerUp.map(({ powerupId, name, details, icon }) => {
+      const available_to_use = usedPowerupsSet.has(powerupId) ? false : true;
+      return { powerupId, name, details, icon, available_to_use };
+    });
+    //console.log(data);
+    response(res, { powerups: data });
+  } catch (err) {
+    response(res, {}, 400, err.message, false);
+  }
+};

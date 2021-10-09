@@ -1,32 +1,24 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-const Journey= require('./journeyModel');
 
-const powerupSchema= new mongoose.Schema({
-
+const powerupSchema = new mongoose.Schema({
   powerupId: {
     type: String,
-    required: true
+    required: true,
   },
 
   name: {
-    type: String
+    type: String,
   },
 
-  detail:
-  {
-    type: String
+  detail: {
+    type: String,
   },
 
   icon: {
-    type: String   //shouldn't it be a URL instead?
-  }
-}
-);
+    type: String, //shouldn't it be a URL instead?
+  },
+});
 
-const Powerup = mongoose.model('Powerup', powerupSchema);
+const Powerup = mongoose.model("Powerup", powerupSchema);
 
 module.exports = Powerup;
-
-
-

@@ -1,62 +1,61 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const User= require('./userModel')
-const Room= require('./roomModel')
-const Powerup= require('./powerupModel')
+const User = require("./userModel");
+const Room = require("./roomModel");
+const Powerup = require("./powerupModel");
 
-const journeySchema= new mongoose.Schema({
-
+const journeySchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'User'
+    ref: "User",
   },
 
   roomId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'Room'
+    ref: "Room",
   },
 
   roomUnlocked: {
     type: Boolean,
-    default: false
+    default: false,
   },
 
   question1: {
     type: String,
-    enum:['unlocked', 'locked', 'solved'],
-    default:['locked']
+    enum: ["unlocked", "locked", "solved"],
+    default: ["locked"],
   },
 
   question2: {
     type: String,
-    enum:['unlocked', 'locked', 'solved'],
-    default:['locked']
+    enum: ["unlocked", "locked", "solved"],
+    default: ["locked"],
   },
 
   question3: {
     type: String,
-    enum:['unlocked', 'locked', 'solved'],
-    default:['locked']
+    enum: ["unlocked", "locked", "solved"],
+    default: ["locked"],
   },
 
   powerupId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Powerup'
+    ref: "Powerup",
   },
 
   powerupUsed: {
     type: Boolean,
-    default: false
+    default: false,
   },
 
   stars: {
     type: Number,
-    default:0
-  }
+    default: 0,
+  },
 });
 
-const Journey = mongoose.model('Journey', journeySchema);
+const Journey = mongoose.model("Journey", journeySchema);
 
 module.exports = Journey;
