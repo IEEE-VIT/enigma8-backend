@@ -5,10 +5,8 @@ const Journey = require("../models/journeyModel");
 const { createUserSchema } = require("../config/requestSchema");
 const { response } = require("../config/responseSchema");
 
-exports.getQuestion = async(req,res) => {
- console.log("helloooo");
-  try {    
-    
+exports.getQuestion = async(req,res) => { 
+  try {       
      const currentJourney= await Journey.find({roomId: req.body.roomId})     
      const email = req.user.email;
 
@@ -17,15 +15,16 @@ exports.getQuestion = async(req,res) => {
       const currentRoom= await Room.find({_id: req.body.roomId})           
       const questionId= currentRoom[0].questionId[0]      
       const question= await Question.findOne({_id: questionId}) 
-      // response(res,questiontext);
+      // response(res,question.text);
       res.status(200).json(question.text)
     } 
+    
     else if(currentJourney[0].question2 === "unsolved")
     {
       const currentRoom= await Room.find({_id: req.body.roomId})           
       const questionId= currentRoom[0].questionId[1]      
       const question= await Question.findOne({_id: questionId})      
-     // response(res,questiontext);
+     // response(res,question.text);
      res.status(200).json(question.text)
     }
 
@@ -34,7 +33,7 @@ exports.getQuestion = async(req,res) => {
       const currentRoom= await Room.find({_id: req.body.roomId})           
       const questionId= currentRoom[0].questionId[2]      
       const question= await Question.findOne({_id: questionId})      
-      // response(res,questiontext);
+      // response(res,question.text);
       res.status(200).json(question.text)
     } 
   }
