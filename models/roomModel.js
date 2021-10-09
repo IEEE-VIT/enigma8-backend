@@ -1,9 +1,4 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-const User= require('./userModel')
-const Room= require('./roomModel')
-const Powerup= require('./powerupModel')
-const Question= require('./questionModel')
 require('mongoose-type-url');
 
 const roomSchema= new mongoose.Schema({
@@ -33,7 +28,6 @@ const roomSchema= new mongoose.Schema({
   starQuota: {
     type: Number
   }
-
 }
 );
 
