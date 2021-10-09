@@ -1,8 +1,4 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-const User = require("./userModel");
-const Room = require("./roomModel");
-const Powerup = require("./powerupModel");
 
 const journeySchema = new mongoose.Schema({
   userId: {

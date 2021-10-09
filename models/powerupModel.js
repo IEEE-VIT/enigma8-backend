@@ -15,7 +15,7 @@ const powerupSchema = new mongoose.Schema({
   },
 
   icon: {
-    type: String, //shouldn't it be a URL instead?
+    type: String
   },
 });
 
