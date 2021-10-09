@@ -1,5 +1,4 @@
 const Room = require("../models/roomModel");
-<<<<<<< HEAD
 const Journey = require("../models/journeyModel");
 const { response } = require("../config/responseSchema");
 const { createUserSchema } = require("../config/requestSchema");
@@ -20,23 +19,10 @@ const getRooms = async (req, res) => {
         });
 
         response(res, { rooms : data});
-=======
-const jou = require("../models/journeyModel");
-const { createUserSchema } = require("../config/requestSchema");
-const { response } = require("../config/responseSchema");
-
-const getRooms = async (req, res) => {
-    try{
-        const userid = req.Journey.userId;
->>>>>>> fa13e28 (abstract array for rooms)
         
     }catch(err){
         response(res, {}, 400, err.message, false);
     }
 };
 
-<<<<<<< HEAD
 module.exports = {getRooms};
-=======
-module.exports = getRooms;
->>>>>>> fa13e28 (abstract array for rooms)
