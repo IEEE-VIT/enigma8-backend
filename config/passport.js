@@ -22,7 +22,7 @@ passport.use(
     },
     async (jwtPayload, done) => {
       try {
-        const user = await User.findOne({ oAuthId: jwtPayload.id });
+        const user = await User.findOne({ email: jwtPayload.email });
 
         done(null, user);
       } catch (error) {
@@ -41,25 +41,29 @@ passport.use(
     },
     function (accessToken, refreshToken, profile, cb) {
       // check if user already exists in our own db
-      User.findOne({ oAuthId: profile.id }).then((currentUser) => {
+      User.findOne({ email: profile._json.email }).then((currentUser) => {
         if (currentUser) {
           // already have this user
-          profile.jwt = jwt.sign({ id: profile.id }, process.env.TOKEN_SECRET);
+          profile.jwt = jwt.sign(
+            { email: profile._json.email },
+            process.env.TOKEN_SECRET
+          );
+          profile.isNew = false;
 
           return cb(null, profile);
         } else {
           // if not, create user in our db
           const jwtToken = jwt.sign(
-            { id: profile.id },
+            { email: profile._json.email },
             process.env.TOKEN_SECRET
           );
           new User({
-            oAuthId: profile.id,
-            username: profile.displayName,
+            email: profile._json.email,
           })
             .save()
             .then((newUser) => {
               profile.jwt = jwtToken;
+              profile.isNew = true;
               return cb(null, profile);
             });
         }

@@ -10,6 +10,7 @@ const mongoose = require("mongoose");
 const authorizedRoutes = require("./routes/authorized");
 const authRoutes = require("./routes/authentication");
 const staticRoutes = require("./routes/static");
+const userRoutes = require("./routes/user");
 
 const app = express();
 const DB_URL = process.env.DB_URI;
@@ -33,6 +34,7 @@ mongoose
 app.use("/auth", authRoutes);
 app.use("/authorized", authorized, authorizedRoutes);
 app.use("/static", staticRoutes);
+app.use("/user", authorized, userRoutes);
 
 app.get("/", (req, res) => {
   res.send("The server is running!");
