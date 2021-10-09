@@ -20,7 +20,7 @@ async function verify(token) {
     // const name = payload["name"];
     const email = payload["email"];
 
-    const isNew = false;
+    let isNew = false;
     const jwtToken = jwt.sign({ email: email }, process.env.TOKEN_SECRET);
 
     const currentUser = await User.findOne({ email: email });
