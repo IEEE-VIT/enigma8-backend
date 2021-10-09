@@ -1,8 +1,4 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-const User= require('./userModel')
-const Room= require('./roomModel')
-const Powerup= require('./powerupModel')
 
 const questionSchema= new mongoose.Schema({
 
@@ -30,13 +26,11 @@ const questionSchema= new mongoose.Schema({
     default:['img']
   },
 
-  answers: {
-    [{type:String, required: true}]
-  },
+  answers:
+    [{type:String, required: true}],
 
-  closeAnswers: {
-    [{type:String, required: true}]
-  },
+  closeAnswers:
+    [{type:String, required: true}],
 
   hint: {
     type:String, 
