@@ -3,8 +3,10 @@ const router = express.Router();
 
 const Joi = require("joi");
 
-const createUser = require("../controllers/userController");
+const { createUser, getPowerups } = require("../controllers/userController");
 
 router.post("/create", createUser);
+
+router.get("/getPowerups", getPowerups);
 
 module.exports = router;
