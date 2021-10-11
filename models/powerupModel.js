@@ -1,11 +1,6 @@
 const mongoose = require("mongoose");
 
 const powerupSchema = new mongoose.Schema({
-  powerupId: {
-    type: String,
-    required: true,
-  },
-
   name: {
     type: String,
   },
@@ -15,7 +10,7 @@ const powerupSchema = new mongoose.Schema({
   },
 
   icon: {
-    type: String
+    type: String,
   },
 });
 

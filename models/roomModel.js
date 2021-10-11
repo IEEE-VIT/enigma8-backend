@@ -3,10 +3,6 @@ const mongoose = require("mongoose");
 require("mongoose-type-url");
 
 const roomSchema = new mongoose.Schema({
-  roomId: {
-    type: String,
-  },
-
   roomNo: {
     type: String,
   },
