@@ -1,7 +1,13 @@
 const User = require("../models/userModel");
 const Powerup = require("../models/powerupModel");
-const { createUserSchema } = require("../config/requestSchema");
+const Journey = require("../models/journeyModel");
+const {
+  createUserSchema,
+  consumePowerupSchema,
+} = require("../config/requestSchema");
 const { response } = require("../config/responseSchema");
+const mongoose = require("mongoose");
+
 exports.createUser = async (req, res) => {
   try {
     // const email = req.user.email;
@@ -52,6 +58,42 @@ exports.getPowerups = async (req, res) => {
     //console.log(data);
     response(res, { powerups: data });
   } catch (err) {
+    response(res, {}, 400, err.message, false);
+  }
+};
+
+exports.consumePowerup = async (req, res) => {
+  const session = await mongoose.startSession();
+  try {
+    const id = req.user.id;
+
+    //JOI validation
+    const { powerupId, roomId } = await consumePowerupSchema.validateAsync({
+      powerupId: req.body.powerupId,
+      roomId: req.body.roomId,
+    });
+
+    session.startTransaction();
+    const user = await User.findOneAndUpdate(
+      { _id: id },
+      { $addToSet: { usedPowerups: powerupId } },
+      { session }
+    );
+    if (!user) throw new Error("Error updating user");
+    const journey = await Journey.findOneAndUpdate(
+      { userid: id, roomId },
+      { powerupId: powerupId },
+      { session }
+    );
+
+    if (!journey) throw new Error("Error updating journey");
+
+    await session.commitTransaction();
+    session.endSession();
+    response(res, { message: "success" });
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
     response(res, {}, 400, err.message, false);
   }
 };
