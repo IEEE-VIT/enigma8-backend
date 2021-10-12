@@ -19,7 +19,7 @@ const getRooms = async (req, res) => {
         rooms.forEach(item => {
             if(userRoomIds.find(roomId => roomId == item.id)){
                 let jou = allJourney.find(a => a.roomId == item.id)
-                data.push([item.id, item.roomNo, item.media, item.title, item.starQuota, jou.roomUnlocked, jou.powerupId, jou.powerupUsed, jou.stars]);
+                data.push([item.id, item.roomNo, item.media, item.title, item.starQuota, jou.roomUnlocked, jou.powerupId, jou.powerupUsed, jou.stars, jou.question1, jou.question2, jou.question3]);
             }
         });
 
