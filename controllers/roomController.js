@@ -2,23 +2,28 @@ const Room = require("../models/roomModel");
 const Journey = require("../models/journeyModel");
 const { response } = require("../config/responseSchema");
 const { createUserSchema } = require("../config/requestSchema");
+const mongoose = require("mongoose");
 
 const getRooms = async (req, res) => {
     try{
         const userId = req.user.id;
-        const userRoms = await Journey.find({userId});
+        const allJourney = await Journey.find({userId});
         const rooms = await Room.find();
-        const userRooms = new Set(userRoms.roomId);
+        let userRoomIds = [];
+
+        allJourney.forEach(item => {
+            userRoomIds.push(item.roomId);
+        });
        
         let data = [];
         rooms.forEach(item => {
-            if(userRooms.has(item.roomId)){
-                let jou = userRoms.find(a => a.roomId == item.RoomId)
-                data.push([item.roomId, item.roomNo, item.media, item.title, item.star_quota, jou.roomUnlocked, jou.power_up_id, jou.power_up_id, jou.stars]);
+            if(userRoomIds.find(roomId => roomId == item.id)){
+                let jou = allJourney.find(a => a.roomId == item.id)
+                data.push([item.id, item.roomNo, item.media, item.title, item.starQuota, jou.roomUnlocked, jou.powerupId, jou.powerupUsed, jou.stars]);
             }
         });
 
-        response(res, { rooms : data});
+        response(res, {allRooms: data});
         
     }catch(err){
         response(res, {}, 400, err.message, false);
