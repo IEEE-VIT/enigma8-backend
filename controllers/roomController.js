@@ -15,11 +15,43 @@ const getRooms = async (req, res) => {
             userRoomIds.push(item.roomId);
         });
        
+        let info = {};
         let data = [];
         rooms.forEach(item => {
             if(userRoomIds.find(roomId => roomId == item.id)){
                 let jou = allJourney.find(a => a.roomId == item.id)
-                data.push([item.id, item.roomNo, item.media, item.title, item.starQuota, jou.roomUnlocked, jou.powerupId, jou.powerupUsed, jou.stars, jou.question1, jou.question2, jou.question3]);
+                info = {
+                    "_id": item.id,
+                    "roomNo": item.roomNo,
+                    "media": item.media,
+                    "title": item.title,
+                    "starQuota": item.starQuota,
+                    "roomUnlocked": jou.roomUnlocked,
+                    "powerupId": jou.powerupId,
+                    "powerupUsed": jou.powerupUsed,
+                    "stars": jou.starts,
+                    "question1": jou.question1,
+                    "question2": jou.question2,
+                    "question3": jou.question3
+                }
+                data.push(info);
+            }
+            else {
+                info = {
+                    "_id": item.id,
+                    "roomNo": item.roomNo,
+                    "media": item.media,
+                    "title": item.title,
+                    "starQuota": item.starQuota,
+                    "roomUnlocked": false,
+                    "powerupId": null,
+                    "powerupUsed": false,
+                    "stars": 0,
+                    "question1": ["locked"],
+                    "question2": ["locked"],
+                    "question3": ["locked"]
+                }
+                data.push(info);
             }
         });
 
