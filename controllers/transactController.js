@@ -6,42 +6,37 @@ const { getQuestionSchema } = require("../config/requestSchema");
 const { response } = require("../config/responseSchema");
 
 exports.getQuestion = async(req,res) => { 
-  try {       
+  try {     
 
-     const { roomId } = await getQuestionSchema.validateAsync(req.body);
-     const email = req.user.email;
-     const user= await User.findOne({email})
-     const userId= user.userId;
-     const currentJourney= await Journey.findOne({roomId: roomId, userId: userId})    
+    const { roomId } = await getQuestionSchema.validateAsync(req.body.roomId);    
+    const user= req.user;
+    const userId= user.userId;
+    const currentJourney= await Journey.findOne({roomId: roomId, userId: userId})    
      
-  if(currentJourney.roomUnlocked=== false)  
+  if(currentJourney === null)  
+  {
     throw new Error ("Room is locked.")
-    
-     if(currentJourney.question1 === "unsolved")
+  }
+
+  let questionFound= false;
+  for(let i=0; i<3;i++)
+  {
+    if(currentJourney.questionsStatus[i] === "unlocked")
     {      
+      questionFound=true;
       const currentRoom= await Room.findOne({_id: roomId})           
-      const questionId= currentRoom.questionId[0]      
-      const question= await Question.findOne({_id: questionId})
-      console.log(question) 
-      response(res,{text: question.text, media: question.media});
+      const questionId= currentRoom.questionId[i]      
+      const question= await Question.findOne({_id: questionId}).select('text media mediaType questionNo currentRoom')
+      response(res,question)
+      // response(res,{text: question.text, media: question.media, mediaType: question.mediaType, questionNo: question.mediaType, currentRoom: currentRoom.roomNo});
       
     } 
-
-    else if(currentJourney.question2 === "unsolved")
+  }    
+    
+    if(questionFound=== false) 
     {
-      const currentRoom= await Room.find({_id: roomId})           
-      const questionId= currentRoom.questionId[1]      
-      const question= await Question.findOne({_id: questionId})      
-      response(res,{text: question.text, media: question.media});
+      throw new Error ("You have solved the entire room")
     }
-
-    else if(currentJourney.question3 === "unsolved")
-    {
-      const currentRoom= await Room.find({_id: roomId})           
-      const questionId= currentRoom.questionId[2]      
-      const question= await Question.findOne({_id: questionId})      
-      response(res,{text: question.text, media: question.media});
-    } 
   }
   catch(err)
   {
