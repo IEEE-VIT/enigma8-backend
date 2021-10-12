@@ -6,6 +6,4 @@ const {getQuestion} = require('../controllers/transactController');
 
 router.post("/getQuestion", getQuestion)
 
-// router.post("/submitAnswer", submitAnswer)
-
 module.exports = router;

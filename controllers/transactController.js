@@ -27,9 +27,7 @@ exports.getQuestion = async(req,res) => {
       const currentRoom= await Room.findOne({_id: roomId})           
       const questionId= currentRoom.questionId[i]      
       const question= await Question.findOne({_id: questionId}).select('text media mediaType questionNo currentRoom')
-      response(res,question)
-      // response(res,{text: question.text, media: question.media, mediaType: question.mediaType, questionNo: question.mediaType, currentRoom: currentRoom.roomNo});
-      
+      response(res,question)      
     } 
   }    
     
