@@ -10,6 +10,13 @@ exports.createUserSchema = Joi.object({
 });
 
 
+
 exports.getQuestionSchema = Joi.object({
   roomId: Joi.objectId().required()
 });
+
+exports.consumePowerupSchema = Joi.object({
+  roomId: Joi.objectId().required(),
+  powerupId: Joi.objectId().required(),
+});
+

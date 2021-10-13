@@ -6,7 +6,6 @@ const journeySchema = new mongoose.Schema({
     required: true,
     ref: "User",
   },
-
   roomId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
