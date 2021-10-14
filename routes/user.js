@@ -6,13 +6,13 @@ const Joi = require("joi");
 const {
   createUser,
   getPowerups,
-  consumePowerup,
+  startJourney,
 } = require("../controllers/userController");
 
 router.post("/create", createUser);
 
 router.get("/getPowerups", getPowerups);
 
-router.post("/selectPowerup", consumePowerup);
+router.post("/selectPowerup", startJourney);
 
 module.exports = router;

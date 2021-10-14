@@ -65,7 +65,7 @@ exports.getPowerups = async (req, res) => {
   }
 };
 
-exports.consumePowerup = async (req, res) => {
+exports.startJourney = async (req, res) => {
   const session = await mongoose.startSession();
   try {
     const id = req.user.id;
@@ -90,7 +90,13 @@ exports.consumePowerup = async (req, res) => {
     );
 
     if (!journey) throw new Error("Error updating journey");
-
+    const currentRoom = await User.findOneAndUpdate(
+      { _id: id },
+      { currentRoomId: roomId },
+      { session }
+    );
+    
+    if(!currentRoom) throw new Error("Error updating current room");
     await session.commitTransaction();
     session.endSession();
     response(res, { message: "success" });

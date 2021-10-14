@@ -9,6 +9,11 @@ const userSchema = new Schema(
     isCollegeStudent: {
       type: "Boolean",
     },
+    currentRoomId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Room",
+    },
     fcmToken: {
       type: "String",
     },
