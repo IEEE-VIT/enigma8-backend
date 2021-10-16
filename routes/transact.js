@@ -4,6 +4,6 @@ const Joi = require("joi");
 
 const {getQuestion} = require('../controllers/transactController');
 
-router.post("/getQuestion", getQuestion)
+router.get("/getQuestion", getQuestion)
 
 module.exports = router;
