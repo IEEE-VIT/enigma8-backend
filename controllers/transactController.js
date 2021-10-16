@@ -10,7 +10,7 @@ exports.getQuestion = async(req,res) => {
 
     const { roomId } = await getQuestionSchema.validateAsync(req.body);    
     const user= req.user;
-    const userId= user.userId;
+    const userId= user.id;
     const currentJourney= await Journey.findOne({roomId, userId})    
      
   if(currentJourney === null)  
