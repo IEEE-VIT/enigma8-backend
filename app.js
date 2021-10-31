@@ -11,6 +11,7 @@ const authorizedRoutes = require("./routes/authorized");
 const authRoutes = require("./routes/authentication");
 const staticRoutes = require("./routes/static");
 const userRoutes = require("./routes/user");
+const transactRoutes = require("./routes/transact");
 const gameRoutes = require("./routes/game");
 
 const app = express();
@@ -31,6 +32,8 @@ app.use("/auth", authRoutes);
 app.use("/authorized", authorized, authorizedRoutes);
 app.use("/static", staticRoutes);
 app.use("/user", authorized, userRoutes);
+app.use("/transact", authorized, transactRoutes);
+
 app.use("/game", authorized, gameRoutes);
 
 app.get("/", (req, res) => {
