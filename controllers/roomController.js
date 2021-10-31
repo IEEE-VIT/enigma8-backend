@@ -20,12 +20,12 @@ const getRooms = async (req, res) => {
         rooms.forEach(item => {
             if (userRoomIds.find(roomId => roomId == item.id)) {
                 let jou = allJourney.find(a => a.roomId == item.id)
-                info = {"room": item, "journey":jou}
+                info = { "room": item, "journey": jou }
                 data.push(info);
             }
             else {
                 let jou = {
-                    "_id" : null,
+                    "_id": null,
                     "roomUnlocked": false,
                     "powerupId": null,
                     "powerupUsed": false,
@@ -34,12 +34,12 @@ const getRooms = async (req, res) => {
                     "question2": "locked",
                     "question3": "locked"
                 }
-                info = {"room": item, "journey":jou}
+                info = { "room": item, "journey": jou }
                 data.push(info);
             }
         });
 
-        response(res, { allRooms: data });
+        response(res, ...data);
 
     } catch (err) {
         response(res, {}, 400, err.message, false);
