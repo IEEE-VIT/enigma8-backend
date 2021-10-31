@@ -6,7 +6,6 @@ const journeySchema = new mongoose.Schema({
     required: true,
     ref: "User",
   },
-
   roomId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -18,23 +17,13 @@ const journeySchema = new mongoose.Schema({
     default: false,
   },
 
-  question1: {
+  questionsStatus: [{
     type: String,
     enum: ["unlocked", "locked", "solved"],
-    default: ["locked"],
-  },
+    default: ["locked", "locked", "locked"]
+  }],
 
-  question2: {
-    type: String,
-    enum: ["unlocked", "locked", "solved"],
-    default: ["locked"],
-  },
-
-  question3: {
-    type: String,
-    enum: ["unlocked", "locked", "solved"],
-    default: ["locked"],
-  },
+  
 
   powerupId: {
     type: mongoose.Schema.Types.ObjectId,

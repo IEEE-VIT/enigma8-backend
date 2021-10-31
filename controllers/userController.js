@@ -1,7 +1,13 @@
 const User = require("../models/userModel");
 const Powerup = require("../models/powerupModel");
-const { createUserSchema } = require("../config/requestSchema");
+const Journey = require("../models/journeyModel");
+const {
+  createUserSchema,
+  consumePowerupSchema,
+} = require("../config/requestSchema");
 const { response } = require("../config/responseSchema");
+const mongoose = require("mongoose");
+
 exports.createUser = async (req, res) => {
   try {
     // const email = req.user.email;
@@ -40,18 +46,58 @@ exports.createUser = async (req, res) => {
 
 exports.getPowerups = async (req, res) => {
   try {
-    const email = req.user.email;
+    const { usedPowerups } = req.user;
 
     const allPowerUp = await Powerup.find({});
-    const user = await User.findOne({ email });
-    const usedPowerupsSet = new Set(user.usedPowerups);
-    const data = allPowerUp.map(({ powerupId, name, details, icon }) => {
-      const available_to_use = usedPowerupsSet.has(powerupId) ? false : true;
-      return { powerupId, name, details, icon, available_to_use };
+
+    const usedPowerupsSet = new Set(usedPowerups.map((id) => id.toHexString())); // a set of Obj ID string
+
+    const data = allPowerUp.map(({ _id, name, detail, icon }) => {
+      const available_to_use = usedPowerupsSet.has(_id.toHexString())
+        ? false
+        : true;
+      return { _id, name, detail, icon, available_to_use };
     });
-    //console.log(data);
+
     response(res, { powerups: data });
   } catch (err) {
+    response(res, {}, 400, err.message, false);
+  }
+};
+
+exports.consumePowerup = async (req, res) => {
+  const session = await mongoose.startSession();
+  try {
+    const id = req.user.id;
+
+    //JOI validation
+    const { powerupId, roomId } = await consumePowerupSchema.validateAsync({
+      powerupId: req.body.powerupId,
+      roomId: req.body.roomId,
+    });
+
+    session.startTransaction();
+    const user = await User.findOneAndUpdate(
+      { _id: id },
+      { $addToSet: { usedPowerups: powerupId } },
+      { session }
+    );
+    if (!user) throw new Error("Error updating user");
+    const journey = await Journey.findOneAndUpdate(
+      { userid: id, roomId },
+      { powerupId: powerupId },
+      { session }
+    );
+
+    if (!journey) throw new Error("Error updating journey");
+
+    await session.commitTransaction();
+    session.endSession();
+    response(res, { message: "success" });
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+
     response(res, {}, 400, err.message, false);
   }
 };
