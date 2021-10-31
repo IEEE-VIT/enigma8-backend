@@ -20,6 +20,9 @@ const userSchema = new Schema(
       type: "Number",
       default: 0,
     },
+    scoreLastUpdated: {
+      type: "Date",
+    },
     outreach: {
       type: "String",
     },
