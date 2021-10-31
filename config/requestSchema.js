@@ -12,3 +12,8 @@ exports.consumePowerupSchema = Joi.object({
   roomId: Joi.objectId().required(),
   powerupId: Joi.objectId().required(),
 });
+exports.getLeaderboardSchema = Joi.object({
+  query: Joi.string().default(""),
+  page: Joi.number().default(1).min(1),
+  perPage: Joi.number().default(2).min(0),
+});
