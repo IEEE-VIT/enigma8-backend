@@ -1,8 +1,31 @@
+const User = require("../models/userModel");
 const Room = require("../models/roomModel");
 const Journey = require("../models/journeyModel");
 const { response } = require("../config/responseSchema");
 const { createUserSchema } = require("../config/requestSchema");
 const mongoose = require("mongoose");
+
+const checkIfRoomUnlocked = async (req, res) => {
+    try {
+        const id = req.user.id;
+        const roomId = req.body.roomId;
+
+        const Users = await User.find({ "_id": id });
+        const rooms = await Room.find({ "_id": roomId });
+
+        let unlock = false;
+
+        if (Users.stars >= rooms.starQuota) {
+            unlock = true;
+        }
+
+        response(res, { unlock: unlock });
+
+    } catch (err) {
+        response(res, {}, 400, err.message, false);
+    }
+};
+
 
 const getRooms = async (req, res) => {
     try {
@@ -39,11 +62,11 @@ const getRooms = async (req, res) => {
             }
         });
 
-        response(res, {data});
+        response(res, { data });
 
     } catch (err) {
         response(res, {}, 400, err.message, false);
     }
 };
 
-module.exports = { getRooms };
+module.exports = { getRooms, checkIfRoomUnlocked };
