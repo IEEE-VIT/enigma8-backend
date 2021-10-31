@@ -17,3 +17,6 @@ exports.getLeaderboardSchema = Joi.object({
   page: Joi.number().default(1).min(1),
   perPage: Joi.number().default(2).min(0),
 });
+exports.getQuestionSchema = Joi.object({
+  roomId: Joi.objectId().required()
+});

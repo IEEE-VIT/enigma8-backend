@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+require("mongoose-type-url");
 
 const journeySchema = new mongoose.Schema({
   userId: {
