@@ -48,7 +48,9 @@ passport.use(
             { email: profile._json.email },
             process.env.TOKEN_SECRET
           );
-          profile.isNew = false;
+
+          //if username exist
+          profile.isNew = currentUser.username ? false : true;
 
           return cb(null, profile);
         } else {
