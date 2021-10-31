@@ -5,7 +5,7 @@ const { response } = require("../config/responseSchema");
 const { createUserSchema } = require("../config/requestSchema");
 const mongoose = require("mongoose");
 
-const unlockRoom = async (req, res) => {
+const checkIfRoomUnlocked = async (req, res) => {
     try {
         const id = req.user.id;
         const roomId = req.body.roomId;
@@ -69,4 +69,4 @@ const getRooms = async (req, res) => {
     }
 };
 
-module.exports = { getRooms, unlockRoom };
+module.exports = { getRooms, checkIfRoomUnlocked };
