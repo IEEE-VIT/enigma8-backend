@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-require("mongoose-type-url");
 
 const questionSchema = new mongoose.Schema({
   questionNo: {
