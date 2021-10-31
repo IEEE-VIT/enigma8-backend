@@ -3,27 +3,31 @@ const router = express.Router();
 const passport = require("passport");
 const { response } = require("../config/responseSchema");
 const verify = require("../controllers/authController");
-//Google Auth
+
+//Google Auth for web
 router.get(
-  "/google",
+  "/web/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 router.get(
-  "/google/redirect",
+  "/web/google/redirect",
   passport.authenticate("google", {
     failureRedirect: "/failed",
     session: false,
   }),
   function (req, res) {
-    response(res, { JWT: req.user.jwt });
+    res.redirect(
+      `${process.env.FRONTEND_URL}googlesuccessfulAuth?token=${req.user.jwt}&isNew=${req.user.isNew}`
+    );
   }
 );
 
-router.post("/generate_jwt_android_google", async (req, res) => {
+//generates a JWT
+router.post("/app/google", async (req, res) => {
   try {
-    const jwt = await verify(req.body.id_token);
-    response(res, { JWT: jwt });
+    const { jwt, isNew } = await verify(req.body.id_token);
+    response(res, { JWT: jwt, isNew: isNew });
   } catch (err) {
     response(res, {}, 400, JSON.stringify(err), false);
   }
