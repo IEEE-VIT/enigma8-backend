@@ -26,20 +26,20 @@ const getRooms = async (req, res) => {
             else {
                 let jou = {
                     "_id": null,
+                    "userId": null,
+                    "roomId": null,
+                    "stars": 0,
+                    "powerupUsed": false,
                     "roomUnlocked": false,
                     "powerupId": null,
-                    "powerupUsed": false,
-                    "stars": 0,
-                    "question1": "locked",
-                    "question2": "locked",
-                    "question3": "locked"
+                    "questionsStatus": ["locked", "locked", "locked"]
                 }
                 info = { "room": item, "journey": jou }
                 data.push(info);
             }
         });
 
-        response(res, ...data);
+        response(res, {data});
 
     } catch (err) {
         response(res, {}, 400, err.message, false);
