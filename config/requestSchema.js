@@ -20,3 +20,6 @@ exports.getLeaderboardSchema = Joi.object({
 exports.getQuestionSchema = Joi.object({
   roomId: Joi.objectId().required(),
 });
+exports.getStorySchema = Joi.object({
+  roomId: Joi.objectId().required(),
+});

@@ -14,6 +14,7 @@ const userRoutes = require("./routes/user");
 const roomRoutes = require("./routes/room")
 const transactRoutes = require("./routes/transact");
 const gameRoutes = require("./routes/game");
+const storyRoutes = require("./routes/story");
 const notifRoutes = require("./routes/notifications");
 
 const app = express();
@@ -37,6 +38,7 @@ app.use("/user", authorized, userRoutes);
 app.use("/room" , authorized, roomRoutes)
 app.use("/transact", authorized, transactRoutes);
 app.use("/game", authorized, gameRoutes);
+app.use("/story", authorized, storyRoutes);
 app.use("/notifs", authorized, notifRoutes);
 
 
