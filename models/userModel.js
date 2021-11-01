@@ -9,14 +9,25 @@ const userSchema = new Schema(
     isCollegeStudent: {
       type: "Boolean",
     },
-    fcmToken: {
-      type: "String",
+    currentRoomId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Room",
     },
+    fcmToken: [
+      {
+        type: "String",
+      },
+    ],
     stars: {
       type: "Number",
       default: 0,
     },
     score: {
+      type: "Number",
+      default: 0,
+    },
+    questionsSolved: {
       type: "Number",
       default: 0,
     },

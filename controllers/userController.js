@@ -64,8 +64,40 @@ exports.getPowerups = async (req, res) => {
     response(res, {}, 400, err.message, false);
   }
 };
+exports.getUser = async (req, res) => {
+  try {
+    const { username, email, score, stars, currentRoomId } = req.user;
 
-exports.consumePowerup = async (req, res) => {
+    //find user rank
+    const allData = await User.find(
+      { username: { $ne: null } },
+      { username: 1, score: 1 }
+    ).sort({ score: -1, scoreLastUpdated: 1 });
+
+    let startRank = 1;
+    const rankedData = allData.map(({ username, score }) => {
+      return { username, score, rank: startRank++ };
+    });
+
+    const { rank } = rankedData.filter(
+      ({ username }) => req.user.username === username
+    )[0];
+
+    const user = {
+      username: username,
+      email: email,
+      score: score,
+      starts: stars,
+      rank: rank,
+      currentRoomId: currentRoomId,
+    };
+    response(res, user);
+  } catch (err) {
+    response(res, {}, 400, err.message, false);
+  }
+};
+
+exports.startJourney = async (req, res) => {
   const session = await mongoose.startSession();
   try {
     const id = req.user.id;
@@ -90,7 +122,13 @@ exports.consumePowerup = async (req, res) => {
     );
 
     if (!journey) throw new Error("Error updating journey");
+    const currentRoom = await User.findOneAndUpdate(
+      { _id: id },
+      { currentRoomId: roomId },
+      { session }
+    );
 
+    if (!currentRoom) throw new Error("Error updating current room");
     await session.commitTransaction();
     session.endSession();
     response(res, { message: "success" });
@@ -98,6 +136,24 @@ exports.consumePowerup = async (req, res) => {
     await session.abortTransaction();
     session.endSession();
 
+    response(res, {}, 400, err.message, false);
+  }
+};
+
+exports.addFCM = async (req, res) => {
+  try {
+    const { id, username } = req.user;
+    const { token } = req.body;
+
+    const user = await User.findOneAndUpdate(
+      { _id: id },
+      { $addToSet: { fcmToken: token } }
+    );
+
+    response(res, {
+      message: "The token was successfully added for user " + username,
+    });
+  } catch (err) {
     response(res, {}, 400, err.message, false);
   }
 };
