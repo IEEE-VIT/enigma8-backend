@@ -32,9 +32,16 @@ exports.story = async (req, res) => {
 
 exports.fullStory = async (req, res) => {
     try {
+        const id = req.user.id;
+        const Users = await User.find({ "_id": id });
+        const currentRoomId = Users[0].currentRoomId;
         const { roomId } = await getStorySchema.validateAsync(
             req.query
         );
+
+        if (roomId != currentRoomId) {
+            throw new Error("Requested story is not from current room");
+        }
         const roomData = await Room.find({ "_id": roomId });
 
         let data = [];
