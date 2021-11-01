@@ -9,6 +9,7 @@ const {
   consumePowerup,
   getUser,
   startJourney,
+  addFCM,
 } = require("../controllers/userController");
 
 router.post("/create", createUser);
@@ -16,6 +17,7 @@ router.post("/create", createUser);
 router.get("/getPowerups", getPowerups);
 
 router.post("/selectPowerup", startJourney);
+router.post("/addFCM", addFCM);
 
 router.get("/getDetails", getUser);
 
