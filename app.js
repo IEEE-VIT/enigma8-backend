@@ -35,8 +35,8 @@ app.use("/static", staticRoutes);
 app.use("/user", authorized, userRoutes);
 app.use("/room" , authorized, roomRoutes)
 app.use("/transact", authorized, transactRoutes);
-
 app.use("/game", authorized, gameRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("The server is running!");
