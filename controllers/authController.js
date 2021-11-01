@@ -32,7 +32,7 @@ async function verify(token) {
         email: email,
       }).save();
     }
-    return { jwt: jwtToken, isNew: isNew };
+    return { jwt: jwtToken, isNew: currentUser.username ? false : true };
   } catch (err) {
     throw "Invalid Token";
   }
