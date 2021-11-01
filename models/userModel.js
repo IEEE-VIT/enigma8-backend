@@ -14,9 +14,11 @@ const userSchema = new Schema(
       required: true,
       ref: "Room",
     },
-    fcmToken: {
-      type: "String",
-    },
+    fcmToken: [
+      {
+        type: "String",
+      },
+    ],
     stars: {
       type: "Number",
       default: 0,

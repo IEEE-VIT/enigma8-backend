@@ -95,8 +95,8 @@ exports.startJourney = async (req, res) => {
       { currentRoomId: roomId },
       { session }
     );
-    
-    if(!currentRoom) throw new Error("Error updating current room");
+
+    if (!currentRoom) throw new Error("Error updating current room");
     await session.commitTransaction();
     session.endSession();
     response(res, { message: "success" });
@@ -104,6 +104,24 @@ exports.startJourney = async (req, res) => {
     await session.abortTransaction();
     session.endSession();
 
+    response(res, {}, 400, err.message, false);
+  }
+};
+
+exports.addFCM = async (req, res) => {
+  try {
+    const { id, username } = req.user;
+    const { token } = req.body;
+
+    const user = await User.findOneAndUpdate(
+      { _id: id },
+      { $addToSet: { fcmToken: token } }
+    );
+
+    response(res, {
+      message: "The token was successfully added for user " + username,
+    });
+  } catch (err) {
     response(res, {}, 400, err.message, false);
   }
 };
