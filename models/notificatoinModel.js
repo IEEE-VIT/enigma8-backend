@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 require("mongoose-type-url");
 
 const notificationSchema = new mongoose.Schema({
-    roomUnlocked: {
+    text: {
       type: String,
     },
     timestamp: {
