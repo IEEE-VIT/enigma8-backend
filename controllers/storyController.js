@@ -1,15 +1,18 @@
-const User = require("../models/userModel");
-const Story = require("../models/storyModel");
+const Room = require("../models/roomModel");
+const Story = require("../story.json");
 const { response } = require("../config/responseSchema");
+const { getStorySchema } = require("../config/requestSchema");
 
 exports.story = async( req, res ) => {
     try {
-        const id = req.user.id;
-        const userData = User.find({"_id": id});
+        const { roomId } = await getStorySchema.validateAsync(
+            req.query
+        );
+        const roomData = await Room.find({ "_id": roomId});
 
         let data = [];
         Story.forEach(item => {
-            if( item.roomId == userData.currentRoom){
+            if( item.roomNo == roomData[0].roomNo){
                 data.push(item.message);
             }
         });
@@ -21,12 +24,14 @@ exports.story = async( req, res ) => {
 
 exports.fullStory = async( req, res ) => {
     try {
-        const id = req.user.id;
-        const userData = User.find({"_id": id});
+        const { roomId } = await getStorySchema.validateAsync(
+            req.query
+        );
+        const roomData = await Room.find({ "_id": roomId});
 
         let data = [];
         Story.forEach(item => {
-            if( item.roomId <= userData.roomId){
+            if( item.roomNo <= roomData[0].roomNo){
                 data.push(item.message);
             }
         });
