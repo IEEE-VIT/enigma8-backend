@@ -7,12 +7,16 @@ const {
   createUser,
   getPowerups,
   consumePowerup,
+  getUser,
+  startJourney,
 } = require("../controllers/userController");
 
 router.post("/create", createUser);
 
 router.get("/getPowerups", getPowerups);
 
-router.post("/selectPowerup", consumePowerup);
+router.post("/selectPowerup", startJourney);
+
+router.get("/getDetails", getUser);
 
 module.exports = router;

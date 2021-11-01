@@ -9,6 +9,11 @@ const userSchema = new Schema(
     isCollegeStudent: {
       type: "Boolean",
     },
+    currentRoomId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Room",
+    },
     fcmToken: {
       type: "String",
     },
@@ -20,12 +25,19 @@ const userSchema = new Schema(
       type: "Number",
       default: 0,
     },
+    questionsSolved: {
+      type: "Number",
+      default: 0,
+    },
+    scoreLastUpdated: {
+      type: "Date",
+    },
     outreach: {
       type: "String",
     },
     usedPowerups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Powerups" }],
     usedHints: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hints" }],
-    currentQuestios: [
+    currentQuestions: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Questions" },
     ],
   },
