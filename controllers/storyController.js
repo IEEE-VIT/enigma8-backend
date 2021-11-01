@@ -13,10 +13,12 @@ exports.story = async (req, res) => {
             req.query
         );
 
-        if (roomId != currentRoomId) {
+        const roomData = await Room.find({ "_id": roomId });
+        const currentRoomData = await Room.find({ "_id": currentRoomId });
+
+        if ( roomData[0].roomNo > currentRoomData[0].roomNo) {
             throw new Error("Requested story is not from current room");
         }
-        const roomData = await Room.find({ "_id": roomId });
 
         let data = [];
         Story.forEach(item => {
@@ -39,10 +41,12 @@ exports.fullStory = async (req, res) => {
             req.query
         );
 
-        if (roomId != currentRoomId) {
+        const roomData = await Room.find({ "_id": roomId });
+        const currentRoomData = await Room.find({ "_id": currentRoomId });
+
+        if ( roomData[0].roomNo > currentRoomData[0].roomNo) {
             throw new Error("Requested story is not from current room");
         }
-        const roomData = await Room.find({ "_id": roomId });
 
         let data = [];
         Story.forEach(item => {
