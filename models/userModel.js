@@ -33,7 +33,7 @@ const userSchema = new Schema(
     },
     usedPowerups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Powerups" }],
     usedHints: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hints" }],
-    currentQuestios: [
+    currentQuestions: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Questions" },
     ],
   },

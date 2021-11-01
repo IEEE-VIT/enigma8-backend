@@ -18,5 +18,5 @@ exports.getLeaderboardSchema = Joi.object({
   perPage: Joi.number().default(2).min(0),
 });
 exports.getQuestionSchema = Joi.object({
-  roomId: Joi.objectId().required()
+  roomId: Joi.objectId().required(),
 });
