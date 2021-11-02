@@ -6,9 +6,7 @@ const userSchema = new Schema(
     username: { type: String, unique: true, sparse: true },
 
     email: { required: true, type: String, unique: true },
-    isCollegeStudent: {
-      type: "Boolean",
-    },
+
     currentRoomId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
