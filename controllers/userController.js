@@ -13,7 +13,7 @@ exports.createUser = async (req, res) => {
     // const email = req.user.email;
     const data = { email: req.user.email, ...req.body };
 
-    const { email, username, isCollegeStudent, outreach } =
+    const { email, username, outreach } =
       await createUserSchema.validateAsync(data);
 
     //check if username already setup for email
@@ -33,7 +33,7 @@ exports.createUser = async (req, res) => {
     //write to db
     const { modifiedCount, matchedCount } = await User.updateOne(
       { email: email },
-      { username, isCollegeStudent, outreach }
+      { username, outreach }
     );
     if (matchedCount === 0) throw new Error("email does not exist");
     else if (modifiedCount === 1)
