@@ -25,12 +25,9 @@ exports.useHintSchema = Joi.object({
 exports.getStorySchema = Joi.object({
   roomId: Joi.objectId().required(),
 });
-<<<<<<< HEAD
 exports.getFeedbackSchema = Joi.object({
   email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
   name : Joi.string().alphanum().min(5).max(20),
   phone: Joi.string().length(10).pattern(/^[0-9]+$/),
   text: Joi.string()
 });
-=======
->>>>>>> e0aadfd33b0f48133d409d42d31d7a65005fc498
