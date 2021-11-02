@@ -6,83 +6,66 @@ const { getQuestionSchema } = require("../config/requestSchema");
 const { useHintSchema } = require("../config/requestSchema");
 const { response } = require("../config/responseSchema");
 
-exports.getQuestion = async(req,res) => { 
-  try {     
+exports.getQuestion = async (req, res) => {
+  try {
+    const { roomId } = await getQuestionSchema.validateAsync(req.body);
+    const userId = req.user.id;
+    const currentJourney = await Journey.findOne({ roomId, userId });
 
-    const { roomId } = await getQuestionSchema.validateAsync(req.body);    
-    const userId= req.user.id;
-    const currentJourney= await Journey.findOne({roomId, userId});    
-     
-  if(currentJourney === null)  
-  {
-    throw new Error ("Room is locked.");
-  }
-
-  let questionFound= false;
-  for(let i=0; i<3;i++)
-  {
-    if(currentJourney.questionsStatus[i] === "unlocked")
-    {      
-      questionFound=true;
-      const currentRoom= await Room.findOne({_id: roomId});           
-      const questionId= currentRoom.questionId[i];      
-      const question= await Question.findOne({_id: questionId}).select("text media mediaType questionNo currentRoom");
-      response(res,question);      
-    } 
-  }    
-    
-    if(questionFound=== false) 
-    {
-      throw new Error ("You have solved the entire room");
+    if (currentJourney === null) {
+      throw new Error("Room is locked.");
     }
-  }
-  catch(err)
-  {
+
+    let questionFound = false;
+    for (let i = 0; i < 3; i++) {
+      if (currentJourney.questionsStatus[i] === "unlocked") {
+        questionFound = true;
+        const currentRoom = await Room.findOne({ _id: roomId });
+        const questionId = currentRoom.questionId[i];
+        const question = await Question.findOne({ _id: questionId }).select(
+          "text media mediaType questionNo currentRoom"
+        );
+        response(res, question);
+      }
+    }
+
+    if (questionFound === false) {
+      throw new Error("You have solved the entire room");
+    }
+  } catch (err) {
     response(res, {}, 400, err.message, false);
   }
-  
 };
 
-exports.useHint= async(req,res) => {
-  try{
-    const { roomId } = await useHintSchema.validateAsync(req.body);    
-    const userId= req.user.id;
-    const currentJourney= await Journey.findOne({roomId, userId});
+exports.useHint = async (req, res) => {
+  try {
+    const { roomId } = await useHintSchema.validateAsync(req.body);
+    const userId = req.user.id;
+    const currentJourney = await Journey.findOne({ roomId, userId });
+    if (!currentJourney) throw new Error("Journey doesnt exist");
 
-    for(let i=0; i<3;i++)
-    {
-      if(currentJourney.questionsStatus[i] === "unlocked")
-      {
-        const currentRoom= await Room.findOne({_id: roomId}); 
-        const questionId= currentRoom.questionId[i];    
-        const question=await Question.findOne({_id: questionId});
-        const hint= question.hint;  
-        const currentUserUsedHints=req.user.usedHints.map((id) => id.toHexString());
+    for (let i = 0; i < 3; i++) {
+      if (currentJourney.questionsStatus[i] === "unlocked") {
+        const currentRoom = await Room.findOne({ _id: roomId });
+        const questionId = currentRoom.questionId[i];
+        const question = await Question.findOne({ _id: questionId });
+        const hint = question.hint;
+        const currentUserUsedHints = req.user.usedHints.map((id) =>
+          id.toHexString()
+        );
 
-        const alreadyUsedHints=null;
-        if(currentUserUsedHints!= null)
-        {
-          const alreadyUsedHints= new Set(currentUserUsedHints);
-          if(alreadyUsedHints.has(questionId.toHexString()))
-          {
-            response(res,{hint}); 
-          }
-          else
-          {
-            const addUsedHints= await User.updateOne({_id:userId},{ $addToSet: { usedHints: questionId },$inc: {score:-100}});
-            response(res,{hint});
-          }
+        const alreadyUsedHints = new Set(currentUserUsedHints);
+        if (!alreadyUsedHints.has(questionId.toHexString())) {
+          const addUsedHints = await User.updateOne(
+            { _id: userId },
+            { $addToSet: { usedHints: questionId } }
+          );
+          if (!addUsedHints) throw new Error("Unexpected db error");
         }
-
-        else
-        {
-          const addUsedHints= await User.updateOne({_id:userId},{ $addToSet: { usedHints: questionId },$inc: {score:-100}});
-          response(res,{hint});
-        }      
+        response(res, { hint });
       }
-    } 
-  }    
-  catch(err){
+    }
+  } catch (err) {
     response(res, {}, 400, err.message, false);
   }
 };
