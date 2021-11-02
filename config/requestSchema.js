@@ -22,3 +22,9 @@ exports.getQuestionSchema = Joi.object({
 exports.getStorySchema = Joi.object({
   roomId: Joi.objectId().required(),
 });
+exports.getFeedbackSchema = Joi.object({
+  email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+  name : Joi.string().alphanum().min(5).max(20),
+  phone: Joi.string().length(10).pattern(/^[0-9]+$/),
+  text: Joi.string()
+});
