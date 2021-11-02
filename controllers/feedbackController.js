@@ -1,18 +1,20 @@
 const { getFeedbackSchema } = require("../config/requestSchema");
+const User = require("../models/userModel");
 const Feedback = require("../models/feedbackModel");
 const { response } = require("../config/responseSchema");
 
 exports.getFeedback = async (req, res) => {
-
     try {
-        const { email, name, text, phone } = await getFeedbackSchema.validateAsync(
+        const id = req.user.id;
+        const userData = await User.find({"_id": id});
+        const email = userData[0].email;
+
+        const { text } = await getFeedbackSchema.validateAsync(
             req.body
         );
 
         const data = new Feedback({
             email: email,
-            name: name,
-            phone: phone,
             text: text
         });
 

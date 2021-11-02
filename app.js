@@ -41,7 +41,7 @@ app.use("/transact", authorized, transactRoutes);
 app.use("/game", authorized, gameRoutes);
 app.use("/story", authorized, storyRoutes);
 app.use("/notifs", authorized, notifRoutes);
-app.use("/feedback", feedRoutes);
+app.use("/feedback", authorized, feedRoutes);
 
 
 
