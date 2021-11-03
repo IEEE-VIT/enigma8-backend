@@ -25,3 +25,6 @@ exports.useHintSchema = Joi.object({
 exports.getStorySchema = Joi.object({
   roomId: Joi.objectId().required(),
 });
+exports.getFeedbackSchema = Joi.object({
+  text: Joi.string()
+});

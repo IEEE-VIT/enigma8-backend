@@ -16,6 +16,7 @@ const transactRoutes = require("./routes/transact");
 const gameRoutes = require("./routes/game");
 const storyRoutes = require("./routes/story");
 const notifRoutes = require("./routes/notifications");
+const feedRoutes = require("./routes/feedback");
 
 const app = express();
 const DB_URL = process.env.DB_URI;
@@ -40,6 +41,8 @@ app.use("/transact", authorized, transactRoutes);
 app.use("/game", authorized, gameRoutes);
 app.use("/story", authorized, storyRoutes);
 app.use("/notifs", authorized, notifRoutes);
+app.use("/feedback", authorized, feedRoutes);
+
 
 
 app.get("/", (req, res) => {
