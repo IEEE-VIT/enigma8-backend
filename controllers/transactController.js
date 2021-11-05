@@ -4,6 +4,9 @@ const User = require("../models/userModel");
 const Journey = require("../models/journeyModel");
 const { getQuestionSchema } = require("../config/requestSchema");
 const { useHintSchema } = require("../config/requestSchema");
+const { submitAnswerSchema } = require("../config/requestSchema");
+require("dotenv").config();
+
 const { response } = require("../config/responseSchema");
 const mongoose = require("mongoose");
 
@@ -71,15 +74,17 @@ exports.useHint = async (req, res) => {
   }
 };
 
+let score= process.env.score;
+let hintReduction= process.env.hintReduction;
 exports.submitAnswer = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
   try {
     const userId = req.user.id;
-    const userAnswer = req.body.userAnswer;
+    const {userAnswer} = await submitAnswerSchema.validateAsync(req.body.userAnswer);
     const userAnswerLower = userAnswer.toLowerCase();
-    const roomId = req.body.roomId;
+    const { roomId } = await submitAnswerSchema.validateAsync(req.body.roomId);
     const currentJourney = await Journey.findOne({ roomId, userId });
+    if(!currentJourney)
+      throw new Error("Journey does not exist");
 
     let i = 0;
     let answerState = 0;
@@ -89,33 +94,35 @@ exports.submitAnswer = async (req, res) => {
         const questionId = currentRoom.questionId[i];
         const currentQuestion = await Question.findOne({ _id: questionId });
 
+        if(!currentRoom)
+          throw new Error("Couldn't find the room");
+
+        if(!currentQuestion)
+          throw new Error("Couldn't fetch the question");
+
         // 0= incorrect ans    1= close answer    2= correct answer
 
         const correctAnswers = new Set(currentQuestion.answers);
         const closeAnswers = new Set(currentQuestion.closeAnswers);
         const currentUserUsedHints = new Set(
           req.user.usedHints.map((id) => id.toHexString())
-        );
-        let score = 100; //should be dynamic
-        const roomJson = [2, 5, 7, 10, 11];
+        );        
+        const roomJson = [2, 5, 7, 10, 11]; //stars required for unlocking next room
         const questionIdHex = questionId.toHexString();
 
         //checking for correct answer
         if (correctAnswers.has(userAnswerLower)) {
           //checking if hint is used, if so then deduct points
           if (currentUserUsedHints.has(questionIdHex)) {
-            score -= 25; //should be dynamic
-          }
-          console.log(score);
-          console.log(userId);
+            score= score-hintReduction; //should be dynamic
+          }          
 
           //update star and score
           const addStarAndScore = await User.updateOne(
             { _id: userId },
-            { $inc: { stars: 1 }, $inc: { score: score } }
+            { $inc: { stars:+1 }, $inc: { score: score } }
           );
 
-          console.log(addStarAndScore);
           if (!addStarAndScore)
             throw new Error("Error updating stars and score");
           answerState = 2;
@@ -158,7 +165,12 @@ exports.submitAnswer = async (req, res) => {
           answerState = 1;
         }
       }
+      else
+      {
+        throw new Error("all questions of this room has been solved");
+      }
     }
+    
     switch (answerState) {
       case 1:
         response(res, { solved: "close, close answer" });

@@ -28,3 +28,8 @@ exports.getStorySchema = Joi.object({
 exports.getFeedbackSchema = Joi.object({
   text: Joi.string()
 });
+exports.submitAnswerSchema = Joi.object({
+  roomId: Joi.objectId().required(),
+  userAnswer: Joi.string()
+
+});
