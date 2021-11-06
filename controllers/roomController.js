@@ -1,25 +1,30 @@
-const User = require("../models/userModel");
 const Room = require("../models/roomModel");
 const Journey = require("../models/journeyModel");
 const { response } = require("../config/responseSchema");
-const { createUserSchema } = require("../config/requestSchema");
-const mongoose = require("mongoose");
 
 const checkIfRoomUnlocked = async (req, res) => {
     try {
-        const id = req.user.id;
         const roomId = req.body.roomId;
+        if (!roomId) {
+            throw new Error("Please specify a room id")
+        }
+        const room = await Room.findOne({ "_id": roomId });
 
-        const Users = await User.find({ "_id": id });
-        const rooms = await Room.find({ "_id": roomId });
-
-        let unlock = false;
-
-        if (Users.stars >= rooms.starQuota) {
-            unlock = true;
+        if (!room) {
+            throw new Error("No such room found")
         }
 
-        response(res, { unlock: unlock });
+        let unlock = false;
+        let starsNeeded = 0;
+
+        if (req.user.stars >= room.starQuota) {
+            unlock = true;
+        }
+        else {
+            starsNeeded = room.starQuota - req.user.stars;
+        }
+
+        response(res, { unlock, starsNeeded });
 
     } catch (err) {
         response(res, {}, 400, err.message, false);

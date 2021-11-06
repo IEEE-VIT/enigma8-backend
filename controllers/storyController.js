@@ -6,24 +6,20 @@ const { getStorySchema } = require("../config/requestSchema");
 
 exports.story = async (req, res) => {
     try {
-        const id = req.user.id;
-        const Users = await User.find({ "_id": id });
-        const currentRoomId = Users[0].currentRoomId;
+        const currentRoomId = req.user.currentRoomId;
         const { roomId } = await getStorySchema.validateAsync(
             req.query
         );
 
-        const roomData = await Room.find({ "_id": roomId });
-        const currentRoomData = await Room.find({ "_id": currentRoomId });
+        const roomData = await Room.findOne({ "_id": roomId });
+        const currentRoomData = await Room.findOne({ "_id": currentRoomId });
 
-        if ( roomData[0].roomNo > currentRoomData[0].roomNo) {
-            throw new Error("Requested story is not from current room");
-        }
+        if ( roomData.roomNo > currentRoomData.roomNo) throw new Error("Requested story is not from current room");
 
         let data = [];
         Story.forEach(item => {
-            if (item.roomNo == roomData[0].roomNo) {
-                data.push(item.message);
+            if (item.roomNo === roomData.roomNo) {
+                data.push(item);
             }
         });
         response(res, { story: data });
@@ -34,24 +30,22 @@ exports.story = async (req, res) => {
 
 exports.fullStory = async (req, res) => {
     try {
-        const id = req.user.id;
-        const Users = await User.find({ "_id": id });
-        const currentRoomId = Users[0].currentRoomId;
+        const currentRoomId = req.user.currentRoomId;
         const { roomId } = await getStorySchema.validateAsync(
             req.query
         );
 
-        const roomData = await Room.find({ "_id": roomId });
-        const currentRoomData = await Room.find({ "_id": currentRoomId });
+        const roomData = await Room.findOne({ "_id": roomId });
+        const currentRoomData = await Room.findOne({ "_id": currentRoomId });
 
-        if ( roomData[0].roomNo > currentRoomData[0].roomNo) {
+        if ( roomData.roomNo > currentRoomData.roomNo) {
             throw new Error("Requested story is not from current room");
         }
 
         let data = [];
         Story.forEach(item => {
-            if (item.roomNo <= roomData[0].roomNo) {
-                data.push(item.message);
+            if (item.roomNo <= roomData.roomNo) {
+                data.push(item);
             }
         });
         response(res, { story: data });

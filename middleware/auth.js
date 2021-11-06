@@ -1,9 +1,10 @@
 const passport = require("passport");
+const { response } = require("../config/responseSchema");
 
-function authorized(request, response, next) {
+function authorized(request, res, next) {
   passport.authenticate("jwt", { session: false }, async (error, user) => {
     if (error || !user) {
-      response.status(401).json({ message: error });
+      response(res, {}, 401, "Please authenticate yourself", false)
       return;
     }
     try {
@@ -12,6 +13,6 @@ function authorized(request, response, next) {
       next(error);
     }
     next();
-  })(request, response, next);
+  })(request, res, next);
 }
 module.exports = authorized;

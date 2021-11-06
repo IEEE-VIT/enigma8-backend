@@ -9,7 +9,6 @@ const userSchema = new Schema(
 
     currentRoomId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
       ref: "Room",
     },
     fcmToken: [
