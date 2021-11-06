@@ -74,18 +74,12 @@ exports.useHint = async (req, res) => {
   }
 };
 
-/*
-Task Involved
-...............
-1. 
-
-*/
-
 const roomJson = [2, 5, 7, 10, 11]; //stars required for unlocking next room
 
 exports.submitAnswer = async (req, res) => {
+  const session = await mongoose.startSession();
   try {
-    const { userId, usedHints, star } = req.user;
+    const { id: userId, usedHints, stars } = req.user;
 
     const { userAnswer, roomId } = await submitAnswerSchema.validateAsync(
       req.body
@@ -95,14 +89,13 @@ exports.submitAnswer = async (req, res) => {
 
     const currentJourney = await Journey.findOne({ roomId, userId });
     if (!currentJourney) throw new Error("Journey does not exist");
-    console.log("current Journey", currentJourney);
-
+    console.log("The Journey:", currentJourney);
+    let flag = false;
     currentJourney.questionsStatus.map(async (status, i) => {
       if (status === "unlocked") {
-        console.log("The answer is submitted for q no:", i + 1);
-
         const currentRoom = await Room.findOne({ _id: roomId });
         if (!currentRoom) throw new Error("Couldn't find the room");
+        console.log("currentRoom:", currentRoom);
 
         const questionId = currentRoom.questionId[i];
 
@@ -113,27 +106,46 @@ exports.submitAnswer = async (req, res) => {
         const closeAnswers = new Set(currentQuestion.closeAnswers);
 
         if (correctAnswers.has(userAnswerLower)) {
-          //userAnswer is correct
-          const effectiveScore = getEffectiveScore(usedHints, questionId);
-          console.log(effectiveScore);
-          await updateScoreStar(effectiveScore);
-          // await updateCurrentQstnStatus(userId,roomId,i);
-          // await updateNextQstnStatus(userId,roomId,i);
-          // await unlockNextRoom(star,userId);
-          response(res, { solved: "hurray, correct answer!" });
+          try {
+            //userAnswer is correct
+            session.startTransaction();
+            const effectiveScore = getEffectiveScore(usedHints, questionId);
+            await updateScoreStar(userId, effectiveScore, session);
+            await updateCurrentQstnStatus(userId, roomId, i, session);
+            await updateNextQstnStatus(userId, roomId, i, session);
+            const nextRoomUnlocked = await unlockNextRoom(
+              stars,
+              userId,
+              session
+            );
+            await session.commitTransaction();
+            session.endSession();
+
+            response(res, {
+              nextRoomUnlocked,
+              solved: "hurray, correct answer!",
+            });
+          } catch (err) {
+            await session.abortTransaction();
+            session.endSession();
+          }
+          flag = true;
         }
         //check if its a close answer
         else if (closeAnswers.has(userAnswerLower)) {
           response(res, { solved: "close, close answer" });
+          flag = true;
         }
         //incorrect answer
-        else response(res, { solved: "sorry, incorrect answer!" });
+        else {
+          response(res, { solved: "sorry, incorrect answer!" });
+          flag = true;
+        }
       }
     });
-
-    throw new Error("all questions of this room has been solved");
-  } catch (error) {
-    response(res, {}, 400, error.message, false);
+    if (!flag) throw new Error("This room has already been solved");
+  } catch (err) {
+    response(res, {}, 400, err.message, false);
   }
 };
 const hasUsedHints = (usedHints, questionId) => {
@@ -153,49 +165,67 @@ const getEffectiveScore = (usedHints, questionId) => {
   return effectiveScore;
 };
 
-const updateScoreStar = async (effectiveScore) => {
+const updateScoreStar = async (userId, effectiveScore, session) => {
   //update star and score
-  const addStarAndScore = await User.updateOne(
+  const addStarAndScore = await User.findOneAndUpdate(
     { _id: userId },
-    { $inc: { stars: +1 }, $inc: { score: effectiveScore } }
+    { $inc: { stars: 1, score: effectiveScore } },
+    { session }
   );
   if (!addStarAndScore) throw new Error("Error updating stars and score");
 };
 
-const updateCurrentQstnStatus = async (userId, roomId, questionIndex) => {
+const updateCurrentQstnStatus = async (
+  userId,
+  roomId,
+  questionIndex,
+  session
+) => {
   //update status of current question from unlocked to solved
   const currentQuestion = "questionsStatus." + String(questionIndex);
   const query = {};
   query[currentQuestion] = "solved";
 
   console.log(query);
-  const updateStatus = await Journey.updateOne(
+  const updateStatus = await Journey.findOneAndUpdate(
     { userId, roomId },
-    { $set: query }
+    { $set: query },
+    { session }
   );
   if (!updateStatus) throw new Error("Error updating status of question");
 };
-const updateNextQstnStatus = async (userId, roomId, questionIndex) => {
+const updateNextQstnStatus = async (userId, roomId, questionIndex, session) => {
   //update status of next question from locked to unlocked
-  const nextQuestion = "questionsStatus." + String(questionIndex + 1);
-  const query = {};
-  query[nextQuestion] = "unlocked";
-  console.log(query);
-  if (questionIndex == 1 || questionIndex == 2) {
-    const updateStatus = await Journey.updateOne(
+  console.log(questionIndex);
+  if (questionIndex < 2) {
+    const nextQuestion = "questionsStatus." + String(questionIndex + 1);
+    const query = {};
+    query[nextQuestion] = "unlocked";
+    console.log(query);
+
+    const updateStatus = await Journey.findOneAndUpdate(
       { userId, roomId },
-      { $set: query }
+      { $set: query },
+      { session }
     );
   }
 };
-const unlockNextRoom = async (star, userId) => {
+const unlockNextRoom = async (star, userId, session) => {
   //if stars enough to unlock the next room
   const currentStar = star + 1; // +1 since its already updated before this is called
+  console.log("cj:", currentStar);
   for (let i = 0; i < roomJson.length; i++) {
     if (currentStar == roomJson[i]) {
       //unlock the i+1th room
-      const { roomId } = await Room.findOne({ roomNo: i + 1 });
-      new JourneySchema({ userId, roomId, roomUnlocked: true }).save();
+      const { id: roomId } = await Room.findOne({ roomNo: i + 1 });
+      await new Journey({
+        userId,
+        roomId,
+        roomUnlocked: true,
+        questionsStatus: ["unlocked", "locked", "locked"],
+      }).save({ session });
+      return roomId;
     }
   }
+  return false;
 };
