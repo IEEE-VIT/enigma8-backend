@@ -8,7 +8,7 @@ const { response } = require("../config/responseSchema");
 
 exports.getQuestion = async (req, res) => {
   try {
-    const { roomId } = await getQuestionSchema.validateAsync(req.body);
+    const { roomId } = await getQuestionSchema.validateAsync(req.query);
     const userId = req.user.id;
     const currentJourney = await Journey.findOne({ roomId, userId });
 
