@@ -5,7 +5,7 @@ exports.createUserSchema = Joi.object({
   email: Joi.string()
     .email({ tlds: { allow: false } })
     .required(),
-  outreach: Joi.string(),
+  outreach: Joi.string().required(),
 });
 exports.consumePowerupSchema = Joi.object({
   roomId: Joi.objectId().required(),
