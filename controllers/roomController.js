@@ -1,13 +1,9 @@
-const User = require("../models/userModel");
 const Room = require("../models/roomModel");
 const Journey = require("../models/journeyModel");
 const { response } = require("../config/responseSchema");
-const { createUserSchema } = require("../config/requestSchema");
-const mongoose = require("mongoose");
 
 const checkIfRoomUnlocked = async (req, res) => {
     try {
-        const id = req.user.id;
         const roomId = req.body.roomId;
         if (!roomId) {
             throw new Error("Please specify a room id")
