@@ -20,16 +20,15 @@ exports.getQuestionSchema = Joi.object({
   roomId: Joi.objectId().required(),
 });
 exports.useHintSchema = Joi.object({
-  roomId: Joi.objectId().required()
+  roomId: Joi.objectId().required(),
 });
 exports.getStorySchema = Joi.object({
   roomId: Joi.objectId().required(),
 });
 exports.getFeedbackSchema = Joi.object({
-  text: Joi.string()
+  text: Joi.string(),
 });
 exports.submitAnswerSchema = Joi.object({
   roomId: Joi.objectId().required(),
-  userAnswer: Joi.string()
-
+  userAnswer: Joi.string().required(),
 });
