@@ -74,7 +74,7 @@ exports.useHint = async (req, res) => {
   }
 };
 
-const roomJson = [2, 5, 7, 10, 11]; //stars required for unlocking next room
+const roomJson = [2, 5, 7, 10, 11]; //stars required for unlocking next room, #the FIRST number(2) indicate the starts reqd to unlock the SECOND room
 
 exports.submitAnswer = async (req, res) => {
   const session = await mongoose.startSession();
@@ -106,44 +106,45 @@ exports.submitAnswer = async (req, res) => {
         const closeAnswers = new Set(currentQuestion.closeAnswers);
 
         if (correctAnswers.has(userAnswerLower)) {
-          try {
-            //userAnswer is correct
-            session.startTransaction();
-            const effectiveScore = getEffectiveScore(usedHints, questionId);
-            await updateScoreStar(userId, effectiveScore, session);
-            await updateCurrentQstnStatus(userId, roomId, i, session);
-            await updateNextQstnStatus(userId, roomId, i, session);
-            const nextRoomUnlocked = await unlockNextRoom(
-              stars,
-              userId,
-              session
-            );
-            await session.commitTransaction();
-            session.endSession();
+          //userAnswer is correct
+          // session.startTransaction();
+          const effectiveScore = getEffectiveScore(usedHints, questionId);
+          await updateScoreStar(userId, effectiveScore, session);
+          await updateCurrentQstnStatus(userId, roomId, i, session);
+          await updateNextQstnStatus(userId, roomId, i, session);
+          const nextRoomUnlocked = await unlockNextRoom(stars, userId, session);
+          // await session.commitTransaction();
+          // session.endSession();
 
-            response(res, {
-              nextRoomUnlocked,
-              solved: "hurray, correct answer!",
-            });
-          } catch (err) {
-            await session.abortTransaction();
-            session.endSession();
-          }
+          response(res, {
+            userId,
+            questionId,
+            nextRoomUnlocked,
+            solved: "hurray, correct answer!",
+          });
+          // } catch (err) {
+          //   // await session.abortTransaction();
+          //   // session.endSession();
+          // }
           flag = true;
         }
         //check if its a close answer
         else if (closeAnswers.has(userAnswerLower)) {
-          response(res, { solved: "close, close answer" });
+          response(res, { userId, questionId, solved: "close, close answer" });
           flag = true;
         }
         //incorrect answer
         else {
-          response(res, { solved: "sorry, incorrect answer!" });
+          response(res, {
+            userId,
+            questionId,
+            solved: "sorry, incorrect answer!",
+          });
           flag = true;
         }
       }
     });
-    if (!flag) throw new Error("This room has already been solved");
+    if (!flag) response(res, {}, 400, "This room is all solved", false);
   } catch (err) {
     response(res, {}, 400, err.message, false);
   }
@@ -217,7 +218,8 @@ const unlockNextRoom = async (star, userId, session) => {
   for (let i = 0; i < roomJson.length; i++) {
     if (currentStar == roomJson[i]) {
       //unlock the i+1th room
-      const { id: roomId } = await Room.findOne({ roomNo: i + 1 });
+      const { id: roomId } = await Room.findOne({ roomNo: i + 2 });
+      console.log("Room unlocked:", roomId);
       await new Journey({
         userId,
         roomId,
