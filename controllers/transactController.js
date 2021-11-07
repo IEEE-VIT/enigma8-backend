@@ -5,6 +5,7 @@ const Journey = require("../models/journeyModel");
 const { getQuestionSchema } = require("../config/requestSchema");
 const { useHintSchema } = require("../config/requestSchema");
 const { submitAnswerSchema } = require("../config/requestSchema");
+const constants = require("../config/constants");
 require("dotenv").config();
 
 const { response } = require("../config/responseSchema");
@@ -158,14 +159,6 @@ const hasUsedHints = (usedHints, questionId) => {
   return false;
 };
 const getEffectiveScore = async (usedHints, questionId) => {
-  const constants = {
-    maxScore: 100,
-    minScore: 60, //excluding hint reduction
-    perSolve: 5,
-    groupBy: 10,
-    hintReduction: 5,
-  };
-
   const { solvedCount: noOfSolves } = await Question.findOne({
     id: questionId,
   });
