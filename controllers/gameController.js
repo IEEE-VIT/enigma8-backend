@@ -28,11 +28,12 @@ exports.getLeaderboard = async (req, res) => {
           .filter(({ username }) => username.includes(query))
           .slice(0, perPage)
       : rankedData.slice(pageStartRank, pageStartRank + perPage);
-
+    const totalPage = Math.ceil(allData.length / perPage);
     response(res, {
       page: page,
       userRank,
       leaderboard,
+      totalPage,
     });
   } catch (err) {
     response(res, {}, 400, err.message, false);

@@ -11,11 +11,11 @@ const mongoose = require("mongoose");
 
 exports.createUser = async (req, res) => {
   try {
-    // const email = req.user.email;
     const data = { email: req.user.email, ...req.body };
 
-    const { email, username, outreach } =
-      await createUserSchema.validateAsync(data);
+    const { email, username, outreach } = await createUserSchema.validateAsync(
+      data
+    );
 
     //check if username already setup for email
     const alreadySet = await User.find({
@@ -32,14 +32,12 @@ exports.createUser = async (req, res) => {
     if (isUsernameDuplicate) throw new Error("username not unique");
 
     //write to db
-    const { modifiedCount, matchedCount } = await User.updateOne(
+    const newDoc = await User.findOneAndUpdate(
       { email: email },
-      { username, outreach }
+      { username, outreach },
+      { new: true }
     );
-    if (matchedCount === 0) throw new Error("email does not exist");
-    else if (modifiedCount === 1)
-      response(res, { message: "user profile updated" });
-    else throw new Error("unexpected database error");
+    response(res, newDoc);
   } catch (err) {
     response(res, {}, 400, err.message, false);
   }
@@ -68,7 +66,7 @@ exports.getPowerups = async (req, res) => {
 exports.getUser = async (req, res) => {
   try {
     const { username, email, score, stars, currentRoomId } = req.user;
-
+    if (!username) throw new Error("User creation flow not complete yet");
     //find user rank
     const allData = await User.find(
       { username: { $ne: null } },
@@ -105,18 +103,18 @@ exports.startJourney = async (req, res) => {
 
     session.startTransaction();
 
-        //JOI validation
+    //JOI validation
     const { powerupId, roomId } = await consumePowerupSchema.validateAsync({
       powerupId: req.body.powerupId,
       roomId: req.body.roomId,
     });
-    
 
-    const checkIfPowerUpExists = await Powerup.findOne({"_id": powerupId});
-    if( !checkIfPowerUpExists ) throw new Error("Please use a valid powerup")
-    
+    const checkIfPowerUpExists = await Powerup.findOne({ _id: powerupId });
+    if (!checkIfPowerUpExists) throw new Error("Please use a valid powerup");
+
     const alreadyUsedPowerups = new Set(req.user.usedPowerups);
-    if (alreadyUsedPowerups.has(powerupId)) throw new Error("This powerup has already been selected")
+    if (alreadyUsedPowerups.has(powerupId))
+      throw new Error("This powerup has already been selected");
 
     const user = await User.findOneAndUpdate(
       { _id: userId },
@@ -125,35 +123,38 @@ exports.startJourney = async (req, res) => {
     );
     if (!user) throw new Error("Error updating user");
 
-    const room = await Room.findOne({_id: roomId});
-    if( !room ) throw new Error("This room doesn't exist")
+    const room = await Room.findOne({ _id: roomId });
+    if (!room) throw new Error("This room doesn't exist");
 
-    if( room.roomNo === "1") {
-      const journeyAlreadyExists = await Journey.findOne({userId: userId, roomId: room.id});
-
-      if(journeyAlreadyExists) throw new Error("You are already in room 1");
-      
-      const roomOneJourney = await Journey.create([{
-        userId,
+    if (room.roomNo === "1") {
+      const journeyAlreadyExists = await Journey.findOne({
+        userId: userId,
         roomId: room.id,
-        stars: 0,
-        powerupUsed: false,
-        roomUnlocked: true,
-        powerupId: powerupId,
-        questionsStatus: [
-            "unlocked",
-            "locked",
-            "locked"
-        ]
-      }],
-      { session }
+      });
+
+      if (journeyAlreadyExists) throw new Error("You are already in room 1");
+
+      const roomOneJourney = await Journey.create(
+        [
+          {
+            userId,
+            roomId: room.id,
+            stars: 0,
+            powerupUsed: false,
+            roomUnlocked: true,
+            powerupId: powerupId,
+            questionsStatus: ["unlocked", "locked", "locked"],
+          },
+        ],
+        { session }
       );
-      if( !roomOneJourney) throw new Error("Error creating room 1 journey");
-    }
-    else {
-      const checkIfJourneyExists = await Journey.findOne({userId, roomId});
-      if( !checkIfJourneyExists ) throw new Error("Please unlock the room first");
-      if( checkIfJourneyExists.powerupId ) throw new Error("You have already selected powerup");
+      if (!roomOneJourney) throw new Error("Error creating room 1 journey");
+    } else {
+      const checkIfJourneyExists = await Journey.findOne({ userId, roomId });
+      if (!checkIfJourneyExists)
+        throw new Error("Please unlock the room first");
+      if (checkIfJourneyExists.powerupId)
+        throw new Error("You have already selected powerup");
 
       const updatedJourney = await Journey.findOneAndUpdate(
         { userId: userId, roomId },
@@ -167,7 +168,7 @@ exports.startJourney = async (req, res) => {
       { currentRoomId: roomId },
       { session }
     );
-    
+
     if (!userCurrentRoom) throw new Error("Error updating current room");
     await session.commitTransaction();
     session.endSession();
