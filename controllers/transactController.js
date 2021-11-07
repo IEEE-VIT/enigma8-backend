@@ -74,8 +74,6 @@ exports.useHint = async (req, res) => {
   }
 };
 
-const roomJson = [2, 5, 7, 10, 11]; //stars required for unlocking next room, #the FIRST number(2) indicate the starts reqd to unlock the SECOND room
-
 exports.submitAnswer = async (req, res) => {
   const session = await mongoose.startSession();
   try {
@@ -147,7 +145,7 @@ const hasUsedHints = (usedHints, questionId) => {
   return false;
 };
 const getEffectiveScore = (usedHints, questionId) => {
-  // TODO : dynamic scoring algo
+  // TODO: dynamic scoring algo
 
   const baseScore = 50;
   const hintReduction = 5;
@@ -212,6 +210,15 @@ const unlockNextRoom = async (userId, nextRoomId, session) => {
 const getNextRoomId = async (star) => {
   //TODO: add case to handle last question
   const currentStar = star + 1; // +1 since its already updated before this is called
+
+  //const roomJson = [2, 5, 7, 10, 11]; //stars required for unlocking next room, #the FIRST number(2) indicate the starts reqd to unlock the SECOND room
+  const rooms = await Room.find();
+  const roomJson = rooms
+    .map(({ starQuota }) => {
+      return starQuota;
+    })
+    .slice(1);
+  console.log("D", roomJson);
 
   for (let i = 0; i < roomJson.length; i++) {
     if (currentStar == roomJson[i]) {
