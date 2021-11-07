@@ -103,13 +103,14 @@ exports.startJourney = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    //JOI validation
+    session.startTransaction();
+
+        //JOI validation
     const { powerupId, roomId } = await consumePowerupSchema.validateAsync({
       powerupId: req.body.powerupId,
       roomId: req.body.roomId,
     });
-
-    session.startTransaction();
+    
 
     const checkIfPowerUpExists = await Powerup.findOne({"_id": powerupId});
     if( !checkIfPowerUpExists ) throw new Error("Please use a valid powerup")
