@@ -120,6 +120,8 @@ exports.submitAnswer = async (req, res) => {
             await updateScoreStar(userId, effectiveScore, session);
             await updateCurrentQstnStatus(userId, roomId, i, session);
             await updateNextQstnStatus(userId, roomId, i, session);
+
+            await incrementQuestionModelSolvedCount(questionId, session);
             await unlockNextRoom(userId, nextRoomId, session);
 
             await session.commitTransaction();
@@ -241,13 +243,12 @@ const unlockNextRoom = async (userId, nextRoomId, session) => {
 const getNextRoomId = async (star) => {
   const currentStar = star + 1; // +1 since its already updated before this is called
 
-  //const roomJson = [2, 5, 7, 10, 11]; //stars required for unlocking next room, #the FIRST number(2) indicate the starts reqd to unlock the SECOND room
   const rooms = await Room.find();
   const roomJson = rooms
     .map(({ starQuota }) => {
       return starQuota;
     })
-    .slice(1);
+    .slice(1); //stars required for unlocking next room, #the FIRST number indicate the starts reqd to unlock the SECOND room
 
   for (let i = 0; i < roomJson.length; i++) {
     if (currentStar == roomJson[i]) {
@@ -257,4 +258,11 @@ const getNextRoomId = async (star) => {
       return id;
     }
   }
+};
+const incrementQuestionModelSolvedCount = async (questionId, session) => {
+  const res = await Question.findOneAndUpdate(
+    { _id: questionId },
+    { $inc: { solvedCount: 1 } },
+    { session, returnDocument: true }
+  );
 };
