@@ -82,7 +82,13 @@ exports.submitAnswer = async (req, res) => {
     const { userAnswer, roomId } = await submitAnswerSchema.validateAsync(
       req.body
     );
-    let responseJson = { userId };
+    let responseJson = {
+      correctAnswer: false,
+      closeAnswer: false,
+      scoreEarned: 0,
+      nextRoomUnlocked: false,
+      nextRoomId: null,
+    };
     const userAnswerLower = userAnswer.toLowerCase();
 
     const currentJourney = await Journey.findOne({ roomId, userId });
@@ -117,7 +123,10 @@ exports.submitAnswer = async (req, res) => {
             await unlockNextRoom(userId, nextRoomId, session);
 
             await session.commitTransaction();
-            responseJson.solved = "correct answer";
+            responseJson.correctAnswer = true;
+            responseJson.scoreEarned = effectiveScore;
+            responseJson.nextRoomUnlocked = nextRoomId ? true : false; //if next room id exist and if answer is correct then next room is unlocked
+            responseJson.nextRoomId = nextRoomId || null;
           } catch (err) {
             await session.abortTransaction();
           } finally {
@@ -126,11 +135,10 @@ exports.submitAnswer = async (req, res) => {
         }
         //check if its a close answer
         else if (closeAnswers.has(userAnswerLower)) {
-          responseJson.solved = "close answer";
+          responseJson.closeAnswer = true;
         }
         //incorrect answer
         else {
-          responseJson.solved = "incorrect answer";
         }
         response(res, responseJson);
       }
@@ -240,7 +248,6 @@ const getNextRoomId = async (star) => {
       return starQuota;
     })
     .slice(1);
-  console.log("D", roomJson);
 
   for (let i = 0; i < roomJson.length; i++) {
     if (currentStar == roomJson[i]) {
