@@ -11,7 +11,6 @@ const mongoose = require("mongoose");
 
 exports.createUser = async (req, res) => {
   try {
-    // const email = req.user.email;
     const data = { email: req.user.email, ...req.body };
 
     const { email, username, outreach } = await createUserSchema.validateAsync(
@@ -33,14 +32,12 @@ exports.createUser = async (req, res) => {
     if (isUsernameDuplicate) throw new Error("username not unique");
 
     //write to db
-    const { modifiedCount, matchedCount } = await User.updateOne(
+    const newDoc = await User.findOneAndUpdate(
       { email: email },
-      { username, outreach }
+      { username, outreach },
+      { new: true }
     );
-    if (matchedCount === 0) throw new Error("email does not exist");
-    else if (modifiedCount === 1)
-      response(res, { message: "user profile updated" });
-    else throw new Error("unexpected database error");
+    response(res, newDoc);
   } catch (err) {
     response(res, {}, 400, err.message, false);
   }
