@@ -15,13 +15,13 @@ const journeySchema = new mongoose.Schema({
 
   roomUnlocked: {
     type: Boolean,
-    default: false,
+    default: true,
   },
 
   questionsStatus: [{
     type: String,
     enum: ["unlocked", "locked", "solved"],
-    default: ["locked", "locked", "locked"]
+    default: ["unlocked", "locked", "locked"]
   }],
 
   
