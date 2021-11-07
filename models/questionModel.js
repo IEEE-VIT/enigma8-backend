@@ -29,6 +29,10 @@ const questionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  solvedCount: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const Question = mongoose.model("Question", questionSchema);
