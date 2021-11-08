@@ -172,7 +172,7 @@ exports.startJourney = async (req, res) => {
     if (!userCurrentRoom) throw new Error("Error updating current room");
     await session.commitTransaction();
     session.endSession();
-    response(res, { message: "success" });
+    response(res, { powerUp: checkIfPowerUpExists, room });
   } catch (err) {
     await session.abortTransaction();
     session.endSession();
