@@ -260,3 +260,39 @@ const incrementQuestionModelSolvedCount = async (questionId, session) => {
     { session, returnDocument: true }
   );
 };
+
+exports.utilisePowerup = async (req, res) => {
+  try {
+    const { roomId } = await getQuestionSchema.validateAsync(req.query);
+    const userId = req.user.id;
+    const currentJourney = await Journey.findOne({ roomId, userId });
+    const powerupId=currentJourney.powerupId;
+
+    if (currentJourney === null) {
+      throw new Error("Room is locked.");
+    }
+
+    let questionFound = false;
+    for (let i = 0; i < 3; i++) {
+      if (currentJourney.questionsStatus[i] === "unlocked") {
+        questionFound = true;
+        const currentRoom = await Room.findOne({ _id: roomId });
+        const questionId = currentRoom.questionId[i];
+        const currentQuestion= await Question.findOne({_id:questionId})
+
+
+
+        switch(powerupId){
+          case 61614ff4810e7950604cf5d6:  //hangman
+            const data= currentQuestion.hangman;
+            break;       
+                      
+          }
+        }
+    }    
+}
+catch (err) {
+  response(res, {}, 400, err.message, false);
+    
+}
+};
