@@ -4,7 +4,7 @@ const { response } = require("../config/responseSchema");
 
 const checkIfRoomUnlocked = async (req, res) => {
   try {
-    const roomId = req.body.roomId;
+    const roomId = req.query.roomId;
     if (!roomId) {
       throw new Error("Please specify a room id");
     }
