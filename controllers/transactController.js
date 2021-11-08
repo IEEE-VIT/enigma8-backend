@@ -49,8 +49,10 @@ exports.useHint = async (req, res) => {
     const currentJourney = await Journey.findOne({ roomId, userId });
     if (!currentJourney) throw new Error("Journey doesnt exist");
 
+    let flag=false;
     for (let i = 0; i < 3; i++) {
-      if (currentJourney.questionsStatus[i] === "unlocked") {
+      if (currentJourney.questionsStatus[i] === "unlocked" && !flag) {
+        flag=true;
         const currentRoom = await Room.findOne({ _id: roomId });
         const questionId = currentRoom.questionId[i];
         const question = await Question.findOne({ _id: questionId });
@@ -69,6 +71,9 @@ exports.useHint = async (req, res) => {
         }
         response(res, { hint });
       }
+    }
+    if(!flag){
+      throw new Error("The entire room is solved");
     }
   } catch (err) {
     response(res, {}, 400, err.message, false);
