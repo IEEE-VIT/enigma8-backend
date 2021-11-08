@@ -12,12 +12,12 @@ exports.getLeaderboard = async (req, res) => {
 
     const allData = await User.find(
       { username: { $ne: null } },
-      { username: 1, score: 1, questionsSolved: 1 }
+      { username: 1, score: 1, stars: 1 }
     ).sort({ score: -1, scoreLastUpdated: 1 });
 
     let startRank = 1;
-    const rankedData = allData.map(({ username, score }) => {
-      return { username, score, questionsSolved: 1, rank: startRank++ };
+    const rankedData = allData.map(({ username, score, stars }) => {
+      return { username, score, questionsSolved: stars, rank: startRank++ };
     });
 
     const userRank = rankedData.filter(({ username }) => uname === username)[0];

@@ -165,20 +165,16 @@ const hasUsedHints = (usedHints, questionId) => {
 };
 const getEffectiveScore = async (usedHints, questionId) => {
   const { solvedCount: noOfSolves } = await Question.findOne({
-    id: questionId,
+    _id: questionId,
   });
 
   let score;
   const maxScore = constants.maxScore;
-  const groupedSolves = noOfSolves / constants.groupBy;
+  const groupedSolves = Math.floor(noOfSolves / constants.groupBy);
 
   const shouldBeScore = maxScore - groupedSolves * constants.perSolve;
-  if (shouldBeScore < constants.minScore) {
-    score = constants.minScore;
-  } else {
-    score = shouldBeScore;
-  }
-
+  score =
+    shouldBeScore < constants.minScore ? constants.minScore : shouldBeScore;
   let effectiveScore = score;
   if (hasUsedHints(usedHints, questionId))
     effectiveScore -= constants.hintReduction;
