@@ -44,7 +44,7 @@ exports.getQuestion = async (req, res) => {
 
 exports.useHint = async (req, res) => {
   try {
-    const { roomId } = await useHintSchema.validateAsync(req.body);
+    const { roomId } = await useHintSchema.validateAsync(req.query);
     const userId = req.user.id;
     const currentJourney = await Journey.findOne({ roomId, userId });
     if (!currentJourney) throw new Error("Journey doesnt exist");
