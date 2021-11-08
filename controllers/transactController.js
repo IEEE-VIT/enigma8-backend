@@ -170,7 +170,6 @@ const getEffectiveScore = async (usedHints, questionId) => {
   const shouldBeScore = maxScore - groupedSolves * constants.perSolve;
   score =
     shouldBeScore < constants.minScore ? constants.minScore : shouldBeScore;
-  console.log(noOfSolves, groupedSolves, shouldBeScore);
   let effectiveScore = score;
   if (hasUsedHints(usedHints, questionId))
     effectiveScore -= constants.hintReduction;

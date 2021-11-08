@@ -19,7 +19,6 @@ exports.getLeaderboard = async (req, res) => {
     const rankedData = allData.map(({ username, score, stars }) => {
       return { username, score, questionsSolved: stars, rank: startRank++ };
     });
-    console.log(rankedData);
 
     const userRank = rankedData.filter(({ username }) => uname === username)[0];
 
