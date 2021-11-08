@@ -33,7 +33,7 @@ const journeySchema = new mongoose.Schema({
 
   powerupUsed: {
     type: String,
-    default: false,
+    default: "no",
     enum: ["yes", "no", "active"],
   },
 
