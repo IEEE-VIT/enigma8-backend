@@ -49,10 +49,10 @@ exports.useHint = async (req, res) => {
     const currentJourney = await Journey.findOne({ roomId, userId });
     if (!currentJourney) throw new Error("Journey doesnt exist");
 
-    let flag=false;
+    let flag = false;
     for (let i = 0; i < 3; i++) {
       if (currentJourney.questionsStatus[i] === "unlocked" && !flag) {
-        flag=true;
+        flag = true;
         const currentRoom = await Room.findOne({ _id: roomId });
         const questionId = currentRoom.questionId[i];
         const question = await Question.findOne({ _id: questionId });
@@ -72,7 +72,7 @@ exports.useHint = async (req, res) => {
         response(res, { hint });
       }
     }
-    if(!flag){
+    if (!flag) {
       throw new Error("The entire room is solved");
     }
   } catch (err) {
@@ -175,6 +175,7 @@ const getEffectiveScore = async (usedHints, questionId) => {
   const shouldBeScore = maxScore - groupedSolves * constants.perSolve;
   score =
     shouldBeScore < constants.minScore ? constants.minScore : shouldBeScore;
+
   let effectiveScore = score;
   if (hasUsedHints(usedHints, questionId))
     effectiveScore -= constants.hintReduction;
