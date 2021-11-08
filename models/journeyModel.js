@@ -32,8 +32,9 @@ const journeySchema = new mongoose.Schema({
   },
 
   powerupUsed: {
-    type: Boolean,
-    default: false,
+    type: String, 
+    default: "no",
+    enum: ["yes", "no", "active"]
   },
 
   stars: {
