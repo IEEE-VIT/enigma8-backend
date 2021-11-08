@@ -83,7 +83,7 @@ exports.useHint = async (req, res) => {
 exports.submitAnswer = async (req, res) => {
   const session = await mongoose.startSession();
   try {
-    const { id: userId, usedHints, stars } = req.user;
+    const { id: userId, usedHints, stars, usedPowerups } = req.user;
 
     const { userAnswer, roomId } = await submitAnswerSchema.validateAsync(
       req.body
@@ -119,9 +119,15 @@ exports.submitAnswer = async (req, res) => {
           //userAnswer is correct
           try {
             session.startTransaction();
+
+            //hints and powerups logic goes here
             const effectiveScore = await getEffectiveScore(
               usedHints,
-              questionId
+              questionId,
+              currentJourney.powerupId,
+              currentJourney.powerupUsed,
+              currentJourney.id,
+              session
             );
             await updateScoreStar(userId, effectiveScore, session);
             await updateCurrentQstnStatus(userId, roomId, i, session);
@@ -163,7 +169,34 @@ const hasUsedHints = (usedHints, questionId) => {
   if (currentUserUsedHints.has(questionId.toHexString())) return true;
   return false;
 };
-const getEffectiveScore = async (usedHints, questionId) => {
+const getEffectiveScore = async (
+  usedHints,
+  questionId,
+  powerupId,
+  powerupUsed,
+  journeyId,
+  session
+) => {
+  let powerUpActiveFlag = false;
+  //First figure out if a powerUp is active i.e. if Journey.powerupUsed = active
+  if (powerupUsed === "active") {
+    powerUpActiveFlag = true;
+    //change to Yes
+    const tesmp = await Journey.findOneAndUpdate(
+      { _id: journeyId },
+      { powerupUsed: "yes" },
+      { session }
+    );
+  }
+
+  //Full Score powerup
+  //Effective score is the full score if this powerup is used
+  if (
+    powerupId.toHexString() === "61614fe7810e7950604cf5d5" &&
+    powerUpActiveFlag
+  )
+    return constants.maxScore;
+
   const { solvedCount: noOfSolves } = await Question.findOne({
     _id: questionId,
   });
@@ -177,6 +210,15 @@ const getEffectiveScore = async (usedHints, questionId) => {
     shouldBeScore < constants.minScore ? constants.minScore : shouldBeScore;
 
   let effectiveScore = score;
+
+  //Free Hint powerup
+  //If user use this hint, dont reduce the score because of hint useage
+  if (
+    powerupId.toHexString() === "61614fad810e7950604cf5d4" &&
+    powerUpActiveFlag
+  )
+    return effectiveScore;
+
   if (hasUsedHints(usedHints, questionId))
     effectiveScore -= constants.hintReduction;
 

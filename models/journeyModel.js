@@ -18,13 +18,13 @@ const journeySchema = new mongoose.Schema({
     default: true,
   },
 
-  questionsStatus: [{
-    type: String,
-    enum: ["unlocked", "locked", "solved"],
-    default: ["unlocked", "locked", "locked"]
-  }],
-
-  
+  questionsStatus: [
+    {
+      type: String,
+      enum: ["unlocked", "locked", "solved"],
+      default: ["unlocked", "locked", "locked"],
+    },
+  ],
 
   powerupId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -32,8 +32,9 @@ const journeySchema = new mongoose.Schema({
   },
 
   powerupUsed: {
-    type: Boolean,
+    type: String,
     default: false,
+    enum: ["yes", "no", "active"],
   },
 
   stars: {
