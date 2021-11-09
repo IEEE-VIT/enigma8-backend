@@ -316,7 +316,7 @@ exports.utilisePowerup = async (req, res) => {
       throw new Error("Powerup already used");
 
     const powerupId = currentJourney.powerupId;
-    const powerUp = Powerup.findOne({ _id: powerupId });
+    const powerUp = await Powerup.findOne({ _id: powerupId });
     if (!powerUp) throw new Error("Please select a valid powerup");
 
     let currentQuestion;
@@ -333,6 +333,7 @@ exports.utilisePowerup = async (req, res) => {
 
     let data;
     let scoring_powerups = false;
+
     switch (powerUp.beAlias) {
       case "hangman":
         data = currentQuestion.hangman;
@@ -366,6 +367,7 @@ exports.utilisePowerup = async (req, res) => {
       { powerupUsed: scoring_powerups ? "active" : "yes" }
     );
     if (!updatedJourney) throw new Error("Error in using powerup");
+
     response(res, { data });
   } catch (err) {
     response(res, {}, 400, err.message, false);
