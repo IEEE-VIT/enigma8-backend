@@ -28,7 +28,7 @@ exports.createUser = async (req, res) => {
       );
 
     //check if username is available
-    const isUsernameDuplicate = await User.find({ username }).count();
+    const isUsernameDuplicate = await User.find({ 'username': { $regex: new RegExp(`^${username}$`), $options: 'i' } }).count();
     if (isUsernameDuplicate) throw new Error("username not unique");
 
     //write to db
