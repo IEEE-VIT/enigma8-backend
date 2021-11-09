@@ -181,6 +181,7 @@ const getEffectiveScore = async (
   journeyId,
   session
 ) => {
+  const { beAlias } = await Powerup.findOne({ _id: powerupId });
   let powerUpActiveFlag = false;
   //First figure out if a powerUp is active i.e. if Journey.powerupUsed = active
   if (powerupUsed === "active") {
@@ -195,11 +196,7 @@ const getEffectiveScore = async (
 
   //Full Score powerup
   //Effective score is the full score if this powerup is used
-  if (
-    powerupId.toHexString() === "61614fe7810e7950604cf5d5" &&
-    powerUpActiveFlag
-  )
-    return constants.maxScore;
+  if (beAlias === "full_score" && powerUpActiveFlag) return constants.maxScore;
 
   const { solvedCount: noOfSolves } = await Question.findOne({
     _id: questionId,
@@ -217,11 +214,7 @@ const getEffectiveScore = async (
 
   //Free Hint powerup
   //If user use this hint, dont reduce the score because of hint useage
-  if (
-    powerupId.toHexString() === "61614fad810e7950604cf5d4" &&
-    powerUpActiveFlag
-  )
-    return effectiveScore;
+  if (beAlias === "free_hint" && powerUpActiveFlag) return effectiveScore;
 
   if (hasUsedHints(usedHints, questionId))
     effectiveScore -= constants.hintReduction;
@@ -319,7 +312,8 @@ exports.utilisePowerup = async (req, res) => {
     const currentJourney = await Journey.findOne({ roomId, userId });
     if (currentJourney === null) throw new Error("Room is locked.");
 
-    if (currentJourney.powerupUsed === "yes") throw new Error("Powerup already used");
+    if (currentJourney.powerupUsed === "yes")
+      throw new Error("Powerup already used");
 
     const powerupId = currentJourney.powerupId;
     const powerUp = Powerup.findOne({ _id: powerupId });
@@ -335,34 +329,34 @@ exports.utilisePowerup = async (req, res) => {
         currentQuestion = await Question.findOne({ _id: questionId });
       }
     }
-    if( !questionFound ) throw new Error("Entire room is solved");
+    if (!questionFound) throw new Error("Entire room is solved");
 
     let data;
     let scoring_powerups = false;
-    switch (powerUp.name) {
+    switch (powerUp.beAlias) {
       case "hangman":
         data = currentQuestion.hangman;
         break;
-      case "Double Hint":
+      case "double_hint":
         data = currentQuestion.doubleHint;
         break;
-      case "URL Hint":
+      case "url_hint":
         data = currentQuestion.urlHint;
         break;
-      case "Javelin":
+      case "javelin":
         data = currentQuestion.javelin;
         break;
-      case "Reveal Cipher":
+      case "reveal_cipher":
         data = currentQuestion.revealCipher;
         break;
-      case "New Close Answer":
+      case "new_close_answer":
         data = currentQuestion.newCloseAnswer;
         break;
-      case "Free Hint":
+      case "free_hint":
         data = "powerup activated";
         scoring_powerups = true;
         break;
-      case "Full Score":
+      case "full_score":
         data = "powerup activated";
         scoring_powerups = true;
         break;
@@ -373,9 +367,7 @@ exports.utilisePowerup = async (req, res) => {
     );
     if (!updatedJourney) throw new Error("Error in using powerup");
     response(res, { data });
-  }
-  catch (err) {
+  } catch (err) {
     response(res, {}, 400, err.message, false);
-
   }
 };
