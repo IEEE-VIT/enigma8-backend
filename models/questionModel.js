@@ -33,6 +33,30 @@ const questionSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  hangman: {
+    type: String,
+    required: true,
+  },
+  doubleHint: {
+    type: String,
+    required: true,
+  },
+  urlHint: {
+    type: mongoose.SchemaTypes.Url,
+    required: true,
+  },
+  javelin: {
+    type: String,
+    required: true,
+  },
+  revealCipher: {
+    type: String,
+    required: true,
+  },
+  newCloseAnswer: {
+    type: String,
+    required: true,
+  },
 });
 
 const Question = mongoose.model("Question", questionSchema);

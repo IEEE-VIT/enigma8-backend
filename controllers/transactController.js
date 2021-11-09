@@ -2,6 +2,7 @@ const Question = require("../models/questionModel");
 const Room = require("../models/roomModel");
 const User = require("../models/userModel");
 const Journey = require("../models/journeyModel");
+const Powerup = require("../models/powerupModel");
 const { getQuestionSchema } = require("../config/requestSchema");
 const { useHintSchema } = require("../config/requestSchema");
 const { submitAnswerSchema } = require("../config/requestSchema");
@@ -49,10 +50,11 @@ exports.useHint = async (req, res) => {
     const currentJourney = await Journey.findOne({ roomId, userId });
     if (!currentJourney) throw new Error("Journey doesnt exist");
 
-    let flag=false;
+    let flag = false;
     for (let i = 0; i < 3; i++) {
       if (currentJourney.questionsStatus[i] === "unlocked" && !flag) {
-        flag=true;
+        flag = true;
+
         const currentRoom = await Room.findOne({ _id: roomId });
         const questionId = currentRoom.questionId[i];
         const question = await Question.findOne({ _id: questionId });
@@ -72,7 +74,7 @@ exports.useHint = async (req, res) => {
         response(res, { hint });
       }
     }
-    if(!flag){
+    if (!flag) {
       throw new Error("The entire room is solved");
     }
   } catch (err) {
@@ -83,7 +85,7 @@ exports.useHint = async (req, res) => {
 exports.submitAnswer = async (req, res) => {
   const session = await mongoose.startSession();
   try {
-    const { id: userId, usedHints, stars } = req.user;
+    const { id: userId, usedHints, stars, usedPowerups } = req.user;
 
     const { userAnswer, roomId } = await submitAnswerSchema.validateAsync(
       req.body
@@ -99,6 +101,8 @@ exports.submitAnswer = async (req, res) => {
 
     const currentJourney = await Journey.findOne({ roomId, userId });
     if (!currentJourney) throw new Error("Journey does not exist");
+    if (!currentJourney.powerupId)
+      throw new Error("Please set room powerup before submiting an answer");
     let flag = false;
     currentJourney.questionsStatus.map(async (status, i) => {
       if (status === "unlocked" && !flag) {
@@ -119,9 +123,15 @@ exports.submitAnswer = async (req, res) => {
           //userAnswer is correct
           try {
             session.startTransaction();
+
+            //hints and powerups logic goes here
             const effectiveScore = await getEffectiveScore(
               usedHints,
-              questionId
+              questionId,
+              currentJourney.powerupId,
+              currentJourney.powerupUsed,
+              currentJourney.id,
+              session
             );
             await updateScoreStar(userId, effectiveScore, session);
             await updateCurrentQstnStatus(userId, roomId, i, session);
@@ -163,7 +173,31 @@ const hasUsedHints = (usedHints, questionId) => {
   if (currentUserUsedHints.has(questionId.toHexString())) return true;
   return false;
 };
-const getEffectiveScore = async (usedHints, questionId) => {
+const getEffectiveScore = async (
+  usedHints,
+  questionId,
+  powerupId,
+  powerupUsed,
+  journeyId,
+  session
+) => {
+  const { beAlias } = await Powerup.findOne({ _id: powerupId });
+  let powerUpActiveFlag = false;
+  //First figure out if a powerUp is active i.e. if Journey.powerupUsed = active
+  if (powerupUsed === "active") {
+    powerUpActiveFlag = true;
+    //change to Yes
+    const tesmp = await Journey.findOneAndUpdate(
+      { _id: journeyId },
+      { powerupUsed: "yes" },
+      { session }
+    );
+  }
+
+  //Full Score powerup
+  //Effective score is the full score if this powerup is used
+  if (beAlias === "full_score" && powerUpActiveFlag) return constants.maxScore;
+
   const { solvedCount: noOfSolves } = await Question.findOne({
     _id: questionId,
   });
@@ -175,7 +209,13 @@ const getEffectiveScore = async (usedHints, questionId) => {
   const shouldBeScore = maxScore - groupedSolves * constants.perSolve;
   score =
     shouldBeScore < constants.minScore ? constants.minScore : shouldBeScore;
+
   let effectiveScore = score;
+
+  //Free Hint powerup
+  //If user use this hint, dont reduce the score because of hint useage
+  if (beAlias === "free_hint" && powerUpActiveFlag) return effectiveScore;
+
   if (hasUsedHints(usedHints, questionId))
     effectiveScore -= constants.hintReduction;
 
@@ -259,4 +299,77 @@ const incrementQuestionModelSolvedCount = async (questionId, session) => {
     { $inc: { solvedCount: 1 } },
     { session, returnDocument: true }
   );
+};
+
+exports.utilisePowerup = async (req, res) => {
+  try {
+    const { roomId } = await getQuestionSchema.validateAsync(req.query);
+    const userId = req.user.id;
+
+    const currentRoom = await Room.findOne({ _id: roomId });
+    if (!currentRoom) throw new Error("Invalid Room");
+
+    const currentJourney = await Journey.findOne({ roomId, userId });
+    if (currentJourney === null) throw new Error("Room is locked.");
+
+    if (currentJourney.powerupUsed === "yes")
+      throw new Error("Powerup already used");
+
+    const powerupId = currentJourney.powerupId;
+    const powerUp = await Powerup.findOne({ _id: powerupId });
+    if (!powerUp) throw new Error("Please select a valid powerup");
+
+    let currentQuestion;
+
+    let questionFound = false;
+    for (let i = 0; i < 3; i++) {
+      if (currentJourney.questionsStatus[i] === "unlocked" && !questionFound) {
+        questionFound = true;
+        const questionId = currentRoom.questionId[i];
+        currentQuestion = await Question.findOne({ _id: questionId });
+      }
+    }
+    if (!questionFound) throw new Error("Entire room is solved");
+
+    let data;
+    let scoring_powerups = false;
+
+    switch (powerUp.beAlias) {
+      case "hangman":
+        data = currentQuestion.hangman;
+        break;
+      case "double_hint":
+        data = currentQuestion.doubleHint;
+        break;
+      case "url_hint":
+        data = currentQuestion.urlHint;
+        break;
+      case "javelin":
+        data = currentQuestion.javelin;
+        break;
+      case "reveal_cipher":
+        data = currentQuestion.revealCipher;
+        break;
+      case "new_close_answer":
+        data = currentQuestion.newCloseAnswer;
+        break;
+      case "free_hint":
+        data = "powerup activated";
+        scoring_powerups = true;
+        break;
+      case "full_score":
+        data = "powerup activated";
+        scoring_powerups = true;
+        break;
+    }
+    const updatedJourney = await Journey.findOneAndUpdate(
+      { userId: userId, roomId },
+      { powerupUsed: scoring_powerups ? "active" : "yes" }
+    );
+    if (!updatedJourney) throw new Error("Error in using powerup");
+
+    response(res, { data });
+  } catch (err) {
+    response(res, {}, 400, err.message, false);
+  }
 };
