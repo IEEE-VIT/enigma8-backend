@@ -6,16 +6,20 @@ const { response } = require("../config/responseSchema");
 exports.getFeedback = async (req, res) => {
     try {
         const id = req.user.id;
-        const userData = await User.find({"_id": id});
-        const email = userData[0].email;
+        const userData = await User.findOne({"_id": id});
+        const email = userData.email;
 
-        const { text } = await getFeedbackSchema.validateAsync(
+        const { isVITStudent, gameRating, userExperience, featureIdeas, difficulties, other} = await getFeedbackSchema.validateAsync(
             req.body
         );
 
         const data = new Feedback({
-            email: email,
-            text: text
+            isVITStudent,
+            gameRating,
+            userExperience, 
+            featureIdeas,
+            difficulties, 
+            other
         });
 
         data.save();
