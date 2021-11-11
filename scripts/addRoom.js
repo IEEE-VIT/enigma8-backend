@@ -11,7 +11,6 @@ connectToMongo().on("connected", () => {});
 prompt.start();
 
 prompt.get(
-  
   ["roomNo", "questionId", "media", "title", "starQuota"],
   async (err, result) => {
     if (err) {
