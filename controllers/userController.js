@@ -28,7 +28,9 @@ exports.createUser = async (req, res) => {
       );
 
     //check if username is available
-    const isUsernameDuplicate = await User.find({ 'username': { $regex: new RegExp(`^${username}$`), $options: 'i' } }).count();
+    const isUsernameDuplicate = await User.find({
+      username: { $regex: new RegExp(`^${username}$`), $options: "i" },
+    }).count();
     if (isUsernameDuplicate) throw new Error("username not unique");
 
     //write to db
@@ -140,7 +142,7 @@ exports.startJourney = async (req, res) => {
             userId,
             roomId: room.id,
             stars: 0,
-            powerupUsed: false,
+            powerupUsed: "no",
             roomUnlocked: true,
             powerupId: powerupId,
             questionsStatus: ["unlocked", "locked", "locked"],
