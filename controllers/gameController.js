@@ -1,7 +1,7 @@
 const User = require("../models/userModel");
 const { getLeaderboardSchema } = require("../config/requestSchema");
 const { response } = require("../config/responseSchema");
-
+const logger = require("../config/logger");
 exports.getLeaderboard = async (req, res) => {
   try {
     const uname = req.user.username;

@@ -8,6 +8,7 @@ const { useHintSchema } = require("../config/requestSchema");
 const { submitAnswerSchema } = require("../config/requestSchema");
 const constants = require("../config/constants");
 require("dotenv").config();
+const logger = require("../config/logger");
 
 const { response } = require("../config/responseSchema");
 const mongoose = require("mongoose");

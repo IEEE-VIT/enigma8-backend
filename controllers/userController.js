@@ -2,6 +2,7 @@ const User = require("../models/userModel");
 const Room = require("../models/roomModel");
 const Powerup = require("../models/powerupModel");
 const Journey = require("../models/journeyModel");
+const logger = require("../config/logger");
 const {
   createUserSchema,
   consumePowerupSchema,

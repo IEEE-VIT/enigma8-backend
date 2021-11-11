@@ -1,7 +1,7 @@
 const Room = require("../models/roomModel");
 const Journey = require("../models/journeyModel");
 const { response } = require("../config/responseSchema");
-
+const logger = require("../config/logger");
 const checkIfRoomUnlocked = async (req, res) => {
   try {
     const roomId = req.query.roomId;
