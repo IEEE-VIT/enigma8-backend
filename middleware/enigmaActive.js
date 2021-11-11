@@ -13,10 +13,15 @@ const isEnigmaActive = (req, res, next) => {
     );
     const currentTime = moment.tz("Asia/Calcutta");
 
-    const enigmaStarted = currentTime < eventStartTime ?  false : true;
+    const enigmaStarted = currentTime > eventStartTime ?  true : false;
+    const enigmaEnded = currentTime > eventEndTime ? true : false;
      
-    if( !enigmaStarted ) {
+    if( !enigmaStarted && !enigmaEnded ) {
         response(res, {}, 401, "Enigma hasn't started yet", false);
+        return;
+    }
+    if( enigmaEnded && enigmaStarted) {
+        response(res, {}, 401, "Enigma has ended", false);
         return;
     }
     next();
