@@ -1,5 +1,6 @@
 require("dotenv").config();
 const cors = require("cors");
+const logger = require("./config/logger");
 
 const express = require("express");
 const authorized = require("./middleware/auth");
@@ -36,14 +37,12 @@ app.use("/auth", authRoutes);
 app.use("/authorized", authorized, authorizedRoutes);
 app.use("/static", staticRoutes);
 app.use("/user", authorized, userRoutes);
-app.use("/room" , authorized, roomRoutes);
+app.use("/room", authorized, roomRoutes);
 app.use("/transact", authorized, transactRoutes);
 app.use("/game", authorized, gameRoutes);
 app.use("/story", authorized, storyRoutes);
 app.use("/notifs", authorized, notifRoutes);
 app.use("/feedback", authorized, feedRoutes);
-
-
 
 app.get("/", (req, res) => {
   res.send("The server is running!");
