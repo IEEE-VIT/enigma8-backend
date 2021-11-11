@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-const notificationController = require("../controllers/notificationController");
+const {internal, notifications} = require("../controllers/notificationController");
 
-router.post("/internal", notificationController.internal);
-router.get("/notifications", notificationController.notifications);
+router.post("/internal", internal);
+router.get("/notifications", notifications);
 
 module.exports = router;

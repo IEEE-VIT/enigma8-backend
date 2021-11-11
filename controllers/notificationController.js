@@ -1,31 +1,26 @@
-const Notifications = require("../models/notificatoinModel");
-const Journey = require("../models/journeyModel");
+const Notification = require("../models/notificatoinModel");
 const { response } = require("../config/responseSchema");
-const mongoose = require("mongoose");
 
-const internal = async (req, res) => {
+exports.internal = async (req, res) => {
     try {
-        var text = req.body.text;
-        var timestamp = req.body.timestamp;
-        var type = req.body.type;
-        var metadata = req.body.metadata;
 
-        const { modifiedCount, matchedCount } = await Notifications.updateOne(
-            { text: text },
-            { timestamp: timestamp },
-            { type: type},
-            { metadata: metadata}
-        );
-
+        const data = new Notification({
+            text: req.body.text,
+            timestamp: req.body.timestamp,
+            type: req.body.type,
+            metadata: req.body.metadata
+        });
+        data.save()
+        response(res, {message: "Notif set"});
     } catch (err) {
         response(res, {}, 400, err.message, false);
     }
 };
 
 
-const notifications = async (req, res) => {
+exports.notifications = async (req, res) => {
     try {
-        const notifs = await Notifications.find().sort({ timestamp: -1 });
+        const notifs = await Notification.find().sort({ timestamp: -1 });
 
         response(res, { notifs });
 
@@ -33,5 +28,3 @@ const notifications = async (req, res) => {
         response(res, {}, 400, err.message, false);
     }
 };
-
-module.exports = { internal, notifications };
