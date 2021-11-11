@@ -29,7 +29,7 @@ prompt.get(
       await roomm.save();
       console.log("room added");
     } catch (e) {
-      console.log("error updating question");
+      console.log("error updating room");
     }
   }
 );

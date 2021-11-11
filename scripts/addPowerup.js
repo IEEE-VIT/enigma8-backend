@@ -26,6 +26,6 @@ prompt.get(["name", "beAlias", "detail", "icon"], async (err, result) => {
     await powerupp.save();
     console.log("powerup added");
   } catch (e) {
-    console.log("error updating question");
+    console.log("error updating powerup");
   }
 });
