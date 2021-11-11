@@ -23,12 +23,20 @@ exports.getLeaderboard = async (req, res) => {
     const userRank = rankedData.filter(({ username }) => uname === username)[0];
 
     const pageStartRank = (page - 1) * perPage;
-    const leaderboard = query
-      ? rankedData
-          .filter(({ username }) => username.includes(query))
-          .slice(0, perPage)
+
+    let queryData;
+    if (query)
+      queryData = rankedData.filter(({ username }) => username.includes(query));
+
+    console.log(queryData);
+    const leaderboard = queryData
+      ? queryData.slice(pageStartRank, pageStartRank + perPage)
       : rankedData.slice(pageStartRank, pageStartRank + perPage);
-    const totalPage = Math.ceil(allData.length / perPage);
+
+    const totalPage = Math.ceil(
+      (queryData ? queryData.length : allData.length) / perPage
+    );
+    if (page > totalPage) throw new Error("page number not valid");
     response(res, {
       page: page,
       userRank,
