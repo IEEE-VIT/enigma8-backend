@@ -142,7 +142,7 @@ exports.startJourney = async (req, res) => {
             userId,
             roomId: room.id,
             stars: 0,
-            powerupUsed: false,
+            powerupUsed: "no",
             roomUnlocked: true,
             powerupId: powerupId,
             questionsStatus: ["unlocked", "locked", "locked"],
