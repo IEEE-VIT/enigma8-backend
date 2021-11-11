@@ -1,0 +1,37 @@
+[
+    {
+        "roomNo": "1",
+        "sender": "person1",
+        "message": "Hey.!"
+    },
+    {
+        "roomNo": "1",
+        "sender": "person2",
+        "message": "Hello.!"
+    },
+    {
+        "roomNo": "1",
+        "sender": "person1",
+        "message": "How are you person2"
+    },
+    {
+        "roomNo": "1",
+        "sender": "person2",
+        "message": "I am good person1"
+    },
+    {
+        "roomNo": "2",
+        "sender": "person1",
+        "message": "Message 2"
+    },
+    {
+        "roomNo": "3",
+        "sender": "person1",
+        "message": "Message 3"
+    },
+    {
+        "roomNo": "4",
+        "sender": "person1",
+        "message": "Message 4"
+    }
+]
