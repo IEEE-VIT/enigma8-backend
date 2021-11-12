@@ -21,9 +21,6 @@ exports.getFeedback = async (req, res) => {
         else if (!req.body.featureIdeas) {
             throw new Error("Please enter any feature ideas you have");
         }
-        else if (!req.body.difficulties) {
-            throw new Error("Please tell us any difficulties you had with Enimga");
-        }
         else if (!req.body.other) {
             throw new Error("Please enter other feedback about Enigma");
         }
