@@ -131,6 +131,7 @@ exports.submitAnswer = async (req, res) => {
               currentJourney.powerupId,
               currentJourney.powerupUsed,
               currentJourney.id,
+              currentQuestion,
               session
             );
             await updateScoreStar(userId, effectiveScore, session);
@@ -179,6 +180,7 @@ const getEffectiveScore = async (
   powerupId,
   powerupUsed,
   journeyId,
+  currentQ,
   session
 ) => {
   const { beAlias } = await Powerup.findOne({ _id: powerupId });
@@ -198,10 +200,7 @@ const getEffectiveScore = async (
   //Effective score is the full score if this powerup is used
   if (beAlias === "full_score" && powerUpActiveFlag) return constants.maxScore;
 
-  const { solvedCount: noOfSolves } = await Question.findOne({
-    _id: questionId,
-  });
-
+  const solvedCount = currentQ.noOfSolves;
   let score;
   const maxScore = constants.maxScore;
   const groupedSolves = Math.floor(noOfSolves / constants.groupBy);
@@ -287,7 +286,7 @@ const getNextRoomId = async (star) => {
   for (let i = 0; i < roomJson.length; i++) {
     if (currentStar == roomJson[i]) {
       //unlock the i+1th room
-      const id;
+      let id;
       rooms.forEach((item) => {
         if(item.roomNo == i+2) id = item.roomId;
       });
