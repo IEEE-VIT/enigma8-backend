@@ -1,19 +1,16 @@
 const { getFeedbackSchema } = require("../config/requestSchema");
-const User = require("../models/userModel");
 const Feedback = require("../models/feedbackModel");
 const { response } = require("../config/responseSchema");
 
 exports.getFeedback = async (req, res) => {
     try {
         const id = req.user.id;
-        const userData = await User.findOne({"_id": id});
-        const email = userData.email;
 
         const { isVITStudent, gameRating, userExperience, featureIdeas, difficulties, other} = await getFeedbackSchema.validateAsync(
             req.body
         );
 
-        const data = new Feedback({
+        const data = Feedback.create({
             isVITStudent,
             gameRating,
             userExperience, 
@@ -22,7 +19,6 @@ exports.getFeedback = async (req, res) => {
             other
         });
 
-        data.save();
         response(res, {message: "Feedback Sent"});
     } catch ( err ) {
         response(res, {}, 400, err.message, false);

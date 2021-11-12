@@ -287,8 +287,11 @@ const getNextRoomId = async (star) => {
   for (let i = 0; i < roomJson.length; i++) {
     if (currentStar == roomJson[i]) {
       //unlock the i+1th room
-      const { id } = await Room.findOne({ roomNo: i + 2 });
-
+      const id;
+      rooms.forEach((item) => {
+        if(item.roomNo == i+2) id = item.roomId;
+      });
+      
       return id;
     }
   }
