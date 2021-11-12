@@ -9,6 +9,25 @@ exports.getFeedback = async (req, res) => {
         const userData = await User.findOne({"_id": id});
         const email = userData.email;
 
+        if (!req.body.isVITStudent) {
+            throw new Error("Please enter if you are VIT student or not");
+        }
+        else if (!req.body.gameRating) {
+            throw new Error("Please enter your rating of Enigma");
+        }
+        else if (!req.body.userExperience) {
+            throw new Error("Please give your experience about Enigma");
+        }
+        else if (!req.body.featureIdeas) {
+            throw new Error("Please enter any feature ideas you have");
+        }
+        else if (!req.body.difficulties) {
+            throw new Error("Please tell us any difficulties you had with Enimga");
+        }
+        else if (!req.body.other) {
+            throw new Error("Please enter other feedback about Enigma");
+        }
+
         const { isVITStudent, gameRating, userExperience, featureIdeas, difficulties, other} = await getFeedbackSchema.validateAsync(
             req.body
         );

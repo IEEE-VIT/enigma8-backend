@@ -14,6 +14,9 @@ const mongoose = require("mongoose");
 
 exports.getQuestion = async (req, res) => {
   try {
+    if(!req.body.roomId){
+      throw new Error("Please enter a roomId");
+    }
     const { roomId } = await getQuestionSchema.validateAsync(req.query);
     const userId = req.user.id;
     const currentJourney = await Journey.findOne({ roomId, userId });
@@ -45,6 +48,9 @@ exports.getQuestion = async (req, res) => {
 
 exports.useHint = async (req, res) => {
   try {
+    if(!req.body.roomId){
+      throw new Error("Plese enter roomId");
+    }
     const { roomId } = await useHintSchema.validateAsync(req.query);
     const userId = req.user.id;
     const currentJourney = await Journey.findOne({ roomId, userId });
@@ -86,6 +92,13 @@ exports.submitAnswer = async (req, res) => {
   const session = await mongoose.startSession();
   try {
     const { id: userId, usedHints, stars, usedPowerups } = req.user;
+
+    if(!req.body.userAnswer){
+      throw new Error("Please enter an Answer");
+    }
+    else if(!req.body.roomId){
+      throw new Error("Please select a Room");
+    }
 
     const { userAnswer, roomId } = await submitAnswerSchema.validateAsync(
       req.body

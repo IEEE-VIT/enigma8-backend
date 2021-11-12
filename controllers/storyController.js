@@ -7,6 +7,9 @@ const { getStorySchema } = require("../config/requestSchema");
 exports.story = async (req, res) => {
     try {
         const currentRoomId = req.user.currentRoomId;
+        if(!req.body.roomId){
+            throw new Error("Please select a room");
+        }
         const { roomId } = await getStorySchema.validateAsync(
             req.query
         );
@@ -31,6 +34,9 @@ exports.story = async (req, res) => {
 exports.fullStory = async (req, res) => {
     try {
         const currentRoomId = req.user.currentRoomId;
+        if(!req.body.roomId){
+            throw new Error("Please select a room");
+        }
         const { roomId } = await getStorySchema.validateAsync(
             req.query
         );

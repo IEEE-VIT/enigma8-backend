@@ -6,6 +6,16 @@ exports.getLeaderboard = async (req, res) => {
   try {
     const uname = req.user.username;
 
+    if(!req.body.page){
+      throw new Error("Please enter page");
+    }
+    else if(!req.body.query){
+      throw new Error("Please enter query");
+    }
+    else if(!req.body.perPage){
+      throw new Error("Please enter perPage");
+    }
+
     const { page, query, perPage } = await getLeaderboardSchema.validateAsync(
       req.query
     );
