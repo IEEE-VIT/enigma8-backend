@@ -351,7 +351,7 @@ exports.utilisePowerup = async (req, res) => {
         data = currentQuestion.revealCipher;
         break;
       case "new_close_answer":
-        data = currentQuestion.newCloseAnswer;
+        data = currentQuestion.newHieroglyphsCloseAnswer;
         break;
       case "free_hint":
         data = "powerup activated";
