@@ -1,7 +1,7 @@
 const Notification = require("../models/notificatoinModel");
 const { response } = require("../config/responseSchema");
 
-exports.internal = async (req, res) => {
+exports.setNotification = async (req, res) => {
     try {
 
         const data = new Notification({
