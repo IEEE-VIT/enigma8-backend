@@ -25,7 +25,7 @@ const checkIfRoomUnlocked = async (req, res) => {
 
     response(res, { unlock, starsNeeded });
   } catch (err) {
-    logger.err(req.user.email + "-> " + err);
+    logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };

@@ -16,7 +16,7 @@ const internal = async (req, res) => {
       { metadata: metadata }
     );
   } catch (err) {
-    logger.err(req.user.email + "-> " + err);
+    logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };
@@ -27,7 +27,7 @@ const notifications = async (req, res) => {
 
     response(res, { notifs });
   } catch (err) {
-    logger.err(req.user.email + "-> " + err);
+    logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };

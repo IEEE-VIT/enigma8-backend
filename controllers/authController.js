@@ -39,7 +39,7 @@ async function verify(token) {
     );
     return { jwt: jwtToken, isNew: currentUser.username ? false : true };
   } catch (err) {
-    logger.err(err);
+    logger.error(err);
     throw new Error("invalid Token");
   }
 }

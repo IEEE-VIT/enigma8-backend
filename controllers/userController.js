@@ -44,7 +44,7 @@ exports.createUser = async (req, res) => {
     logger.info(`User created! Email:${email} Username:${username}`);
   } catch (err) {
     response(res, {}, 400, err.message, false);
-    logger.err(req.user.email + "-> " + err);
+    logger.error(req.user.email + "-> " + err);
   }
 };
 
@@ -66,7 +66,7 @@ exports.getPowerups = async (req, res) => {
     response(res, { powerups: data });
   } catch (err) {
     response(res, {}, 400, err.message, false);
-    logger.err(req.user.email + "-> " + err);
+    logger.error(req.user.email + "-> " + err);
   }
 };
 exports.getUser = async (req, res) => {
@@ -99,7 +99,7 @@ exports.getUser = async (req, res) => {
     response(res, user);
   } catch (err) {
     response(res, {}, 400, err.message, false);
-    logger.err(req.user.email + "-> " + err);
+    logger.error(req.user.email + "-> " + err);
   }
 };
 
@@ -181,7 +181,7 @@ exports.startJourney = async (req, res) => {
     session.endSession();
     response(res, { powerUp: checkIfPowerUpExists, room });
   } catch (err) {
-    logger.err(req.user.email + "-> " + err);
+    logger.error(req.user.email + "-> " + err);
     await session.abortTransaction();
     session.endSession();
 
@@ -203,7 +203,7 @@ exports.addFCM = async (req, res) => {
       message: "the token was successfully added for user " + username,
     });
   } catch (err) {
-    logger.err(req.user.email + "-> " + err);
+    logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };

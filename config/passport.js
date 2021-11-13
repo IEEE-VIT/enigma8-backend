@@ -26,7 +26,7 @@ passport.use(
 
         done(null, user);
       } catch (error) {
-        logger.err(err);
+        logger.error(err);
         done(null, false, { message: "invalid e-mail address or password" });
       }
     }
