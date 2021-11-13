@@ -31,10 +31,11 @@ async function verify(token) {
       await new User({
         email: email,
       }).save();
+      return { jwt: jwtToken, isNew: true };
     }
     return { jwt: jwtToken, isNew: currentUser.username ? false : true };
   } catch (err) {
-    throw "Invalid Token";
+    throw new Error("Invalid Token!");
   }
 }
 
