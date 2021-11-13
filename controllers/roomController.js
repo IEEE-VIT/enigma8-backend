@@ -25,6 +25,7 @@ const checkIfRoomUnlocked = async (req, res) => {
 
     response(res, { unlock, starsNeeded });
   } catch (err) {
+    logger.err(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };
@@ -65,6 +66,7 @@ const getRooms = async (req, res) => {
 
     response(res, { data });
   } catch (err) {
+    logger.err(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };

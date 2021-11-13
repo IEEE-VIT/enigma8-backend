@@ -23,6 +23,7 @@ exports.story = async (req, res) => {
     });
     response(res, { story: data });
   } catch (err) {
+    logger.err(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };
@@ -47,6 +48,7 @@ exports.fullStory = async (req, res) => {
     });
     response(res, { story: data });
   } catch (err) {
+    logger.err(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };

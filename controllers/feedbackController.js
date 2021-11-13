@@ -30,6 +30,7 @@ exports.getFeedback = async (req, res) => {
     data.save();
     response(res, { message: "Feedback Sent" });
   } catch (err) {
+    logger.err(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };

@@ -40,6 +40,7 @@ exports.getQuestion = async (req, res) => {
       throw new Error("You have solved the entire room");
     }
   } catch (err) {
+    logger.err(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };
@@ -79,6 +80,7 @@ exports.useHint = async (req, res) => {
       throw new Error("The entire room is solved");
     }
   } catch (err) {
+    logger.err(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };
@@ -147,6 +149,7 @@ exports.submitAnswer = async (req, res) => {
             responseJson.nextRoomUnlocked = nextRoomId ? true : false; //if next room id exist and if answer is correct then next room is unlocked
             responseJson.nextRoomId = nextRoomId || null;
           } catch (err) {
+            logger.err(req.user.email + "-> " + err);
             await session.abortTransaction();
           } finally {
             session.endSession();
@@ -165,6 +168,7 @@ exports.submitAnswer = async (req, res) => {
 
     if (!flag) response(res, {}, 400, "This room is all solved", false);
   } catch (err) {
+    logger.err(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };
@@ -371,6 +375,7 @@ exports.utilisePowerup = async (req, res) => {
 
     response(res, { data });
   } catch (err) {
+    logger.err(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };
