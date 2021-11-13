@@ -110,6 +110,8 @@ exports.startJourney = async (req, res) => {
       powerupId: req.body.powerupId,
       roomId: req.body.roomId,
     });
+    
+
 
     const checkIfPowerUpExists = await Powerup.findOne({ _id: powerupId });
     if (!checkIfPowerUpExists) throw new Error("Please use a valid powerup");

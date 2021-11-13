@@ -7,10 +7,15 @@ const { getQuestionSchema } = require("../config/requestSchema");
 const { useHintSchema } = require("../config/requestSchema");
 const { submitAnswerSchema } = require("../config/requestSchema");
 const constants = require("../config/constants");
+const crypto = require("crypto");
 require("dotenv").config();
 
 const { response } = require("../config/responseSchema");
 const mongoose = require("mongoose");
+
+const algorithm = process.env.algorithm;
+const initVector = process.env.initVector;
+const securityKey = process.env.securityKey;
 
 exports.getQuestion = async (req, res) => {
   try {
@@ -21,6 +26,8 @@ exports.getQuestion = async (req, res) => {
     if (currentJourney === null) {
       throw new Error("Room is locked.");
     }
+    if (!currentJourney.powerupId)
+      throw new Error("Please set room powerup before submiting an answer");
 
     let questionFound = false;
     for (let i = 0; i < 3; i++) {
@@ -28,10 +35,23 @@ exports.getQuestion = async (req, res) => {
         questionFound = true;
         const currentRoom = await Room.findOne({ _id: roomId });
         const questionId = currentRoom.questionId[i];
-        const question = await Question.findOne({ _id: questionId }).select(
-          "text media mediaType questionNo currentRoom"
+        const question = await Question.findOne({ _id: questionId });
+        const media = question.media;
+        const mediaType = question.mediaType;
+        const questionNo = question.questionNo;
+        // .select(
+        //   "text media mediaType questionNo currentRoom"
+        // );
+
+        const decipher1 = crypto.createDecipheriv(
+          algorithm,
+          securityKey,
+          initVector
         );
-        response(res, question);
+        let text = decipher1.update(question.text, "hex", "utf-8");
+        text += decipher1.final("utf8");
+
+        response(res, { text, media, mediaType, questionNo });
       }
     }
 
@@ -285,9 +305,9 @@ const getNextRoomId = async (star) => {
     .slice(1); //stars required for unlocking next room, #the FIRST number indicate the starts reqd to unlock the SECOND room
 
   for (let i = 0; i < roomJson.length; i++) {
-    if (currentStar == roomJson[i]) {
+    if (currentStar === roomJson[i]) {
       //unlock the i+1th room
-      const { id } = await Room.findOne({ roomNo: i + 2 });
+      const { id } = await Room.findOne({ roomNo: i + 1 + 1 });
 
       return id;
     }
@@ -336,22 +356,88 @@ exports.utilisePowerup = async (req, res) => {
 
     switch (powerUp.beAlias) {
       case "hangman":
-        data = currentQuestion.hangman;
+        const decipher2 = crypto.createDecipheriv(
+          algorithm,
+          securityKey,
+          initVector
+        );
+        let decryptedDatahangman = decipher2.update(
+          currentQuestion.hangman,
+          "hex",
+          "utf-8"
+        );
+        decryptedDatahangman += decipher2.final("utf8");
+        data = decryptedDatahangman;
         break;
       case "double_hint":
-        data = currentQuestion.doubleHint;
+        const decipher3 = crypto.createDecipheriv(
+          algorithm,
+          securityKey,
+          initVector
+        );
+        let decryptedDatadoubleHint = decipher3.update(
+          currentQuestion.doubleHint,
+          "hex",
+          "utf-8"
+        );
+        decryptedDatadoubleHint += decipher3.final("utf8");
+        data = decryptedDatadoubleHint;
         break;
       case "url_hint":
-        data = currentQuestion.urlHint;
+        const decipher4 = crypto.createDecipheriv(
+          algorithm,
+          securityKey,
+          initVector
+        );
+        let decryptedDataurlHint = decipher4.update(
+          currentQuestion.urlHint,
+          "hex",
+          "utf-8"
+        );
+        decryptedDataurlHint += decipher4.final("utf8");
+        data = decryptedDataurlHint;
         break;
       case "javelin":
-        data = currentQuestion.javelin;
+        const decipher5 = crypto.createDecipheriv(
+          algorithm,
+          securityKey,
+          initVector
+        );
+        let decryptedDatajavelin = decipher5.update(
+          currentQuestion.javelin,
+          "hex",
+          "utf-8"
+        );
+        decryptedDatajavelin += decipher5.final("utf8");
+        data = decryptedDatajavelin;
         break;
       case "reveal_cipher":
-        data = currentQuestion.revealCipher;
+        const decipher6 = crypto.createDecipheriv(
+          algorithm,
+          securityKey,
+          initVector
+        );
+        let decryptedDatarevealCipher = decipher6.update(
+          currentQuestion.revealCipher,
+          "hex",
+          "utf-8"
+        );
+        decryptedDatarevealCipher += decipher6.final("utf8");
+        data = decryptedDatarevealCipher;
         break;
       case "new_close_answer":
-        data = currentQuestion.newCloseAnswer;
+        const decipher7 = crypto.createDecipheriv(
+          algorithm,
+          securityKey,
+          initVector
+        );
+        let decryptedDatanewCloseAnswer = decipher7.update(
+          currentQuestion.newCloseAnswer,
+          "hex",
+          "utf-8"
+        );
+        decryptedDatanewCloseAnswer += decipher7.final("utf8");
+        data = decryptedDatanewCloseAnswer;
         break;
       case "free_hint":
         data = "powerup activated";
