@@ -13,7 +13,13 @@ exports.getFeedback = async (req, res) => {
             req.body
         );
 
+        const doesFeedbackExist = await Feedback.findOne({ email });
+        if( doesFeedbackExist ) {
+            throw new Error("You have already given feedback");
+        }
+
         const data = new Feedback({
+            email,
             isVITStudent,
             gameRating,
             userExperience, 

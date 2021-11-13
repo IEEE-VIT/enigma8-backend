@@ -4,6 +4,9 @@ const mongoose = require("mongoose");
 require("mongoose-type-url");
 
 const feedbackSchema = new mongoose.Schema({
+    email: {
+      type: String, 
+    },
     isVITStudent: {
       type: Boolean
     },
