@@ -1,13 +1,5 @@
 const Notification = require("../models/notificatoinModel");
 const { response } = require("../config/responseSchema");
-<<<<<<< HEAD
-
-exports.notifications = async (req, res) => {
-    try {
-        const notifs = await Notification.find().sort({ timestamp: -1 });
-
-        response(res, { notifs });
-=======
 const mongoose = require("mongoose");
 const logger = require("../config/logger");
 const internal = async (req, res) => {
@@ -31,10 +23,10 @@ const internal = async (req, res) => {
 const notifications = async (req, res) => {
   try {
     const notifs = await Notifications.find().sort({ timestamp: -1 });
->>>>>>> 4c0265b (logger basics)
 
     response(res, { notifs });
   } catch (err) {
     response(res, {}, 400, err.message, false);
   }
 };
+module.exports = { notifications };

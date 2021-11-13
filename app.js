@@ -33,6 +33,7 @@ require("./config/passport");
 connectToMongo().on("connected", () => {
   console.log("✅ Mongoose is connected");
   logger.info("✅ Mongoose is connected");
+  logger.error("✅ Mongoose is connected");
 });
 
 app.use("/auth", authRoutes);
