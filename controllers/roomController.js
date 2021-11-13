@@ -6,12 +6,12 @@ const checkIfRoomUnlocked = async (req, res) => {
   try {
     const roomId = req.query.roomId;
     if (!roomId) {
-      throw new Error("Please specify a room id");
+      throw new Error("please specify a room id");
     }
     const room = await Room.findOne({ _id: roomId });
 
     if (!room) {
-      throw new Error("No such room found");
+      throw new Error("no such room found");
     }
 
     let unlock = false;

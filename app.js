@@ -33,7 +33,6 @@ require("./config/passport");
 connectToMongo().on("connected", () => {
   console.log("✅ Mongoose is connected");
   logger.info("✅ Mongoose is connected");
-  logger.error("✅ Mongoose is connected");
 });
 
 app.use("/auth", authRoutes);
@@ -54,5 +53,4 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log("🚀 Server Ready! at port:", PORT);
   logger.info(`🚀 Server Ready! at port: ${PORT}`);
-  console.log("Goto http://localhost:" + PORT);
 });

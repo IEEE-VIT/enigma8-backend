@@ -13,7 +13,7 @@ exports.story = async (req, res) => {
     const currentRoomData = await Room.findOne({ _id: currentRoomId });
 
     if (roomData.roomNo > currentRoomData.roomNo)
-      throw new Error("Requested story is not from current room");
+      throw new Error("requested story is not from current room");
 
     let data = [];
     Story.forEach((item) => {
@@ -37,7 +37,7 @@ exports.fullStory = async (req, res) => {
     const currentRoomData = await Room.findOne({ _id: currentRoomId });
 
     if (roomData.roomNo > currentRoomData.roomNo) {
-      throw new Error("Requested story is not from current room");
+      throw new Error("requested story is not from current room");
     }
 
     let data = [];
