@@ -2,6 +2,7 @@ const User = require("../models/userModel");
 const Room = require("../models/roomModel");
 const Powerup = require("../models/powerupModel");
 const Journey = require("../models/journeyModel");
+const logger = require("../config/logger");
 const {
   createUserSchema,
   consumePowerupSchema,
@@ -34,7 +35,7 @@ exports.createUser = async (req, res) => {
     }).count();
     if (alreadySet)
       throw new Error(
-        "Username for this email is already set. It cannot be updated"
+        "username for this email is already set, it cannot be updated"
       );
 
     //check if username is available
@@ -50,8 +51,10 @@ exports.createUser = async (req, res) => {
       { new: true }
     );
     response(res, newDoc);
+    logger.info(`User created! Email:${email} Username:${username}`);
   } catch (err) {
     response(res, {}, 400, err.message, false);
+    logger.error(req.user.email + "-> " + err);
   }
 };
 
@@ -73,12 +76,13 @@ exports.getPowerups = async (req, res) => {
     response(res, { powerups: data });
   } catch (err) {
     response(res, {}, 400, err.message, false);
+    logger.error(req.user.email + "-> " + err);
   }
 };
 exports.getUser = async (req, res) => {
   try {
     const { username, email, score, stars, currentRoomId } = req.user;
-    if (!username) throw new Error("User creation flow not complete yet");
+    if (!username) throw new Error("user creation flow not complete yet");
     //find user rank
     const allData = await User.find(
       { username: { $ne: null } },
@@ -105,6 +109,7 @@ exports.getUser = async (req, res) => {
     response(res, user);
   } catch (err) {
     response(res, {}, 400, err.message, false);
+    logger.error(req.user.email + "-> " + err);
   }
 };
 
@@ -129,21 +134,21 @@ exports.startJourney = async (req, res) => {
     });
 
     const checkIfPowerUpExists = await Powerup.findOne({ _id: powerupId });
-    if (!checkIfPowerUpExists) throw new Error("Please use a valid powerup");
+    if (!checkIfPowerUpExists) throw new Error("please use a valid powerup");
 
     const alreadyUsedPowerups = new Set(req.user.usedPowerups);
     if (alreadyUsedPowerups.has(powerupId))
-      throw new Error("This powerup has already been selected");
+      throw new Error("this powerup has already been selected");
 
     const user = await User.findOneAndUpdate(
       { _id: userId },
       { $addToSet: { usedPowerups: powerupId } },
       { session }
     );
-    if (!user) throw new Error("Error updating user");
+    if (!user) throw new Error("error updating user");
 
     const room = await Room.findOne({ _id: roomId });
-    if (!room) throw new Error("This room doesn't exist");
+    if (!room) throw new Error("this room doesn't exist");
 
     if (room.roomNo === "1") {
       const journeyAlreadyExists = await Journey.findOne({
@@ -151,7 +156,7 @@ exports.startJourney = async (req, res) => {
         roomId: room.id,
       });
 
-      if (journeyAlreadyExists) throw new Error("You are already in room 1");
+      if (journeyAlreadyExists) throw new Error("you are already in room 1");
 
       const roomOneJourney = await Journey.create(
         [
@@ -167,20 +172,20 @@ exports.startJourney = async (req, res) => {
         ],
         { session }
       );
-      if (!roomOneJourney) throw new Error("Error creating room 1 journey");
+      if (!roomOneJourney) throw new Error("error creating room 1 journey");
     } else {
       const checkIfJourneyExists = await Journey.findOne({ userId, roomId });
       if (!checkIfJourneyExists)
-        throw new Error("Please unlock the room first");
+        throw new Error("please unlock the room first");
       if (checkIfJourneyExists.powerupId)
-        throw new Error("You have already selected powerup");
+        throw new Error("you have already selected powerup");
 
       const updatedJourney = await Journey.findOneAndUpdate(
         { userId: userId, roomId },
         { powerupId: powerupId },
         { session }
       );
-      if (!updatedJourney) throw new Error("Error updating journey");
+      if (!updatedJourney) throw new Error("error updating journey");
     }
     const userCurrentRoom = await User.findOneAndUpdate(
       { _id: userId },
@@ -188,11 +193,12 @@ exports.startJourney = async (req, res) => {
       { session }
     );
 
-    if (!userCurrentRoom) throw new Error("Error updating current room");
+    if (!userCurrentRoom) throw new Error("error updating current room");
     await session.commitTransaction();
     session.endSession();
     response(res, { powerUp: checkIfPowerUpExists, room });
   } catch (err) {
+    logger.error(req.user.email + "-> " + err);
     await session.abortTransaction();
     session.endSession();
 
@@ -211,9 +217,10 @@ exports.addFCM = async (req, res) => {
     );
 
     response(res, {
-      message: "The token was successfully added for user " + username,
+      message: "the token was successfully added for user " + username,
     });
   } catch (err) {
+    logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };

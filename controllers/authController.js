@@ -1,12 +1,12 @@
 const { OAuth2Client } = require("google-auth-library");
 const User = require("../models/userModel");
-
+const logger = require("../config/logger");
 const jwt = require("jsonwebtoken");
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 async function verify(token) {
-  if (!token) throw "Please provide a id_token";
+  if (!token) throw new Error("please provide a id_token");
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
@@ -14,7 +14,7 @@ async function verify(token) {
     });
     const payload = ticket.getPayload();
 
-    if (!payload) throw "Invalid token";
+    if (!payload) throw new Error("invalid token");
 
     const userid = payload["sub"];
     // const name = payload["name"];
@@ -33,9 +33,15 @@ async function verify(token) {
       }).save();
       return { jwt: jwtToken, isNew: true };
     }
+    logger.info(
+      `app/google user. isNew:${currentUser.username ? false : true} username:${
+        currentUser.username
+      }`
+    );
     return { jwt: jwtToken, isNew: currentUser.username ? false : true };
   } catch (err) {
-    throw new Error("Invalid Token!");
+    logger.error(err + "");
+    throw new Error("invalid Token");
   }
 }
 

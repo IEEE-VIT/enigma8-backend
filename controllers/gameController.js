@@ -1,7 +1,7 @@
 const User = require("../models/userModel");
 const { getLeaderboardSchema } = require("../config/requestSchema");
 const { response } = require("../config/responseSchema");
-
+const logger = require("../config/logger");
 exports.getLeaderboard = async (req, res) => {
   try {
     const uname = req.user.username;
@@ -44,6 +44,7 @@ exports.getLeaderboard = async (req, res) => {
       totalPage,
     });
   } catch (err) {
+    logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };
