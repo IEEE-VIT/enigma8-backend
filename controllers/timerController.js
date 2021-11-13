@@ -1,5 +1,4 @@
 const moment = require("moment-timezone");
-const logger = require("../config/logger");
 const getTimer = () => {
   const eventStartTime = moment.tz(
     Date.parse(process.env.ENIGMA_START_TIME),

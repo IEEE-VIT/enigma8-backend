@@ -1,5 +1,5 @@
 const passport = require("passport");
-const logger = require("../config/logger");
+
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
@@ -26,7 +26,6 @@ passport.use(
 
         done(null, user);
       } catch (error) {
-        logger.error(err);
         done(null, false, { message: "invalid e-mail address or password" });
       }
     }
@@ -52,9 +51,7 @@ passport.use(
 
           //if username exist
           profile.isNew = currentUser.username ? false : true;
-          logger.info(
-            `web/google user. isNew:${profile.isNew} username:${currentUser.username}`
-          );
+
           return cb(null, profile);
         } else {
           // if not, create user in our db
@@ -69,9 +66,6 @@ passport.use(
             .then((newUser) => {
               profile.jwt = jwtToken;
               profile.isNew = true;
-              logger.info(
-                `web/google user. isNew:${profile.isNew} username:${profile._json.email}`
-              );
               return cb(null, profile);
             });
         }

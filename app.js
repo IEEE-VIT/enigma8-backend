@@ -1,7 +1,5 @@
 require("dotenv").config();
 const cors = require("cors");
-const logger = require("./config/logger");
-logger.info("Server started");
 
 const express = require("express");
 const authorized = require("./middleware/auth");
@@ -32,19 +30,20 @@ require("./config/passport");
 //connect to mongoDB
 connectToMongo().on("connected", () => {
   console.log("✅ Mongoose is connected");
-  logger.info("✅ Mongoose is connected");
 });
 
 app.use("/auth", authRoutes);
 app.use("/authorized", authorized, authorizedRoutes);
 app.use("/static", staticRoutes);
 app.use("/user", authorized, userRoutes);
-app.use("/room", authorized, roomRoutes);
+app.use("/room" , authorized, roomRoutes);
 app.use("/transact", authorized, transactRoutes);
 app.use("/game", authorized, gameRoutes);
 app.use("/story", authorized, storyRoutes);
 app.use("/notifs", authorized, notifRoutes);
 app.use("/feedback", authorized, feedRoutes);
+
+
 
 app.get("/", (req, res) => {
   res.send("The server is running!");
@@ -52,5 +51,5 @@ app.get("/", (req, res) => {
 
 app.listen(PORT, () => {
   console.log("🚀 Server Ready! at port:", PORT);
-  logger.info(`🚀 Server Ready! at port: ${PORT}`);
+  console.log("Goto http://localhost:" + PORT);
 });
