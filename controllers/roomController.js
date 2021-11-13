@@ -53,7 +53,7 @@ const getRooms = async (req, res) => {
           userId: null,
           roomId: null,
           stars: 0,
-          powerupUsed: false,
+          powerupUsed: "no",
           roomUnlocked: false,
           powerupId: null,
           questionsStatus: ["locked", "locked", "locked"],
