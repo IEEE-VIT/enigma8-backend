@@ -15,7 +15,7 @@ const mongoose = require("mongoose");
 
 exports.getQuestion = async (req, res) => {
   try {
-    if(!req.query.roomId){
+    if (!req.query.roomId) {
       throw new Error("Please enter a roomId");
     }
     const { roomId } = await getQuestionSchema.validateAsync(req.query);
@@ -50,7 +50,7 @@ exports.getQuestion = async (req, res) => {
 
 exports.useHint = async (req, res) => {
   try {
-    if(!req.query.roomId){
+    if (!req.query.roomId) {
       throw new Error("Plese enter roomId");
     }
     const { roomId } = await useHintSchema.validateAsync(req.query);
@@ -96,10 +96,9 @@ exports.submitAnswer = async (req, res) => {
   try {
     const { id: userId, usedHints, stars, usedPowerups } = req.user;
 
-    if(!req.body.userAnswer){
+    if (!req.body.userAnswer) {
       throw new Error("Please enter an Answer");
-    }
-    else if(!req.body.roomId){
+    } else if (!req.body.roomId) {
       throw new Error("Please select a Room");
     }
 
@@ -157,6 +156,7 @@ exports.submitAnswer = async (req, res) => {
             await updateNextQstnStatus(userId, roomId, i, session);
 
             await incrementQuestionModelSolvedCount(questionId, session);
+            const nextRoomId = await getNextRoomId(stars);
             await unlockNextRoom(userId, nextRoomId, session);
 
             await session.commitTransaction();
