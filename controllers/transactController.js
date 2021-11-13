@@ -14,7 +14,7 @@ const mongoose = require("mongoose");
 
 exports.getQuestion = async (req, res) => {
   try {
-    if(!req.body.roomId){
+    if(!req.query.roomId){
       throw new Error("Please enter a roomId");
     }
     const { roomId } = await getQuestionSchema.validateAsync(req.query);
@@ -48,7 +48,7 @@ exports.getQuestion = async (req, res) => {
 
 exports.useHint = async (req, res) => {
   try {
-    if(!req.body.roomId){
+    if(!req.query.roomId){
       throw new Error("Plese enter roomId");
     }
     const { roomId } = await useHintSchema.validateAsync(req.query);
