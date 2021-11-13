@@ -26,7 +26,12 @@ exports.getStorySchema = Joi.object({
   roomId: Joi.objectId().required(),
 });
 exports.getFeedbackSchema = Joi.object({
-  text: Joi.string(),
+  isVITStudent: Joi.boolean().required(),
+  gameRating: Joi.number().required(),
+  userExperience: Joi.string().required(),
+  featureIdeas: Joi.string().required(),
+  difficulties: Joi.string().required(),
+  other: Joi.string().required()
 });
 exports.submitAnswerSchema = Joi.object({
   roomId: Joi.objectId().required(),

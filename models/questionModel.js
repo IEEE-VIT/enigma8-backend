@@ -53,7 +53,7 @@ const questionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  newCloseAnswer: {
+  newHieroglyphsCloseAnswer: {
     type: String,
     required: true,
   },

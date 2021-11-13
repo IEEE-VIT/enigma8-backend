@@ -33,9 +33,18 @@ const userSchema = new Schema(
     },
     outreach: {
       type: "String",
+      enum: [
+        "instagram",
+        "facebook",
+        "reddit",
+        "linkedin",
+        "discord",
+        "word of mouth",
+        "others",
+      ],
     },
     usedPowerups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Powerups" }],
-    usedHints: [{type:"ObjectId"}],
+    usedHints: [{ type: "ObjectId" }],
     currentQuestions: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Questions" },
     ],

@@ -35,7 +35,7 @@
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.33",
-    "mongoose": "^6.0.5",
+    "mongoose": "^6.0.12",
     "mongoose-type-url": "^2.1.0",
     "node-fetch": "^3.0.0",
     "nodemon": "^2.0.12",
@@ -43,7 +43,9 @@
     "passport-apple": "^2.0.1",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.0",
-    "prettier": "^2.3.2"
+    "prettier": "^2.3.2",
+    "prompt": "^1.2.0",
+    "winston": "^3.3.3"
   },
   "husky": {
     "hooks": {
