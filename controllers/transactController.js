@@ -136,6 +136,9 @@ exports.submitAnswer = async (req, res) => {
               currentJourney.id,
               session
             );
+            logger.info(
+              `$UserId:${userId} -> Correct answer submitted. Effective Score:${effectiveScore}`
+            );
             await updateScoreStar(userId, effectiveScore, session);
             await updateCurrentQstnStatus(userId, roomId, i, session);
             await updateNextQstnStatus(userId, roomId, i, session);
@@ -270,13 +273,17 @@ const updateNextQstnStatus = async (userId, roomId, questionIndex, session) => {
   }
 };
 const unlockNextRoom = async (userId, nextRoomId, session) => {
-  if (nextRoomId)
+  if (nextRoomId) {
     await new Journey({
       userId,
       roomId: nextRoomId,
       roomUnlocked: true,
       questionsStatus: ["unlocked", "locked", "locked"],
     }).save({ session });
+    logger.info(
+      `userId:${userId} -> Unlocking new room on correct answer. roomId:${nextRoomId}`
+    );
+  }
 };
 
 const getNextRoomId = async (star) => {

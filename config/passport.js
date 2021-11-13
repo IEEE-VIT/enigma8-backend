@@ -52,7 +52,9 @@ passport.use(
 
           //if username exist
           profile.isNew = currentUser.username ? false : true;
-
+          logger.info(
+            `web/google user. isNew:${profile.isNew} username:${currentUser.username}`
+          );
           return cb(null, profile);
         } else {
           // if not, create user in our db
@@ -67,6 +69,9 @@ passport.use(
             .then((newUser) => {
               profile.jwt = jwtToken;
               profile.isNew = true;
+              logger.info(
+                `web/google user. isNew:${profile.isNew} username:${profile._json.email}`
+              );
               return cb(null, profile);
             });
         }

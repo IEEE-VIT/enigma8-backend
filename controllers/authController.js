@@ -32,6 +32,7 @@ async function verify(token) {
         email: email,
       }).save();
     }
+    logger.info(`app/google user. isNew:${isNew} username:${username}`);
     return { jwt: jwtToken, isNew: currentUser.username ? false : true };
   } catch (err) {
     logger.err(err);
