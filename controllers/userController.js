@@ -14,6 +14,16 @@ exports.createUser = async (req, res) => {
   try {
     const data = { email: req.user.email, ...req.body };
 
+    if (!data.email) {
+      throw new Error("Please enter email");
+    }
+    else if (!data.username) {
+      throw new Error("Please enter username");
+    }
+    else if (!data.outreach) {
+      throw new Error("Please enter outreach");
+    }
+
     const { email, username, outreach } = await createUserSchema.validateAsync(
       data
     );
@@ -109,6 +119,13 @@ exports.startJourney = async (req, res) => {
     const userId = req.user.id;
 
     session.startTransaction();
+
+    if( !req.body.powerupId){
+      throw new Error("Please select a powerup");
+    }
+    else if(!req.body.roomId){
+      throw new Error("Please select a Room");
+    }
 
     //JOI validation
     const { powerupId, roomId } = await consumePowerupSchema.validateAsync({

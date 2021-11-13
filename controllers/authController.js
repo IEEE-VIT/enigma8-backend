@@ -31,6 +31,7 @@ async function verify(token) {
       await new User({
         email: email,
       }).save();
+      return { jwt: jwtToken, isNew: true };
     }
     logger.info(
       `app/google user. isNew:${currentUser.username ? false : true} username:${
@@ -39,7 +40,6 @@ async function verify(token) {
     );
     return { jwt: jwtToken, isNew: currentUser.username ? false : true };
   } catch (err) {
-    console.log(err);
     logger.error(err + "");
     throw new Error("invalid Token");
   }
