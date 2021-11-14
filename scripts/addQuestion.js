@@ -12,14 +12,14 @@ const initVector = process.env.initVector;
 const securityKey = process.env.securityKey;
 const cipher = crypto.createCipheriv(algorithm, securityKey, initVector);
 
-// const decipher = crypto.createDecipheriv(algorithm, securityKey, initVector);
-// const text="6725e93d41be557b9464afc08b12219d";
+const decipher = crypto.createDecipheriv(algorithm, securityKey, initVector);
+const text="0bff0953c22ad8d46061c6e90b7d4ad1";
 
-// let decryptedData = decipher.update(text, "hex", "utf-8");
+let decryptedData = decipher.update(text, "hex", "utf-8");
 
-// decryptedData += decipher.final("utf8");
+decryptedData += decipher.final("utf8");
 
-// console.log("Decrypted message: " + decryptedData);
+console.log("Decrypted message: " + decryptedData);
 
 // use || operator to enter multiple values
 

@@ -366,8 +366,10 @@ exports.utilisePowerup = async (req, res) => {
           "hex",
           "utf-8"
         );
+
         decryptedDatahangman += decipher2.final("utf8");
         data = decryptedDatahangman;
+        console.log(decryptedDatahangman);
         break;
       case "double_hint":
         const decipher3 = crypto.createDecipheriv(
@@ -396,6 +398,7 @@ exports.utilisePowerup = async (req, res) => {
         );
         decryptedDataurlHint += decipher4.final("utf8");
         data = decryptedDataurlHint;
+        console.log(decryptedDataurlHint);
         break;
       case "javelin":
         const decipher5 = crypto.createDecipheriv(
