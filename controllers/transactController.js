@@ -30,12 +30,29 @@ exports.getQuestion = async (req, res) => {
     for (let i = 0; i < 3; i++) {
       if (currentJourney.questionsStatus[i] === "unlocked") {
         questionFound = true;
+        const currentPowerupId=currentJourney.powerupId;
+        const powerupDetails= await Powerup.findOne({_id:currentPowerupId});
+        const powerupUsed= currentJourney.powerupUsed;
         const currentRoom = await Room.findOne({ _id: roomId });
         const questionId = currentRoom.questionId[i];
+        let hint= null;
         const question = await Question.findOne({ _id: questionId }).select(
-          "text media mediaType questionNo currentRoom"
+          "text media mediaType questionNo currentRoom hint"
         );
-        response(res, question);
+
+        const currentUserUsedHints = req.user.usedHints.map((id) =>
+          id.toHexString()
+        );
+
+        const alreadyUsedHints = new Set(currentUserUsedHints);
+        if (!alreadyUsedHints.has(questionId.toHexString())) {
+          hint=null;
+        }
+        else if(alreadyUsedHints.has(questionId.toHexString())){
+          hint= question.hint;
+        }
+        
+        response(res, {question,powerupDetails,powerupUsed,hint});
       }
     }
 
