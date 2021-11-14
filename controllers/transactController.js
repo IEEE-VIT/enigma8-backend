@@ -8,13 +8,18 @@ const { useHintSchema } = require("../config/requestSchema");
 const { submitAnswerSchema } = require("../config/requestSchema");
 const constants = require("../config/constants");
 require("dotenv").config();
+const logger = require("../config/logger");
 
 const { response } = require("../config/responseSchema");
 const mongoose = require("mongoose");
 
 exports.getQuestion = async (req, res) => {
   try {
+<<<<<<< HEAD
     if(!req.query.roomId){
+=======
+    if (!req.query.roomId) {
+>>>>>>> 9203ceaccea4fc3650e31f44b27f427ebaf2591c
       throw new Error("Please enter a roomId");
     }
     const { roomId } = await getQuestionSchema.validateAsync(req.query);
@@ -22,7 +27,7 @@ exports.getQuestion = async (req, res) => {
     const currentJourney = await Journey.findOne({ roomId, userId });
 
     if (currentJourney === null) {
-      throw new Error("Room is locked.");
+      throw new Error("room is locked");
     }
 
     let questionFound = false;
@@ -39,22 +44,27 @@ exports.getQuestion = async (req, res) => {
     }
 
     if (questionFound === false) {
-      throw new Error("You have solved the entire room");
+      throw new Error("you have solved the entire room");
     }
   } catch (err) {
+    logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };
 
 exports.useHint = async (req, res) => {
   try {
+<<<<<<< HEAD
     if(!req.query.roomId){
+=======
+    if (!req.query.roomId) {
+>>>>>>> 9203ceaccea4fc3650e31f44b27f427ebaf2591c
       throw new Error("Plese enter roomId");
     }
     const { roomId } = await useHintSchema.validateAsync(req.query);
     const userId = req.user.id;
     const currentJourney = await Journey.findOne({ roomId, userId });
-    if (!currentJourney) throw new Error("Journey doesnt exist");
+    if (!currentJourney) throw new Error("journey doesnt exist");
 
     let flag = false;
     for (let i = 0; i < 3; i++) {
@@ -75,15 +85,16 @@ exports.useHint = async (req, res) => {
             { _id: userId },
             { $addToSet: { usedHints: questionId } }
           );
-          if (!addUsedHints) throw new Error("Unexpected db error");
+          if (!addUsedHints) throw new Error("unexpected db error");
         }
         response(res, { hint });
       }
     }
     if (!flag) {
-      throw new Error("The entire room is solved");
+      throw new Error("the entire room is solved");
     }
   } catch (err) {
+    logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };
@@ -93,10 +104,16 @@ exports.submitAnswer = async (req, res) => {
   try {
     const { id: userId, usedHints, stars, usedPowerups } = req.user;
 
+<<<<<<< HEAD
     if(!req.body.userAnswer){
       throw new Error("Please enter an Answer");
     }
     else if(!req.body.roomId){
+=======
+    if (!req.body.userAnswer) {
+      throw new Error("Please enter an Answer");
+    } else if (!req.body.roomId) {
+>>>>>>> 9203ceaccea4fc3650e31f44b27f427ebaf2591c
       throw new Error("Please select a Room");
     }
 
@@ -113,21 +130,21 @@ exports.submitAnswer = async (req, res) => {
     const userAnswerLower = userAnswer.toLowerCase();
 
     const currentJourney = await Journey.findOne({ roomId, userId });
-    if (!currentJourney) throw new Error("Journey does not exist");
+    if (!currentJourney) throw new Error("journey does not exist");
     if (!currentJourney.powerupId)
-      throw new Error("Please set room powerup before submiting an answer");
+      throw new Error("please set room powerup before submiting an answer");
     let flag = false;
     currentJourney.questionsStatus.map(async (status, i) => {
       if (status === "unlocked" && !flag) {
         flag = true;
         const currentRoom = await Room.findOne({ _id: roomId });
-        if (!currentRoom) throw new Error("Couldn't find the room");
+        if (!currentRoom) throw new Error("couldn't find the room");
 
         const questionId = currentRoom.questionId[i];
         responseJson["questionId"] = questionId.toHexString();
 
         const currentQuestion = await Question.findOne({ _id: questionId });
-        if (!currentQuestion) throw new Error("Couldn't fetch the question");
+        if (!currentQuestion) throw new Error("couldn't fetch the question");
         const nextRoomId = await getNextRoomId(stars);
         const correctAnswers = new Set(currentQuestion.answers);
         const closeAnswers = new Set(currentQuestion.closeAnswers);
@@ -146,11 +163,15 @@ exports.submitAnswer = async (req, res) => {
               currentJourney.id,
               session
             );
+            logger.info(
+              `$UserId:${userId} -> Correct answer submitted. Effective Score:${effectiveScore}`
+            );
             await updateScoreStar(userId, effectiveScore, session);
             await updateCurrentQstnStatus(userId, roomId, i, session);
             await updateNextQstnStatus(userId, roomId, i, session);
 
             await incrementQuestionModelSolvedCount(questionId, session);
+            const nextRoomId = await getNextRoomId(stars);
             await unlockNextRoom(userId, nextRoomId, session);
 
             await session.commitTransaction();
@@ -159,6 +180,7 @@ exports.submitAnswer = async (req, res) => {
             responseJson.nextRoomUnlocked = nextRoomId ? true : false; //if next room id exist and if answer is correct then next room is unlocked
             responseJson.nextRoomId = nextRoomId || null;
           } catch (err) {
+            logger.error(req.user.email + "-> " + err);
             await session.abortTransaction();
           } finally {
             session.endSession();
@@ -175,8 +197,9 @@ exports.submitAnswer = async (req, res) => {
       }
     });
 
-    if (!flag) response(res, {}, 400, "This room is all solved", false);
+    if (!flag) response(res, {}, 400, "this room is all solved", false);
   } catch (err) {
+    logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };
@@ -242,7 +265,7 @@ const updateScoreStar = async (userId, effectiveScore, session) => {
     { $inc: { stars: 1, score: effectiveScore } },
     { session }
   );
-  if (!addStarAndScore) throw new Error("Error updating stars and score");
+  if (!addStarAndScore) throw new Error("error updating stars and score");
 };
 
 const updateCurrentQstnStatus = async (
@@ -261,7 +284,7 @@ const updateCurrentQstnStatus = async (
     { $set: query },
     { session }
   );
-  if (!updateStatus) throw new Error("Error updating status of question");
+  if (!updateStatus) throw new Error("error updating status of question");
 };
 const updateNextQstnStatus = async (userId, roomId, questionIndex, session) => {
   //update status of next question from locked to unlocked
@@ -278,13 +301,17 @@ const updateNextQstnStatus = async (userId, roomId, questionIndex, session) => {
   }
 };
 const unlockNextRoom = async (userId, nextRoomId, session) => {
-  if (nextRoomId)
+  if (nextRoomId) {
     await new Journey({
       userId,
       roomId: nextRoomId,
       roomUnlocked: true,
       questionsStatus: ["unlocked", "locked", "locked"],
     }).save({ session });
+    logger.info(
+      `userId:${userId} -> Unlocking new room on correct answer. roomId:${nextRoomId}`
+    );
+  }
 };
 
 const getNextRoomId = async (star) => {
@@ -320,17 +347,17 @@ exports.utilisePowerup = async (req, res) => {
     const userId = req.user.id;
 
     const currentRoom = await Room.findOne({ _id: roomId });
-    if (!currentRoom) throw new Error("Invalid Room");
+    if (!currentRoom) throw new Error("invalid room");
 
     const currentJourney = await Journey.findOne({ roomId, userId });
-    if (currentJourney === null) throw new Error("Room is locked.");
+    if (currentJourney === null) throw new Error("room is locked.");
 
     if (currentJourney.powerupUsed === "yes")
-      throw new Error("Powerup already used");
+      throw new Error("powerup already used");
 
     const powerupId = currentJourney.powerupId;
     const powerUp = await Powerup.findOne({ _id: powerupId });
-    if (!powerUp) throw new Error("Please select a valid powerup");
+    if (!powerUp) throw new Error("please select a valid powerup");
 
     let currentQuestion;
 
@@ -342,7 +369,7 @@ exports.utilisePowerup = async (req, res) => {
         currentQuestion = await Question.findOne({ _id: questionId });
       }
     }
-    if (!questionFound) throw new Error("Entire room is solved");
+    if (!questionFound) throw new Error("entire room is solved");
 
     let data;
     let scoring_powerups = false;
@@ -379,10 +406,11 @@ exports.utilisePowerup = async (req, res) => {
       { userId: userId, roomId },
       { powerupUsed: scoring_powerups ? "active" : "yes" }
     );
-    if (!updatedJourney) throw new Error("Error in using powerup");
+    if (!updatedJourney) throw new Error("error in using powerup");
 
     response(res, { data });
   } catch (err) {
+    logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };

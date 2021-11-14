@@ -1,17 +1,17 @@
 const Room = require("../models/roomModel");
 const Journey = require("../models/journeyModel");
 const { response } = require("../config/responseSchema");
-
+const logger = require("../config/logger");
 const checkIfRoomUnlocked = async (req, res) => {
   try {
     const roomId = req.query.roomId;
     if (!roomId) {
-      throw new Error("Please specify a room id");
+      throw new Error("please specify a room id");
     }
     const room = await Room.findOne({ _id: roomId });
 
     if (!room) {
-      throw new Error("No such room found");
+      throw new Error("no such room found");
     }
 
     let unlock = false;
@@ -25,6 +25,7 @@ const checkIfRoomUnlocked = async (req, res) => {
 
     response(res, { unlock, starsNeeded });
   } catch (err) {
+    logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };
@@ -65,6 +66,7 @@ const getRooms = async (req, res) => {
 
     response(res, { data });
   } catch (err) {
+    logger.err(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };
