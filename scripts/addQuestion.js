@@ -24,7 +24,7 @@ prompt.get(
     "urlHint",
     "javelin",
     "revealCipher",
-    "newCloseAnswer",
+    "newHieroglyphsCloseAnswer",
   ],
   async (err, result) => {
     if (err) {
@@ -45,7 +45,11 @@ prompt.get(
       urlHint: result.urlHint,
       javelin: result.javelin,
       revealCipher: result.revealCipher,
+<<<<<<< HEAD
       newCloseAnswer: result.newCloseAnswer,
+=======
+      newHieroglyphsCloseAnswer: result.newHieroglyphsCloseAnswer,
+>>>>>>> 898b4afe20aedc7b5930bc29e41e79cb3727947b
     });
 
     try {
