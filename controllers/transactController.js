@@ -15,11 +15,7 @@ const mongoose = require("mongoose");
 
 exports.getQuestion = async (req, res) => {
   try {
-<<<<<<< HEAD
-    if(!req.query.roomId){
-=======
     if (!req.query.roomId) {
->>>>>>> 9203ceaccea4fc3650e31f44b27f427ebaf2591c
       throw new Error("Please enter a roomId");
     }
     const { roomId } = await getQuestionSchema.validateAsync(req.query);
@@ -54,11 +50,7 @@ exports.getQuestion = async (req, res) => {
 
 exports.useHint = async (req, res) => {
   try {
-<<<<<<< HEAD
-    if(!req.query.roomId){
-=======
     if (!req.query.roomId) {
->>>>>>> 9203ceaccea4fc3650e31f44b27f427ebaf2591c
       throw new Error("Plese enter roomId");
     }
     const { roomId } = await useHintSchema.validateAsync(req.query);
@@ -104,16 +96,9 @@ exports.submitAnswer = async (req, res) => {
   try {
     const { id: userId, usedHints, stars, usedPowerups } = req.user;
 
-<<<<<<< HEAD
-    if(!req.body.userAnswer){
-      throw new Error("Please enter an Answer");
-    }
-    else if(!req.body.roomId){
-=======
     if (!req.body.userAnswer) {
       throw new Error("Please enter an Answer");
     } else if (!req.body.roomId) {
->>>>>>> 9203ceaccea4fc3650e31f44b27f427ebaf2591c
       throw new Error("Please select a Room");
     }
 
