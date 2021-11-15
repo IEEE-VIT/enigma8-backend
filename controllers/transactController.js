@@ -36,9 +36,8 @@ exports.getQuestion = async (req, res) => {
         const currentRoom = await Room.findOne({ _id: roomId });
         const questionId = currentRoom.questionId[i];
         let hint= null;
-        const question = await Question.findOne({ _id: questionId }).select(
-          "text media mediaType questionNo currentRoom hint"
-        );
+        const deets = await Question.findOne({ _id: questionId });
+        const question=({_id:deets.id, text:deets.text,media:deets.media,mediaType:deets.mediaType, questionNo:deets.questionNo,currentRoom:deets.currentRoom});
 
         const currentUserUsedHints = req.user.usedHints.map((id) =>
           id.toHexString()
@@ -49,7 +48,7 @@ exports.getQuestion = async (req, res) => {
           hint=null;
         }
         else if(alreadyUsedHints.has(questionId.toHexString())){
-          hint= question.hint;
+          hint= deets.hint;
         }
         
         response(res, {question,powerupDetails,powerupUsed,hint});
