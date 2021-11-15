@@ -12,7 +12,7 @@ const questionSchema = new mongoose.Schema({
   },
 
   media: {
-    type: mongoose.SchemaTypes.Url,
+    type: String,
   },
 
   mediaType: {
@@ -42,7 +42,7 @@ const questionSchema = new mongoose.Schema({
     required: true,
   },
   urlHint: {
-    type: mongoose.SchemaTypes.Url,
+    type: String,
     required: true,
   },
   javelin: {
@@ -53,7 +53,7 @@ const questionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  newCloseAnswer: {
+  newHieroglyphsCloseAnswer: {
     type: String,
     required: true,
   },

@@ -13,7 +13,7 @@ const securityKey = process.env.securityKey;
 const cipher = crypto.createCipheriv(algorithm, securityKey, initVector);
 
 const decipher = crypto.createDecipheriv(algorithm, securityKey, initVector);
-const text="0bff0953c22ad8d46061c6e90b7d4ad1";
+const text="b2032955cd5ea1c9a3aad0388c1ca4c0";
 
 let decryptedData = decipher.update(text, "hex", "utf-8");
 
@@ -39,7 +39,7 @@ prompt.get(
     "urlHint",
     "javelin",
     "revealCipher",
-    "newCloseAnswer",
+    "newHieroglyphsCloseAnswer",
   ],
   async (err, result) => {
     if (err) {
@@ -91,14 +91,14 @@ prompt.get(
     let cipheredQuestionrevealCipher = cipher9.update(message9, "utf-8", "hex");
     cipheredQuestionrevealCipher += cipher9.final("hex");
 
-    let message10 = result.newCloseAnswer;
+    let message10 = result.newHieroglyphsCloseAnswer;
     const cipher10 = crypto.createCipheriv(algorithm, securityKey, initVector);
-    let cipheredQuestionnewCloseAnswer = cipher10.update(
+    let cipheredQuestionnewHieroglyphsCloseAnswer = cipher10.update(
       message10,
       "utf-8",
       "hex"
     );
-    cipheredQuestionnewCloseAnswer += cipher10.final("hex");
+    cipheredQuestionnewHieroglyphsCloseAnswer += cipher10.final("hex");
 
     let message11 = result.doubleHint;
     const cipher11 = crypto.createCipheriv(algorithm, securityKey, initVector);
@@ -119,7 +119,7 @@ prompt.get(
       urlHint: cipheredQuestionurlHint,
       javelin: cipheredQuestionjavelin,
       revealCipher: cipheredQuestionrevealCipher,
-      newCloseAnswer: cipheredQuestionnewCloseAnswer,
+      newHieroglyphsCloseAnswer: cipheredQuestionnewHieroglyphsCloseAnswer,
     });
 
     try {
