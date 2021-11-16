@@ -16,11 +16,9 @@ exports.createUser = async (req, res) => {
 
     if (!data.email) {
       throw new Error("Please enter email");
-    }
-    else if (!data.username) {
+    } else if (!data.username) {
       throw new Error("Please enter username");
-    }
-    else if (!data.outreach) {
+    } else if (!data.outreach) {
       throw new Error("Please enter outreach");
     }
 
@@ -120,10 +118,9 @@ exports.startJourney = async (req, res) => {
 
     session.startTransaction();
 
-    if( !req.body.powerupId){
+    if (!req.body.powerupId) {
       throw new Error("Please select a powerup");
-    }
-    else if(!req.body.roomId){
+    } else if (!req.body.roomId) {
       throw new Error("Please select a Room");
     }
 
@@ -209,11 +206,15 @@ exports.startJourney = async (req, res) => {
 exports.addFCM = async (req, res) => {
   try {
     const { id, username } = req.user;
-    const { token } = req.body;
+    const { token, os } = req.body;
+    if (!token) throw new Error("Please add token");
+    if (!os) throw new Error("Please add os");
+    const possibleOs = new Set(["android", "ios", "web"]);
+    if (!possibleOs.has(os)) throw new Error("invalid os");
 
     const user = await User.findOneAndUpdate(
       { _id: id },
-      { $addToSet: { fcmToken: token } }
+      { $addToSet: { fcmToken: { token, os } } }
     );
 
     response(res, {
