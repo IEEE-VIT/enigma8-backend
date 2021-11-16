@@ -308,6 +308,7 @@ const unlockNextRoom = async (userId, nextRoomId, session) => {
       roomId: nextRoomId,
       roomUnlocked: true,
       questionsStatus: ["unlocked", "locked", "locked"],
+      powerupSet:true
     }).save({ session });
     logger.info(
       `userId:${userId} -> Unlocking new room on correct answer. roomId:${nextRoomId}`
