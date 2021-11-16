@@ -9,9 +9,14 @@ const { submitAnswerSchema } = require("../config/requestSchema");
 const constants = require("../config/constants");
 require("dotenv").config();
 const logger = require("../config/logger");
+const crypto = require("crypto");
 
 const { response } = require("../config/responseSchema");
 const mongoose = require("mongoose");
+
+const algorithm = process.env.algorithm;
+const initVector = process.env.initVector;
+const securityKey = process.env.securityKey;
 
 exports.getQuestion = async (req, res) => {
   try {
@@ -30,14 +35,41 @@ exports.getQuestion = async (req, res) => {
     for (let i = 0; i < 3; i++) {
       if (currentJourney.questionsStatus[i] === "unlocked") {
         questionFound = true;
-        const currentPowerupId=currentJourney.powerupId;
-        const powerupDetails= await Powerup.findOne({_id:currentPowerupId});
-        const powerupUsed= currentJourney.powerupUsed;
+        const currentPowerupId = currentJourney.powerupId;
+        const powerupDetails = await Powerup.findOne({ _id: currentPowerupId });
+        const powerupUsed = currentJourney.powerupUsed;
         const currentRoom = await Room.findOne({ _id: roomId });
         const questionId = currentRoom.questionId[i];
-        let hint= null;
+        let hint = null;
         const deets = await Question.findOne({ _id: questionId });
-        const question=({_id:deets.id, text:deets.text,media:deets.media,mediaType:deets.mediaType, questionNo:deets.questionNo,currentRoom:deets.currentRoom});
+
+        const decipherText = crypto.createDecipheriv(
+          algorithm,
+          securityKey,
+          initVector
+        );
+
+        let messageText = deets.text;
+        let decText = decipherText.update(messageText, "hex", "utf-8");
+        decText += decipherText.final("utf8");
+
+        const decipherHint = crypto.createDecipheriv(
+          algorithm,
+          securityKey,
+          initVector
+        );
+        let messageMedia = deets.media;
+        let decMedia = decipherHint.update(messageMedia, "hex", "utf-8");
+        decMedia += decipherHint.final("utf8");
+
+        const question = {
+          _id: deets.id,
+          text: decText,
+          media: decMedia,
+          mediaType: deets.mediaType,
+          questionNo: deets.questionNo,
+          currentRoom: deets.currentRoom,
+        };
 
         const currentUserUsedHints = req.user.usedHints.map((id) =>
           id.toHexString()
@@ -45,13 +77,20 @@ exports.getQuestion = async (req, res) => {
 
         const alreadyUsedHints = new Set(currentUserUsedHints);
         if (!alreadyUsedHints.has(questionId.toHexString())) {
-          hint=null;
+          hint = null;
+        } else if (alreadyUsedHints.has(questionId.toHexString())) {
+          const decipherHint = crypto.createDecipheriv(
+            algorithm,
+            securityKey,
+            initVector
+          );
+          let messageHint = deets.hint;
+          let decHint = decipherHint.update(messageHint, "hex", "utf-8");
+          decHint += decipherHint.final("utf8");
+          hint = decHint;
         }
-        else if(alreadyUsedHints.has(questionId.toHexString())){
-          hint= deets.hint;
-        }
-        
-        response(res, {question,powerupDetails,powerupUsed,hint});
+
+        response(res, { question, powerupDetails, powerupUsed, hint });
       }
     }
 
@@ -82,7 +121,21 @@ exports.useHint = async (req, res) => {
         const currentRoom = await Room.findOne({ _id: roomId });
         const questionId = currentRoom.questionId[i];
         const question = await Question.findOne({ _id: questionId });
-        const hint = question.hint;
+
+        const decipherQuestionHint = crypto.createDecipheriv(
+          algorithm,
+          securityKey,
+          initVector
+        );
+        let messageQuestionHint = question.hint;
+        let decQuestionHint = decipherQuestionHint.update(
+          messageQuestionHint,
+          "hex",
+          "utf-8"
+        );
+        decQuestionHint += decipherQuestionHint.final("utf8");
+
+        const hint = decQuestionHint;
         const currentUserUsedHints = req.user.usedHints.map((id) =>
           id.toHexString()
         );
@@ -377,22 +430,80 @@ exports.utilisePowerup = async (req, res) => {
 
     switch (powerUp.beAlias) {
       case "hangman":
-        data = currentQuestion.hangman;
+        const decipherHangman = crypto.createDecipheriv(
+          algorithm,
+          securityKey,
+          initVector
+        );
+        let messageHangman = currentQuestion.hangman;
+        let decHangman = decipherHangman.update(messageHangman, "hex", "utf-8");
+        decHangman += decipherHangman.final("utf8");
+        data = decHangman;
         break;
       case "double_hint":
-        data = currentQuestion.doubleHint;
+        const decipherDoubleHint = crypto.createDecipheriv(
+          algorithm,
+          securityKey,
+          initVector
+        );
+        let messageDoubleHint = currentQuestion.doubleHint;
+        let decDoubleHint = decipherDoubleHint.update(
+          messageDoubleHint,
+          "hex",
+          "utf-8"
+        );
+        decDoubleHint += decipherDoubleHint.final("utf8");
+        data = decDoubleHint;
         break;
       case "url_hint":
-        data = currentQuestion.urlHint;
+        const decipherUrlHint = crypto.createDecipheriv(
+          algorithm,
+          securityKey,
+          initVector
+        );
+        let messageUrlHint = currentQuestion.urlHint;
+        let decUrlHint = decipherUrlHint.update(messageUrlHint, "hex", "utf-8");
+        decUrlHint += decipherUrlHint.final("utf8");
+        data = decUrlHint;
         break;
       case "javelin":
-        data = currentQuestion.javelin;
+        const decipherJavelin = crypto.createDecipheriv(
+          algorithm,
+          securityKey,
+          initVector
+        );
+        let messageJavelin = currentQuestion.javelin;
+        let decJavelin = decipherJavelin.update(messageJavelin, "hex", "utf-8");
+        decJavelin += decipherJavelin.final("utf8");
+        data = decJavelin;
         break;
       case "reveal_cipher":
-        data = currentQuestion.revealCipher;
+        const decipherReveal = crypto.createDecipheriv(
+          algorithm,
+          securityKey,
+          initVector
+        );
+        let messageReveal = currentQuestion.revealCipher;
+        let decReveal = decipherReveal.update(messageReveal, "hex", "utf-8");
+        decReveal += decipherReveal.final("utf8");
+        data = decReveal;
         break;
       case "new_close_answer":
-        data = currentQuestion.newHieroglyphsCloseAnswer;
+        const decipherHieroglyphsCloseAnswer = crypto.createDecipheriv(
+          algorithm,
+          securityKey,
+          initVector
+        );
+        let messageHieroglyphsCloseAnswer =
+          currentQuestion.newHieroglyphsCloseAnswer;
+        let decHieroglyphsCloseAnswer = decipherHieroglyphsCloseAnswer.update(
+          messageHieroglyphsCloseAnswer,
+          "hex",
+          "utf-8"
+        );
+        decHieroglyphsCloseAnswer +=
+          decipherHieroglyphsCloseAnswer.final("utf8");
+        data = decHieroglyphsCloseAnswer;
         break;
       case "free_hint":
         data = "powerup activated";
