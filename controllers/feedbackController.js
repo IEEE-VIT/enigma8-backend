@@ -18,6 +18,7 @@ exports.getFeedback = async (req, res) => {
       other,
     } = await getFeedbackSchema.validateAsync(req.body);
 
+
     const doesFeedbackExist = await Feedback.findOne({ email });
     if (doesFeedbackExist) {
       throw new Error("You have already given feedback");

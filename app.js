@@ -5,6 +5,7 @@ logger.info("Server started");
 
 const express = require("express");
 const authorized = require("./middleware/auth");
+const isEnigmaActive = require("./middleware/enigmaActive");
 
 const connectToMongo = require("./models/db");
 
@@ -38,13 +39,14 @@ connectToMongo().on("connected", () => {
 app.use("/auth", authRoutes);
 app.use("/authorized", authorized, authorizedRoutes);
 app.use("/static", staticRoutes);
-app.use("/user", authorized, userRoutes);
-app.use("/room", authorized, roomRoutes);
-app.use("/transact", authorized, transactRoutes);
-app.use("/game", authorized, gameRoutes);
-app.use("/story", authorized, storyRoutes);
-app.use("/notifs", authorized, notifRoutes);
-app.use("/feedback", authorized, feedRoutes);
+
+app.use("/user", authorized, isEnigmaActive, userRoutes);
+app.use("/room" , authorized, isEnigmaActive, roomRoutes);
+app.use("/transact", authorized, isEnigmaActive, transactRoutes);
+app.use("/game", authorized, isEnigmaActive, gameRoutes);
+app.use("/story", authorized, isEnigmaActive, storyRoutes);
+app.use("/notifs", authorized, isEnigmaActive, notifRoutes);
+app.use("/feedback", authorized, isEnigmaActive,feedRoutes);
 
 app.get("/", (req, res) => {
   res.send("The server is running!");
