@@ -41,9 +41,11 @@ const journeySchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+
   powerupSet: {
-    type: Boolean,
-    default: false,
+    type: String,
+    default: "no",
+    
   },
 });
 

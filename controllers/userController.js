@@ -165,7 +165,7 @@ exports.startJourney = async (req, res) => {
             roomUnlocked: true,
             powerupId: powerupId,
             questionsStatus: ["unlocked", "locked", "locked"],
-            powerupSet: true,
+            powerupSet: "yes",
           },
         ],
         { session }
@@ -180,8 +180,8 @@ exports.startJourney = async (req, res) => {
 
       const updatedJourney = await Journey.findOneAndUpdate(
         { userId: userId, roomId },
-        { powerupId: powerupId },
-        { powerupSet: true },
+        { powerupId: powerupId,powerupSet: "yes" }
+        ,
         { session }
       );
       if (!updatedJourney) throw new Error("error updating journey");
