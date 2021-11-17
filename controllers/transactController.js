@@ -30,14 +30,21 @@ exports.getQuestion = async (req, res) => {
     for (let i = 0; i < 3; i++) {
       if (currentJourney.questionsStatus[i] === "unlocked") {
         questionFound = true;
-        const currentPowerupId=currentJourney.powerupId;
-        const powerupDetails= await Powerup.findOne({_id:currentPowerupId});
-        const powerupUsed= currentJourney.powerupUsed;
+        const currentPowerupId = currentJourney.powerupId;
+        const powerupDetails = await Powerup.findOne({ _id: currentPowerupId });
+        const powerupUsed = currentJourney.powerupUsed;
         const currentRoom = await Room.findOne({ _id: roomId });
         const questionId = currentRoom.questionId[i];
-        let hint= null;
+        let hint = null;
         const deets = await Question.findOne({ _id: questionId });
-        const question=({_id:deets.id, text:deets.text,media:deets.media,mediaType:deets.mediaType, questionNo:deets.questionNo,currentRoom:deets.currentRoom});
+        const question = {
+          _id: deets.id,
+          text: deets.text,
+          media: deets.media,
+          mediaType: deets.mediaType,
+          questionNo: deets.questionNo,
+          currentRoom: deets.currentRoom,
+        };
 
         const currentUserUsedHints = req.user.usedHints.map((id) =>
           id.toHexString()
@@ -45,13 +52,12 @@ exports.getQuestion = async (req, res) => {
 
         const alreadyUsedHints = new Set(currentUserUsedHints);
         if (!alreadyUsedHints.has(questionId.toHexString())) {
-          hint=null;
+          hint = null;
+        } else if (alreadyUsedHints.has(questionId.toHexString())) {
+          hint = deets.hint;
         }
-        else if(alreadyUsedHints.has(questionId.toHexString())){
-          hint= deets.hint;
-        }
-        
-        response(res, {question,powerupDetails,powerupUsed,hint});
+
+        response(res, { question, powerupDetails, powerupUsed, hint });
       }
     }
 
@@ -308,6 +314,7 @@ const unlockNextRoom = async (userId, nextRoomId, session) => {
       roomId: nextRoomId,
       roomUnlocked: true,
       questionsStatus: ["unlocked", "locked", "locked"],
+      powerupSet: true,
     }).save({ session });
     logger.info(
       `userId:${userId} -> Unlocking new room on correct answer. roomId:${nextRoomId}`

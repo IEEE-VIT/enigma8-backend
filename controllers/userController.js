@@ -16,11 +16,9 @@ exports.createUser = async (req, res) => {
 
     if (!data.email) {
       throw new Error("Please enter email");
-    }
-    else if (!data.username) {
+    } else if (!data.username) {
       throw new Error("Please enter username");
-    }
-    else if (!data.outreach) {
+    } else if (!data.outreach) {
       throw new Error("Please enter outreach");
     }
 
@@ -120,10 +118,9 @@ exports.startJourney = async (req, res) => {
 
     session.startTransaction();
 
-    if( !req.body.powerupId){
+    if (!req.body.powerupId) {
       throw new Error("Please select a powerup");
-    }
-    else if(!req.body.roomId){
+    } else if (!req.body.roomId) {
       throw new Error("Please select a Room");
     }
 
@@ -168,6 +165,7 @@ exports.startJourney = async (req, res) => {
             roomUnlocked: true,
             powerupId: powerupId,
             questionsStatus: ["unlocked", "locked", "locked"],
+            powerupSet: true,
           },
         ],
         { session }
@@ -183,6 +181,7 @@ exports.startJourney = async (req, res) => {
       const updatedJourney = await Journey.findOneAndUpdate(
         { userId: userId, roomId },
         { powerupId: powerupId },
+        { powerupSet: true },
         { session }
       );
       if (!updatedJourney) throw new Error("error updating journey");
