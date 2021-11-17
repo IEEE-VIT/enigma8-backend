@@ -14,7 +14,7 @@ const {
 } = require("../controllers/userController");
 
 router.post("/create", createUser);
-router.post("/addFCM", addFCM);
+router.post("/addFCM", usernameCheck, addFCM);
 router.get("/getDetails", usernameCheck, getUser);
 router.get("/getPowerups", isEnigmaActive, usernameCheck, getPowerups);
 router.post("/selectPowerup", isEnigmaActive, usernameCheck, startJourney);
