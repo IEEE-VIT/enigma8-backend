@@ -4,6 +4,7 @@ const cors = require("cors");
 const express = require("express");
 const authorized = require("./middleware/auth");
 const isEnigmaActive = require("./middleware/enigmaActive");
+const usernameCheck = require("./middleware/usernameCheck");
 
 const connectToMongo = require("./models/db");
 
@@ -37,14 +38,12 @@ app.use("/auth", authRoutes);
 app.use("/authorized", authorized, authorizedRoutes);
 app.use("/static", staticRoutes);
 app.use("/user", authorized, userRoutes);
-app.use("/room" , authorized, isEnigmaActive, roomRoutes);
-app.use("/transact", authorized, isEnigmaActive, transactRoutes);
-app.use("/game", authorized, isEnigmaActive, gameRoutes);
-app.use("/story", authorized, isEnigmaActive, storyRoutes);
-app.use("/notifs", authorized, isEnigmaActive, notifRoutes);
-app.use("/feedback", authorized, isEnigmaActive,feedRoutes);
-
-
+app.use("/room", authorized, isEnigmaActive, usernameCheck, roomRoutes);
+app.use("/transact", authorized, isEnigmaActive, usernameCheck, transactRoutes);
+app.use("/game", authorized, isEnigmaActive, usernameCheck, gameRoutes);
+app.use("/story", authorized, isEnigmaActive, usernameCheck, storyRoutes);
+app.use("/notifs", authorized, isEnigmaActive, usernameCheck, notifRoutes);
+app.use("/feedback", authorized, isEnigmaActive, usernameCheck, feedRoutes);
 
 app.get("/", (req, res) => {
   res.send("The server is running!");
