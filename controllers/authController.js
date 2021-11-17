@@ -14,10 +14,8 @@ async function verify(token) {
     });
     const payload = ticket.getPayload();
 
-    if (!payload) throw "Invalid token";
-
-    const userid = payload["sub"];
-    // const name = payload["name"];
+    if (!payload) throw "Invalid token";    
+    
     const email = payload["email"];
 
     let isNew = false;
