@@ -36,7 +36,7 @@ connectToMongo().on("connected", () => {
 app.use("/auth", authRoutes);
 app.use("/authorized", authorized, authorizedRoutes);
 app.use("/static", staticRoutes);
-app.use("/user", authorized, isEnigmaActive, userRoutes);
+app.use("/user", authorized, userRoutes);
 app.use("/room" , authorized, isEnigmaActive, roomRoutes);
 app.use("/transact", authorized, isEnigmaActive, transactRoutes);
 app.use("/game", authorized, isEnigmaActive, gameRoutes);
