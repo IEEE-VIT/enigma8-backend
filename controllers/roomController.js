@@ -44,11 +44,13 @@ const getRooms = async (req, res) => {
     let info = {};
     let data = [];
     rooms.forEach((item) => {
+      let starsLeft = item.starQuota - req.user.stars;
       if (userRoomIds.find((roomId) => roomId == item.id)) {
         let jou = allJourney.find((a) => a.roomId == item.id);
-        info = { room: item, journey: jou };
+        info = { room: item, journey: jou, starsLeft};
         data.push(info);
       } else {
+        
         let jou = {
           _id: null,
           userId: null,
@@ -58,15 +60,16 @@ const getRooms = async (req, res) => {
           roomUnlocked: false,
           powerupId: null,
           questionsStatus: ["locked", "locked", "locked"],
+          powerupSet:"no"
         };
-        info = { room: item, journey: jou };
+        info = { room: item, journey: jou,starsLeft };
         data.push(info);
       }
     });
 
     response(res, { data });
   } catch (err) {
-    logger.err(req.user.email + "-> " + err);
+    logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };
