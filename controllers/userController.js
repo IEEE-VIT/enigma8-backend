@@ -208,11 +208,15 @@ exports.startJourney = async (req, res) => {
 exports.addFCM = async (req, res) => {
   try {
     const { id, username } = req.user;
-    const { token } = req.body;
+    const { token, os } = req.body;
+    if (!token) throw new Error("Please add token");
+    if (!os) throw new Error("Please add os");
+    const possibleOs = new Set(["android", "ios", "web"]);
+    if (!possibleOs.has(os)) throw new Error("invalid os");
 
     const user = await User.findOneAndUpdate(
       { _id: id },
-      { $addToSet: { fcmToken: token } }
+      { $addToSet: { fcmToken: { token, os } } }
     );
 
     response(res, {

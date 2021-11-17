@@ -13,7 +13,7 @@ const userSchema = new Schema(
     },
     fcmToken: [
       {
-        type: "String",
+        type: "Mixed",
       },
     ],
     stars: {
