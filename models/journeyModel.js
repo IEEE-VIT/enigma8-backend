@@ -41,6 +41,10 @@ const journeySchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  powerupSet: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Journey = mongoose.model("Journey", journeySchema);
