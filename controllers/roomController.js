@@ -5,6 +5,7 @@ const logger = require("../config/logger");
 const checkIfRoomUnlocked = async (req, res) => {
   try {
     const roomId = req.query.roomId;
+    const userId = req.user.id;
     if (!roomId) {
       throw new Error("please specify a room id");
     }
