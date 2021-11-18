@@ -28,7 +28,6 @@
     "dotenv": "^10.0.0",
     "eslint": "^7.32.0",
     "express": "^4.17.1",
-
     "firebase-admin": "^10.0.0",
     "google-auth-library": "^7.9.1",
     "husky": "^7.0.2",

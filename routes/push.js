@@ -1,3 +1,6 @@
+const express = require("express");
+const router = express.Router();
+
 var admin = require("firebase-admin");
 var User = require("../models/userModel");
 var serviceAccount = {
@@ -15,17 +18,25 @@ var serviceAccount = {
     "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-98vno%40enigma-8.iam.gserviceaccount.com",
 };
 
-const connectToMongo = require("../models/db");
-
-async function fun() {
+router.post("/all", async (req, res) => {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
   const messaging = admin.messaging();
-  const ffcm = await User.find({}).then((res, err) => {
-    console.log(res);
-  });
+  const ffcm = await User.find({ fcmToken: { $ne: [] } });
+
   const fcm = ffcm.map(({ fcmToken }) => fcmToken);
+  console.log(fcm);
+
+  const fffcm = [];
+  for (var a in fcm) {
+    if (fcm[a]) {
+      console.log(fcm[a]);
+      fffcm.push(...fcm[a]);
+    }
+  }
+
+  console.log(fffcm);
   const registrationTokens = fcm;
 
   const message = {
@@ -39,24 +50,7 @@ async function fun() {
   messaging.sendMulticast(message).then((response) => {
     console.log(response.successCount + " messages were sent successfully");
   });
-}
+  res.send("");
+});
 
-//fun();
-
-(async () => {
-  try {
-    console.log("trying");
-    //connect to mongoDB
-    connectToMongo().on("connected", () => {
-      console.log("✅ Mongoose is connected");
-      logger.info("✅ Mongoose is connected");
-    });
-
-    const ffcm = await User.find({ fcmToken: "" });
-    console.log(ffcm, "f");
-    console.log("end");
-  } catch (e) {
-    // Deal with the fact the chain failed
-    console.log("cc");
-  }
-})();
+module.exports = router;
