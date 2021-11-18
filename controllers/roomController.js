@@ -9,21 +9,31 @@ const checkIfRoomUnlocked = async (req, res) => {
       throw new Error("please specify a room id");
     }
     const room = await Room.findOne({ _id: roomId });
-
+    
     if (!room) {
       throw new Error("no such room found");
     }
 
-    let unlock = false;
-    let starsNeeded = 0;
-
-    if (req.user.stars >= room.starQuota) {
-      unlock = true;
-    } else {
-      starsNeeded = room.starQuota - req.user.stars;
+    const currentJourney = await Journey.findOne({ roomId, userId });
+    if(!currentJourney){
+      throw new Error("journey does not exist");
     }
 
-    response(res, { unlock, starsNeeded });
+    let status = "locked";
+    let starsNeeded = room.starQuota - req.user.stars;
+
+    if (currentJourney.roomUnlocked==false && starsNeeded<=0) {
+      status = "canUnlock";
+    }
+    else if(currentJourney.questionsStatus == ["solved","solved","solved"])
+    {
+      status="complete";
+    }
+    else{
+      status="unlocked";
+    }
+
+    response(res, { status, starsNeeded });
   } catch (err) {
     logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
