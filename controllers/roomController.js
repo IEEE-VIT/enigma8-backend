@@ -14,16 +14,25 @@ const checkIfRoomUnlocked = async (req, res) => {
       throw new Error("no such room found");
     }
 
-    let unlock = false;
-    let starsNeeded = 0;
-
-    if (req.user.stars >= room.starQuota) {
-      unlock = true;
-    } else {
-      starsNeeded = room.starQuota - req.user.stars;
+    const currentJourney = await Journey.findOne({ roomId, userId });
+    if (!currentJourney) {
+      throw new Error("journey does not exist");
     }
 
-    response(res, { unlock, starsNeeded });
+    let status = "locked";
+    let starsNeeded = room.starQuota - req.user.stars;
+
+    if (currentJourney.roomUnlocked == false && starsNeeded <= 0) {
+      status = "canUnlock";
+    } else if (
+      currentJourney.questionsStatus == ["solved", "solved", "solved"]
+    ) {
+      status = "complete";
+    } else {
+      status = "unlocked";
+    }
+
+    response(res, { status, starsNeeded });
   } catch (err) {
     logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
@@ -47,10 +56,9 @@ const getRooms = async (req, res) => {
       let starsLeft = item.starQuota - req.user.stars;
       if (userRoomIds.find((roomId) => roomId == item.id)) {
         let jou = allJourney.find((a) => a.roomId == item.id);
-        info = { room: item, journey: jou, starsLeft};
+        info = { room: item, journey: jou, starsLeft };
         data.push(info);
       } else {
-        
         let jou = {
           _id: null,
           userId: null,
@@ -60,9 +68,9 @@ const getRooms = async (req, res) => {
           roomUnlocked: false,
           powerupId: null,
           questionsStatus: ["locked", "locked", "locked"],
-          powerupSet:"no"
+          powerupSet: "no",
         };
-        info = { room: item, journey: jou,starsLeft };
+        info = { room: item, journey: jou, starsLeft };
         data.push(info);
       }
     });
