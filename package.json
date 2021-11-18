@@ -21,8 +21,6 @@
   },
   "homepage": "https://github.com/IEEE-VIT/enigma8-backend#readme",
   "dependencies": {
-    "apple-auth": "^1.0.7",
-    "apple-signin-auth": "^1.5.1",
     "axios": "^0.21.4",
     "body-parser": "^1.19.0",
     "cookie-session": "^1.4.0",
@@ -30,7 +28,6 @@
     "dotenv": "^10.0.0",
     "eslint": "^7.32.0",
     "express": "^4.17.1",
-    "fs": "^0.0.1-security",
     "google-auth-library": "^7.9.1",
     "husky": "^7.0.2",
     "joi": "^17.4.2",

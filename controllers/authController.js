@@ -2,7 +2,6 @@ const { OAuth2Client } = require("google-auth-library");
 const User = require("../models/userModel");
 const logger = require("../config/logger");
 const jwt = require("jsonwebtoken");
-const appleSignin = require("apple-signin-auth");
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
