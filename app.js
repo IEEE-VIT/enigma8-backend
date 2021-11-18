@@ -19,7 +19,7 @@ const gameRoutes = require("./routes/game");
 const storyRoutes = require("./routes/story");
 const notifRoutes = require("./routes/notifications");
 const feedRoutes = require("./routes/feedback");
-const pushRoutes = require("./routes/push");
+const oracleRoutes = require("./routes/oracle");
 
 const app = express();
 const DB_URL = process.env.DB_URI;
@@ -46,7 +46,7 @@ app.use("/game", authorized, gameRoutes);
 app.use("/story", authorized, storyRoutes);
 app.use("/notifs", authorized, notifRoutes);
 app.use("/feedback", authorized, feedRoutes);
-app.use("/push", pushRoutes);
+app.use("/oracle", oracleRoutes);
 
 app.get("/", (req, res) => {
   res.send("The server is running!");
