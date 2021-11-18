@@ -8,7 +8,7 @@ var serviceAccount = {
   type: "service_account",
   project_id: "enigma-8",
   private_key_id: process.env.ORACLE_PRIV_KEY_ID,
-  private_key: process.env.ORACLE_PRIV_KEY,
+  private_key: process.env.ORACLE_PRIV_KEY.replace(/\\n/g, "\n"),
   client_email: process.env.ORACLE_CLIENT_EMAIL,
   client_id: process.env.ORACLE_CLIENT_ID,
   auth_uri: "https://accounts.google.com/o/oauth2/auth",
