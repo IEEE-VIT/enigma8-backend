@@ -46,7 +46,7 @@ app.use("/game", authorized, gameRoutes);
 app.use("/story", authorized, storyRoutes);
 app.use("/notifs", authorized, notifRoutes);
 app.use("/feedback", authorized, feedRoutes);
-app.use("/oracle", oracleRoutes);
+// app.use("/oracle", oracleRoutes);
 
 app.get("/", (req, res) => {
   res.send("The server is running!");

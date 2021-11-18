@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const { response } = require("../config/responseSchema");
-const verify = require("../controllers/authController");
+const auth = require("../controllers/authController");
 
 //Google Auth for web
 router.get(
@@ -26,8 +26,17 @@ router.get(
 //generates a JWT
 router.post("/app/google", async (req, res) => {
   try {
-    const { jwt, isNew } = await verify(req.body.id_token);
+    const { jwt, isNew } = await auth.verify(req.body.id_token);
     response(res, { JWT: jwt, isNew: isNew });
+  } catch (err) {
+    response(res, {}, 400, JSON.stringify(err), false);
+  }
+});
+
+router.get("/app/apple", async (req, res) => {
+  try {
+    const { grantCode } = await auth.validateApple(req.body.grantCode);
+    response(res, { grantCode, isNew: isNew });
   } catch (err) {
     response(res, {}, 400, JSON.stringify(err), false);
   }
