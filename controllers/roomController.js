@@ -5,25 +5,39 @@ const logger = require("../config/logger");
 const checkIfRoomUnlocked = async (req, res) => {
   try {
     const roomId = req.query.roomId;
+    const userId = req.user.id;
     if (!roomId) {
       throw new Error("please specify a room id");
     }
-    const room = await Room.findOne({ _id: roomId });
 
+    const room = await Room.findOne({ _id: roomId });
     if (!room) {
       throw new Error("no such room found");
     }
 
-    let unlock = false;
-    let starsNeeded = 0;
+    let status = "locked";
+    let starsNeeded = room.starQuota - req.user.stars;
 
-    if (req.user.stars >= room.starQuota) {
-      unlock = true;
-    } else {
-      starsNeeded = room.starQuota - req.user.stars;
+    const currentJourney = await Journey.findOne({ roomId, userId });
+    if (!currentJourney) {
+      status = "locked";
+      response(res, { status, starsNeeded });
     }
+    else{
+      if (currentJourney.roomUnlocked == false && starsNeeded <= 0) {
+        status = "canUnlock";
+      } else if (        JSON.stringify(currentJourney.questionsStatus) ==
+        JSON.stringify(["solved", "solved", "solved"])
+      ) {
+        status = "complete";
+      } else {
+        status = "unlocked";
+      }
+  
+      response(res, { status, starsNeeded });
 
-    response(res, { unlock, starsNeeded });
+    }
+    
   } catch (err) {
     logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
@@ -47,10 +61,9 @@ const getRooms = async (req, res) => {
       let starsLeft = item.starQuota - req.user.stars;
       if (userRoomIds.find((roomId) => roomId == item.id)) {
         let jou = allJourney.find((a) => a.roomId == item.id);
-        info = { room: item, journey: jou, starsLeft};
+        info = { room: item, journey: jou, starsLeft };
         data.push(info);
       } else {
-        
         let jou = {
           _id: null,
           userId: null,
@@ -60,9 +73,9 @@ const getRooms = async (req, res) => {
           roomUnlocked: false,
           powerupId: null,
           questionsStatus: ["locked", "locked", "locked"],
-          powerupSet:"no"
+          powerupSet: "no",
         };
-        info = { room: item, journey: jou,starsLeft };
+        info = { room: item, journey: jou, starsLeft };
         data.push(info);
       }
     });
