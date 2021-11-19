@@ -26,7 +26,16 @@ router.get(
 //generates a JWT
 router.post("/app/google", async (req, res) => {
   try {
-    const { jwt, isNew } = await verify(req.body.id_token);
+    const { jwt, isNew } = await verify.googleVerify(req.body.id_token);
+    response(res, { JWT: jwt, isNew: isNew });
+  } catch (err) {
+    response(res, {}, 400, JSON.stringify(err), false);
+  }
+});
+
+router.post("/app/apple", async (req, res) => {
+  try {
+    const { jwt, isNew } = await verify.appleVerify(req.body.token);
     response(res, { JWT: jwt, isNew: isNew });
   } catch (err) {
     response(res, {}, 400, JSON.stringify(err), false);
