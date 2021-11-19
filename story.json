@@ -9,7 +9,6 @@
         "sender": "Abdul Ali(NPC)",
         "message": "Your loyal sidekick. Born and brought up in Egypt, Ali has always been fascinated with the history of his land. From the age of 18, Ali has been a worker for several excavation teams in and around the Valley of Kings(the ancient burial site of Pharaohs). In your first ever independent excavation, Ali helped guide you around the traditions and culture practiced by the people of the land. After discovering a tomb room, Ali was caught under a collapsing roof structure. You led a team into the collapsing structure and pulled Ali out from the depths. Ever since, Ali has been helping you as a lead excavator in all your projects."
     },
-
     {
         "roomNo": "1",
         "sender": "MJ",
@@ -65,7 +64,6 @@
         "sender": "MJ",
         "message": "Let’s try our luck shall we…"
     },
-
     {
         "roomNo": "2",
         "sender": "narrator",
@@ -161,7 +159,6 @@
         "sender": "MJ",
         "message": "*Sigh*"
     },
-
     {
         "roomNo": "3",
         "sender": "narrator",
@@ -262,7 +259,6 @@
         "sender": "Ali",
         "message": "Hurry! I don't want to be another skeleton for people a hundred years from now to find!!"
     },
-
     {
         "roomNo": "4",
         "sender": "narrator",
@@ -363,7 +359,6 @@
         "sender": "MJ",
         "message": "Yea but this time, you get to hangout with a ghost haha."
     },
-
     {
         "roomNo": "5",
         "sender": "MJ",
@@ -419,8 +414,6 @@
         "sender": "MJ",
         "message": "Nevermind the cynical Ali, let us move on now, the path should be just beyond this door."
     },
-    
-
     {
         "roomNo": "6",
         "sender": "Ali",
@@ -551,7 +544,6 @@
         "sender": "narrator",
         "message": "(MJ reluctantly picks himself up and starts digging through the sandy wall)"
     },
-
     {
         "roomNo": "7",
         "sender": "narrator",
@@ -602,7 +594,6 @@
         "sender": "MJ",
         "message": " Look! There's a small cave-like structure at the very end. That’s possibly the judging room of Anubis. We just need to find the right way in. Maybe these hieroglyphics could elaborate."
     },
-
     {
         "roomNo": "8",
         "sender": "Voice",
@@ -643,11 +634,10 @@
         "sender": "MJ",
         "message": " We need to etch a circle into the floor. Then, we recite the following verse engraved on these walls. But first, we’d need to decrypt the markings..."
     },
-
     {
         "roomNo": "100",
         "sender": "MJ",
-        "message": "I have solved it! The verse reads\nYa 'Anubis, yda 'uwzuris. Astamae 'iilaa suti.\nYa 'Anubis, 'ant min yazan alqulbu. Astamae 'iilaa suti.\nYa 'Anubis, dalil almawtaa.\nAleawalim bayn alealamin maftuhatan,\nwa'amrak 'an tuqadim(ah) nafsak(h) fi eini."       
+        "message": "I have solved it! The verse reads\nYa 'Anubis, yda 'uwzuris. Astamae 'iilaa suti.\nYa 'Anubis, 'ant min yazan alqulbu. Astamae 'iilaa suti.\nYa 'Anubis, dalil almawtaa.\nAleawalim bayn alealamin maftuhatan,\nwa'amrak 'an tuqadim(ah) nafsak(h) fi eini."
     },
     {
         "roomNo": "100",
@@ -672,7 +662,7 @@
     {
         "roomNo": "100",
         "sender": "MJ",
-        "message": "WHAT? You weren't a pharaoh, just a member of the royal family! You never even presided over Egypt!"       
+        "message": "WHAT? You weren't a pharaoh, just a member of the royal family! You never even presided over Egypt!"
     },
     {
         "roomNo": "100",
@@ -682,7 +672,7 @@
     {
         "roomNo": "100",
         "sender": "MJ",
-        "message": "(in disbelief) but but the markings said it was Thutmose-"       
+        "message": "(in disbelief) but but the markings said it was Thutmose-"
     },
     {
         "roomNo": "100",
@@ -692,7 +682,7 @@
     {
         "roomNo": "100",
         "sender": "MJ",
-        "message": "Oh God, Ali was right. Oh no, Oh no no no. What have I done?"       
+        "message": "Oh God, Ali was right. Oh no, Oh no no no. What have I done?"
     },
     {
         "roomNo": "100",
@@ -702,7 +692,7 @@
     {
         "roomNo": "100",
         "sender": "MJ",
-        "message": "I can make this right. I can still ensure justice prevails. I will not allow Akhenaten to enjoy the pleasures of the field of reeds. I owe it to Ali."       
+        "message": "I can make this right. I can still ensure justice prevails. I will not allow Akhenaten to enjoy the pleasures of the field of reeds. I owe it to Ali."
     },
     {
         "roomNo": "100",
@@ -712,7 +702,7 @@
     {
         "roomNo": "100",
         "sender": "MJ",
-        "message": " NO. Don’t you dare! I know what to do. I know how I can stop you.(MJ gets a sharp rock out and stabs himself and dies. His essence enters into osiris’ path)"       
+        "message": " NO. Don’t you dare! I know what to do. I know how I can stop you.(MJ gets a sharp rock out and stabs himself and dies. His essence enters into osiris’ path)"
     },
     {
         "roomNo": "100",
@@ -732,36 +722,36 @@
     {
         "roomNo": "100",
         "sender": "MJ",
-        "message": "(in the field of reeds) Oh wow where am I. (sees Ali) Ali? Is that you? "       
+        "message": "(in the field of reeds) Oh wow where am I. (sees Ali) Ali? Is that you? "
     },
     {
         "roomNo": "100",
         "sender": "Ali",
-        "message": "Hello Jones. I’ve been waiting for you. Glad to see you understood the reality of the situation. Come now, eternal peace awaits us."       
+        "message": "Hello Jones. I’ve been waiting for you. Glad to see you understood the reality of the situation. Come now, eternal peace awaits us."
     },
     {
         "roomNo": "100",
         "sender": "MJ",
-        "message": "(in the field of reeds) Oh wow dying wasn’t part of my agenda today -(sees Ali) Ali? Is that you?"       
+        "message": "(in the field of reeds) Oh wow dying wasn’t part of my agenda today -(sees Ali) Ali? Is that you?"
     },
     {
         "roomNo": "100",
         "sender": "Ali",
-        "message": "Miss me? Can’t stay away from me for even a few hours? Actually it’s such a relief that you showed up instead of the creepy dead mummy"       
+        "message": "Miss me? Can’t stay away from me for even a few hours? Actually it’s such a relief that you showed up instead of the creepy dead mummy"
     },
     {
         "roomNo": "100",
         "sender": "MJ",
-        "message": "But, we are dead.?"       
+        "message": "But, we are dead.?"
     },
     {
         "roomNo": "100",
         "sender": "Ali",
-        "message": "Oh yeah, that sucks but you’ll get used to it."       
+        "message": "Oh yeah, that sucks but you’ll get used to it."
     },
     {
         "roomNo": "100",
         "sender": "Ali",
-        "message": "Come now, eternal peace awaits us. Oh, and they have chocolate here."       
+        "message": "Come now, eternal peace awaits us. Oh, and they have chocolate here."
     }
 ]
