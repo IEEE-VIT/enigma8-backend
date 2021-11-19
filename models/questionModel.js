@@ -42,7 +42,7 @@ const questionSchema = new mongoose.Schema({
     required: true,
   },
   urlHint: {
-    type: mongoose.SchemaTypes.Url,
+    type: String,
     required: true,
   },
   javelin: {
