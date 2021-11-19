@@ -379,35 +379,55 @@ exports.utilisePowerup = async (req, res) => {
     }
     if (!questionFound) throw new Error("entire room is solved");
 
+    let text;
     let data;
+    let imgUrl;
     let scoring_powerups = false;
 
     switch (powerUp.beAlias) {
       case "hangman":
+        text = "The Hangman is";
         data = currentQuestion.hangman;
+        imgUrl = null;
         break;
       case "double_hint":
+        text = "The Double Hint is";
         data = currentQuestion.doubleHint;
+        imgUrl = null;
         break;
       case "url_hint":
+        text = "The URL is";
         data = currentQuestion.urlHint;
+        imgUrl = null;
         break;
       case "javelin":
-        data = currentQuestion.javelin;
+        text = "The Javelin is";
+        data = null;
+        imgUrl = currentQuestion.javelin;
         break;
       case "reveal_cipher":
+        text = "The Cipher used is";
         data = currentQuestion.revealCipher;
+        imgUrl = null;
         break;
       case "new_close_answer":
-        data = currentQuestion.newHieroglyphsCloseAnswer;
+        text = "The Hieroglyphs Close answer for this is";
+        data = null;
+        imgUrl = currentQuestion.newHieroglyphsCloseAnswer;
         break;
       case "free_hint":
-        data = "powerup activated";
+        text =
+          "Free Hint activated! Use hint for this question without losing any points";
+        data = null;
         scoring_powerups = true;
+        imgUrl = null;
         break;
       case "full_score":
-        data = "powerup activated";
+        text =
+          "Full Score activated! Earn total points for this question without relative scoring. Time is on your side.";
+        data = null;
         scoring_powerups = true;
+        imgUrl = null;
         break;
     }
     const updatedJourney = await Journey.findOneAndUpdate(
@@ -416,7 +436,7 @@ exports.utilisePowerup = async (req, res) => {
     );
     if (!updatedJourney) throw new Error("error in using powerup");
 
-    response(res, { data });
+    response(res, { powerUp, text, data, imgUrl });
   } catch (err) {
     logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
