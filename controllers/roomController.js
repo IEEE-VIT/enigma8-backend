@@ -22,22 +22,22 @@ const checkIfRoomUnlocked = async (req, res) => {
     if (!currentJourney) {
       status = "locked";
       response(res, { status, starsNeeded });
-    }
-    else{
-      if (currentJourney.roomUnlocked == false && starsNeeded <= 0) {
-        status = "canUnlock";
-      } else if (        JSON.stringify(currentJourney.questionsStatus) ==
+    } else {
+      if (
+        JSON.stringify(currentJourney.questionsStatus) ==
         JSON.stringify(["solved", "solved", "solved"])
       ) {
         status = "complete";
+      }
+      //journey will only exist if room is unlocked
+      if (!currentJourney.powerupId) {
+        status = "canUnlock";
       } else {
         status = "unlocked";
       }
-  
-      response(res, { status, starsNeeded });
 
+      response(res, { status, starsNeeded });
     }
-    
   } catch (err) {
     logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
