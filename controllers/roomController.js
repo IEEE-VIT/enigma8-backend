@@ -19,6 +19,18 @@ const checkIfRoomUnlocked = async (req, res) => {
     let starsNeeded = room.starQuota - req.user.stars;
 
     const currentJourney = await Journey.findOne({ roomId, userId });
+
+    //if its the first room and the journey exist, means that the powerup is selected
+    if (room.roomNo === "1") {
+      if (!currentJourney) status = "canUnlock";
+      else if (currentJourney) {
+        if (currentJourney.questionsStatus[2] === "solved") status = "complete";
+        else status = "unlocked";
+      }
+      response(res, { status, starsNeeded });
+      return;
+    }
+
     if (!currentJourney) {
       status = "locked";
       response(res, { status, starsNeeded });
