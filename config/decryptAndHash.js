@@ -1,6 +1,14 @@
 const CryptoJS = require("crypto-js");
+require("dotenv").config();
 
-const secretKey = "glfyle";
+const secretKey = process.env.ENCRPYTION_SECRET_KEY;
+
+const decryptWithAes = (encryptedText) => {
+  let originalText = CryptoJS.AES.decrypt(encryptedText, secretKey).toString(
+    CryptoJS.enc.Utf8
+  );
+  return originalText;
+};
 
 exports.hashAnswer = (inputText) => {
   let hashedValue = CryptoJS.SHA256(inputText).toString();
@@ -30,27 +38,3 @@ exports.getDecryptedQuestion = async (ques) => {
   // console.log(decryptedQuestion);
   return decryptedQuestion;
 };
-
-const decryptWithAes = (encryptedText) => {
-  let originalText = CryptoJS.AES.decrypt(encryptedText, secretKey).toString(
-    CryptoJS.enc.Utf8
-  );
-  return originalText;
-};
-
-exports.checkIfHashExistsInArray = (userAnswer, hashedArray) => {
-  const hashedAnswer = CryptoJS.SHA256(userAnswer).toString();
-  if (hashedArray.includes(hashedAnswer)) {
-    console.log(true);
-    return true;
-  }
-  console.log(false);
-  return false;
-};
-
-// addQuestion();
-// getDecryptedQuestion();
-
-// checkIfHashExistsInArray("a1", hashedAns);
-// checkIfHashExistsInArray("a2", hashedAns);
-// checkIfHashExistsInArray("A1", hashedAns);

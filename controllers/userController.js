@@ -165,7 +165,7 @@ exports.startJourney = async (req, res) => {
             roomUnlocked: true,
             powerupId: powerupId,
             questionsStatus: ["unlocked", "locked", "locked"],
-            powerupSet: true,
+            powerupSet: "yes",
           },
         ],
         { session }
@@ -180,8 +180,7 @@ exports.startJourney = async (req, res) => {
 
       const updatedJourney = await Journey.findOneAndUpdate(
         { userId, roomId },
-        { powerupId: powerupId,
-        powerupSet: true },
+        { powerupId: powerupId, powerupSet: "yes" },
         { session }
       );
       if (!updatedJourney) throw new Error("error updating journey");
@@ -197,7 +196,6 @@ exports.startJourney = async (req, res) => {
     session.endSession();
     response(res, { powerUp: checkIfPowerUpExists, room });
   } catch (err) {
-    console.log(err);
     logger.error(req.user.email + "-> " + err);
     await session.abortTransaction();
     session.endSession();

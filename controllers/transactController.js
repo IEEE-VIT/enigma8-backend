@@ -162,11 +162,8 @@ exports.submitAnswer = async (req, res) => {
         if (!encryptedCurrentQuestion) throw new Error("couldn't fetch the question");
         const hashOfCorrectAnswers = new Set(encryptedCurrentQuestion.answers);
         const hashOfCloseAnswers = new Set(encryptedCurrentQuestion.closeAnswers);
-        console.log(hashOfCorrectAnswers);
-        console.log(hashOfCloseAnswers);
 
         const hashedInputAnswer=hashAnswer(userAnswerLower);
-        console.log(hashedInputAnswer);
 
         if (hashOfCorrectAnswers.has(hashedInputAnswer)) {
           //userAnswer is correct
@@ -326,7 +323,7 @@ const unlockNextRoom = async (userId, nextRoomId, session) => {
       roomId: nextRoomId,
       roomUnlocked: true,
       questionsStatus: ["unlocked", "locked", "locked"],
-      powerupSet: true,
+      powerupSet: "no",
     }).save({ session });
     logger.info(
       `userId:${userId} -> Unlocking new room on correct answer. roomId:${nextRoomId}`
@@ -361,9 +358,6 @@ const incrementQuestionModelSolvedCount = async (questionId, session) => {
   );
 };
 
-// ENCRYPT AND HASHING CHECKD TILL HERE 
-// WAITING FOR VARUN TO GET HIS PART MERGED
-
 exports.utilisePowerup = async (req, res) => {
   try {
     const { roomId } = await getQuestionSchema.validateAsync(req.query);
@@ -382,49 +376,68 @@ exports.utilisePowerup = async (req, res) => {
     const powerUp = await Powerup.findOne({ _id: powerupId });
     if (!powerUp) throw new Error("please select a valid powerup");
 
-    let currentQuestion;
+    let currentEncryptedQuestion;
 
     let questionFound = false;
     for (let i = 0; i < 3; i++) {
       if (currentJourney.questionsStatus[i] === "unlocked" && !questionFound) {
         questionFound = true;
         const questionId = currentRoom.questionId[i];
-        currentQuestion = await Question.findOne({ _id: questionId });
+        currentEncryptedQuestion = await Question.findOne({ _id: questionId });
+        currentDecryptedQuestion= await getDecryptedQuestion(currentEncryptedQuestion);
       }
     }
     if (!questionFound) throw new Error("entire room is solved");
 
+    let text;
     let data;
+    let imgUrl;
     let scoring_powerups = false;
-
-    //WIP TEST FROM HERE TOMO
 
     switch (powerUp.beAlias) {
       case "hangman":
-        data = currentQuestion.hangman;
+        text = "The Hangman is";
+        data = currentDecryptedQuestion.hangman;
+        imgUrl = null;
         break;
       case "double_hint":
-        data = currentQuestion.doubleHint;
+        text = "The Double Hint is";
+        data = currentDecryptedQuestion.doubleHint;
+        imgUrl = null;
         break;
       case "url_hint":
-        data = currentQuestion.urlHint;
+        text = "The URL is";
+        data = currentDecryptedQuestion.urlHint;
+        imgUrl = null;
         break;
       case "javelin":
-        data = currentQuestion.javelin;
+        text = "The Javelin is";
+        data = null;
+        imgUrl = currentDecryptedQuestion.javelin;
         break;
       case "reveal_cipher":
-        data = currentQuestion.revealCipher;
+        text = "The Cipher used is";
+        data = currentDecryptedQuestion.revealCipher;
+        imgUrl = null;
         break;
       case "new_close_answer":
-        data = currentQuestion.newHieroglyphsCloseAnswer;
+        text = "The Hieroglyphs Close answer for this is";
+        data = null;
+        imgUrl = currentDecryptedQuestion.newHieroglyphsCloseAnswer;
         break;
       case "free_hint":
-        data = "powerup activated";
+        text =
+          "Free Hint activated! Use hint for this question without losing any points";
+        data = null;
         scoring_powerups = true;
+        imgUrl = null;
         break;
       case "full_score":
-        data = "powerup activated";
+        text =
+          "Full Score activated! Earn total points for this question without relative scoring. Time is on your side.";
+        data = null;
         scoring_powerups = true;
+        imgUrl = null;
         break;
     }
     const updatedJourney = await Journey.findOneAndUpdate(
@@ -433,7 +446,7 @@ exports.utilisePowerup = async (req, res) => {
     );
     if (!updatedJourney) throw new Error("error in using powerup");
 
-    response(res, { data });
+    response(res, { powerUp, text, data, imgUrl });
   } catch (err) {
     logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
