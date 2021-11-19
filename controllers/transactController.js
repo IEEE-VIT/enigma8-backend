@@ -11,6 +11,8 @@ require("dotenv").config();
 const logger = require("../config/logger");
 
 const { response } = require("../config/responseSchema");
+const { getDecryptedQuestion, hashAnswer } = require("../config/decryptAndHash"); 
+
 const mongoose = require("mongoose");
 
 exports.getQuestion = async (req, res) => {
@@ -36,14 +38,17 @@ exports.getQuestion = async (req, res) => {
         const currentRoom = await Room.findOne({ _id: roomId });
         const questionId = currentRoom.questionId[i];
         let hint = null;
-        const deets = await Question.findOne({ _id: questionId });
+        const encryptedQuestion = await Question.findOne({ _id: questionId });
+        const decryptedQues=await getDecryptedQuestion(encryptedQuestion);
+        console.log(decryptedQues);
+
         const question = {
-          _id: deets.id,
-          text: deets.text,
-          media: deets.media,
-          mediaType: deets.mediaType,
-          questionNo: deets.questionNo,
-          currentRoom: deets.currentRoom,
+          _id: decryptedQues.id,
+          text: decryptedQues.text,
+          media: decryptedQues.media,
+          mediaType: decryptedQues.mediaType,
+          questionNo: decryptedQues.questionNo,
+          currentRoom: decryptedQues.currentRoom,
         };
 
         const currentUserUsedHints = req.user.usedHints.map((id) =>
@@ -54,7 +59,7 @@ exports.getQuestion = async (req, res) => {
         if (!alreadyUsedHints.has(questionId.toHexString())) {
           hint = null;
         } else if (alreadyUsedHints.has(questionId.toHexString())) {
-          hint = deets.hint;
+          hint = decryptedQues.hint;
         }
 
         response(res, { question, powerupDetails, powerupUsed, hint });
@@ -65,11 +70,12 @@ exports.getQuestion = async (req, res) => {
       throw new Error("you have solved the entire room");
     }
   } catch (err) {
+    console.log(err);
     logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
 };
-
+//get question done
 exports.useHint = async (req, res) => {
   try {
     if (!req.query.roomId) {
@@ -87,8 +93,9 @@ exports.useHint = async (req, res) => {
 
         const currentRoom = await Room.findOne({ _id: roomId });
         const questionId = currentRoom.questionId[i];
-        const question = await Question.findOne({ _id: questionId });
-        const hint = question.hint;
+        const encryptedQuestion = await Question.findOne({ _id: questionId });
+        const decryptedQues=await getDecryptedQuestion(encryptedQuestion);
+        const hint = decryptedQues.hint;
         const currentUserUsedHints = req.user.usedHints.map((id) =>
           id.toHexString()
         );
@@ -112,11 +119,12 @@ exports.useHint = async (req, res) => {
     response(res, {}, 400, err.message, false);
   }
 };
+// get hint done
 
 exports.submitAnswer = async (req, res) => {
   const session = await mongoose.startSession();
   try {
-    const { id: userId, usedHints, stars, usedPowerups } = req.user;
+    const { id: userId, usedHints, stars } = req.user;
 
     if (!req.body.userAnswer) {
       throw new Error("Please enter an Answer");
@@ -150,13 +158,14 @@ exports.submitAnswer = async (req, res) => {
         const questionId = currentRoom.questionId[i];
         responseJson["questionId"] = questionId.toHexString();
 
-        const currentQuestion = await Question.findOne({ _id: questionId });
-        if (!currentQuestion) throw new Error("couldn't fetch the question");
-        const nextRoomId = await getNextRoomId(stars);
-        const correctAnswers = new Set(currentQuestion.answers);
-        const closeAnswers = new Set(currentQuestion.closeAnswers);
+        const encryptedCurrentQuestion = await Question.findOne({ _id: questionId });
+        if (!encryptedCurrentQuestion) throw new Error("couldn't fetch the question");
+        const hashOfCorrectAnswers = new Set(encryptedCurrentQuestion.answers);
+        const hashOfCloseAnswers = new Set(encryptedCurrentQuestion.closeAnswers);
 
-        if (correctAnswers.has(userAnswerLower)) {
+        const hashedInputAnswer=hashAnswer(userAnswerLower);
+
+        if (hashOfCorrectAnswers.has(hashedInputAnswer)) {
           //userAnswer is correct
           try {
             session.startTransaction();
@@ -194,7 +203,7 @@ exports.submitAnswer = async (req, res) => {
           }
         }
         //check if its a close answer
-        else if (closeAnswers.has(userAnswerLower)) {
+        else if (hashOfCloseAnswers.has(hashedInputAnswer)) {
           responseJson.closeAnswer = true;
         }
         //incorrect answer
@@ -240,7 +249,7 @@ const getEffectiveScore = async (
   //Full Score powerup
   //Effective score is the full score if this powerup is used
   if (beAlias === "full_score" && powerUpActiveFlag) return constants.maxScore;
-
+  // noOfSolved is never encrypted hence no need to decrypt only so it's fine!
   const { solvedCount: noOfSolves } = await Question.findOne({
     _id: questionId,
   });
@@ -367,14 +376,15 @@ exports.utilisePowerup = async (req, res) => {
     const powerUp = await Powerup.findOne({ _id: powerupId });
     if (!powerUp) throw new Error("please select a valid powerup");
 
-    let currentQuestion;
+    let currentEncryptedQuestion;
 
     let questionFound = false;
     for (let i = 0; i < 3; i++) {
       if (currentJourney.questionsStatus[i] === "unlocked" && !questionFound) {
         questionFound = true;
         const questionId = currentRoom.questionId[i];
-        currentQuestion = await Question.findOne({ _id: questionId });
+        currentEncryptedQuestion = await Question.findOne({ _id: questionId });
+        currentDecryptedQuestion= await getDecryptedQuestion(currentEncryptedQuestion);
       }
     }
     if (!questionFound) throw new Error("entire room is solved");
@@ -387,33 +397,33 @@ exports.utilisePowerup = async (req, res) => {
     switch (powerUp.beAlias) {
       case "hangman":
         text = "The Hangman is";
-        data = currentQuestion.hangman;
+        data = currentDecryptedQuestion.hangman;
         imgUrl = null;
         break;
       case "double_hint":
         text = "The Double Hint is";
-        data = currentQuestion.doubleHint;
+        data = currentDecryptedQuestion.doubleHint;
         imgUrl = null;
         break;
       case "url_hint":
         text = "The URL is";
-        data = currentQuestion.urlHint;
+        data = currentDecryptedQuestion.urlHint;
         imgUrl = null;
         break;
       case "javelin":
         text = "The Javelin is";
         data = null;
-        imgUrl = currentQuestion.javelin;
+        imgUrl = currentDecryptedQuestion.javelin;
         break;
       case "reveal_cipher":
         text = "The Cipher used is";
-        data = currentQuestion.revealCipher;
+        data = currentDecryptedQuestion.revealCipher;
         imgUrl = null;
         break;
       case "new_close_answer":
         text = "The Hieroglyphs Close answer for this is";
         data = null;
-        imgUrl = currentQuestion.newHieroglyphsCloseAnswer;
+        imgUrl = currentDecryptedQuestion.newHieroglyphsCloseAnswer;
         break;
       case "free_hint":
         text =

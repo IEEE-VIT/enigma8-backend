@@ -179,9 +179,8 @@ exports.startJourney = async (req, res) => {
         throw new Error("you have already selected powerup");
 
       const updatedJourney = await Journey.findOneAndUpdate(
-        { userId: userId, roomId },
-        { powerupId: powerupId,powerupSet: "yes" }
-        ,
+        { userId, roomId },
+        { powerupId: powerupId, powerupSet: "yes" },
         { session }
       );
       if (!updatedJourney) throw new Error("error updating journey");

@@ -12,13 +12,11 @@ const questionSchema = new mongoose.Schema({
   },
 
   media: {
-    type: mongoose.SchemaTypes.Url,
+    type: String,
   },
 
   mediaType: {
     type: String,
-    enum: ["img", "vid"],
-    default: ["img"],
   },
 
   answers: [{ type: String, required: true }],
