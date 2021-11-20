@@ -40,7 +40,6 @@ exports.getQuestion = async (req, res) => {
         let hint = null;
         const encryptedQuestion = await Question.findOne({ _id: questionId });
         const decryptedQues=await getDecryptedQuestion(encryptedQuestion);
-        console.log(decryptedQues);
 
         const question = {
           _id: decryptedQues.id,
@@ -70,7 +69,6 @@ exports.getQuestion = async (req, res) => {
       throw new Error("you have solved the entire room");
     }
   } catch (err) {
-    console.log(err);
     logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
   }
@@ -442,7 +440,7 @@ exports.utilisePowerup = async (req, res) => {
     }
     const updatedJourney = await Journey.findOneAndUpdate(
       { userId: userId, roomId },
-      { powerupUsed: scoring_powerups ? "active" : "yes" }
+      { powerupUsed: "active" }
     );
     if (!updatedJourney) throw new Error("error in using powerup");
 
