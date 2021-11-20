@@ -32,7 +32,6 @@ exports.getLeaderboard = async (req, res) => {
     if (query)
       queryData = rankedData.filter(({ username }) => username.includes(query));
 
-    console.log(queryData);
     const leaderboard = queryData
       ? queryData.slice(pageStartRank, pageStartRank + perPage)
       : rankedData.slice(pageStartRank, pageStartRank + perPage);

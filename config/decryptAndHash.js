@@ -35,6 +35,5 @@ exports.getDecryptedQuestion = async (ques) => {
   );
   hashedAns = ques.answers;
   hashedCls = ques.closeAnswers;
-  // console.log(decryptedQuestion);
   return decryptedQuestion;
 };
