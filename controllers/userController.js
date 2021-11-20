@@ -104,7 +104,22 @@ exports.getUser = async (req, res) => {
       rank: rank,
       currentRoomId: currentRoomId,
     };
-    response(res, user);
+
+    let nextRoomUnlocksIn = null;
+    if (currentRoomId != null) {
+      const currentRoom = await Room.findOne({ _id: currentRoomId });
+      let currentRoomNo = parseInt(currentRoom.roomNo);
+      const nextRoom = await Room.findOne({ roomNo: currentRoomNo + 1 });
+
+      if (!nextRoom) {
+        nextRoomUnlocksIn = -1;
+      } else {
+        const nextRoomStarQuota = nextRoom.starQuota;
+        nextRoomUnlocksIn = nextRoomStarQuota - req.user.stars;
+      }
+    }
+
+    response(res, { user, nextRoomUnlocksIn });
   } catch (err) {
     response(res, {}, 400, err.message, false);
     logger.error(req.user.email + "-> " + err);
