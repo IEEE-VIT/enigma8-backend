@@ -59,6 +59,7 @@ const getRooms = async (req, res) => {
     const allJourney = await Journey.find({ userId });
     const rooms = await Room.find();
     let userRoomIds = [];
+    let nextRoomsUnlockedIn = Number.MAX_SAFE_INTEGER;
 
     allJourney.forEach((item) => {
       userRoomIds.push(item.roomId);
@@ -68,6 +69,9 @@ const getRooms = async (req, res) => {
     let data = [];
     rooms.forEach((item) => {
       let starsLeft = item.starQuota - req.user.stars;
+      if (starsLeft > 0 && starsLeft < nextRoomsUnlockedIn) {
+        nextRoomsUnlockedIn = starsLeft;
+      }
       if (userRoomIds.find((roomId) => roomId == item.id)) {
         let jou = allJourney.find((a) => a.roomId == item.id);
         info = { room: item, journey: jou, starsLeft };
@@ -89,7 +93,7 @@ const getRooms = async (req, res) => {
       }
     });
 
-    response(res, { data });
+    response(res, { data, nextRoomsUnlockedIn, stars: req.user.stars });
   } catch (err) {
     logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
