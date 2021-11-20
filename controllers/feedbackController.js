@@ -11,11 +11,11 @@ exports.getFeedback = async (req, res) => {
 
     const {
       isVITStudent,
+      regNo,
+      vitEmail,
       gameRating,
       userExperience,
       featureIdeas,
-      difficulties,
-      other,
     } = await getFeedbackSchema.validateAsync(req.body);
 
     const doesFeedbackExist = await Feedback.findOne({ email });
@@ -26,11 +26,11 @@ exports.getFeedback = async (req, res) => {
     const data = new Feedback({
       email,
       isVITStudent,
+      regNo,
+      vitEmail,
       gameRating,
       userExperience,
       featureIdeas,
-      difficulties,
-      other,
     });
 
     data.save();
