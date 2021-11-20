@@ -40,3 +40,29 @@ exports.getFeedback = async (req, res) => {
     response(res, {}, 400, err.message, false);
   }
 };
+
+
+exports.feedbackFilled = async (req, res) => {
+   try {
+    const id = req.user.id;
+    const userData = await User.findOne({ _id: id });
+    const email = userData.email;
+
+    let data;
+    const doesFeedbackExist = await Feedback.findOne({ email });
+    if (doesFeedbackExist) {
+      data = {
+        feedbackFilled: true
+      }
+    }
+    else {
+      data = {
+        feedbackFilled: false
+      }
+    }
+    response(res, { data });
+  } catch (err) {
+    logger.error(req.user.email + "-> " + err);
+    response(res, {}, 400, err.message, false);
+  }
+};
