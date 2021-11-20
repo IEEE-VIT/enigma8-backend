@@ -12,7 +12,7 @@ exports.story = async (req, res) => {
     }
     const { roomId } = await getStorySchema.validateAsync(req.query);
 
-    const roomData = await Room.findOne({ _id: roomId });
+    const roomData = await Room.findOne({ id: roomId });
     const currentRoomData = await Room.findOne({ _id: currentRoomId });
 
     if (roomData.roomNo > currentRoomData.roomNo)
@@ -33,13 +33,12 @@ exports.story = async (req, res) => {
 exports.fullStory = async (req, res) => {
   try {
     const currentRoomId = req.user.currentRoomId;
-    if(!currentRoomId){
-      throw new Error("Please start playing Enigma first!")
+    if (!currentRoomId) {
+      throw new Error("Please start playing Enigma first!");
     }
 
     const currentRoomData = await Room.findOne({ _id: currentRoomId });
     const currRoomNo = parseInt(currentRoomData.roomNo, 10);
-
 
     let data = [];
     Story.forEach((item) => {
