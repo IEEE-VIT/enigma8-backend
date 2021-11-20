@@ -6,6 +6,10 @@ exports.getLeaderboard = async (req, res) => {
   try {
     const uname = req.user.username;
 
+    if (!req.user.username) {
+      throw new Error("Please set a username first!");
+    }
+
     const { page, query, perPage } = await getLeaderboardSchema.validateAsync(
       req.query
     );
