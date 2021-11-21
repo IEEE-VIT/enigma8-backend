@@ -6,6 +6,10 @@ exports.getLeaderboard = async (req, res) => {
   try {
     const uname = req.user.username;
 
+    if (!req.user.username) {
+      throw new Error("Please set a username first!");
+    }
+
     const { page, query, perPage } = await getLeaderboardSchema.validateAsync(
       req.query
     );
@@ -28,7 +32,6 @@ exports.getLeaderboard = async (req, res) => {
     if (query)
       queryData = rankedData.filter(({ username }) => username.includes(query));
 
-    console.log(queryData);
     const leaderboard = queryData
       ? queryData.slice(pageStartRank, pageStartRank + perPage)
       : rankedData.slice(pageStartRank, pageStartRank + perPage);

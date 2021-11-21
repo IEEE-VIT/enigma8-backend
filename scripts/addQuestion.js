@@ -1,58 +1,119 @@
-const prompt = require("prompt");
 require("dotenv").config();
 const connectToMongo = require("../models/db");
 const Question = require("../models/questionModel");
+const CryptoJS = require("crypto-js");
 
 //connect to mongoDB
 connectToMongo().on("connected", () => {});
 
 //use || operator to enter multiple values
 
-prompt.start();
+const secretKey = process.env.ENCRPYTION_SECRET_KEY;
 
-prompt.get(
-  [
-    "questionNo",
-    "text",
-    "media",
-    "mediaType",
-    "answers",
-    "closeAnswers",
-    "hint",
-    "hangman",
-    "doubleHint",
-    "urlHint",
-    "javelin",
-    "revealCipher",
-    "newHieroglyphsCloseAnswer",
-  ],
-  async (err, result) => {
-    if (err) {
-      console.log("Error");
-    }
+const encryptWithAes = (text) => {
+  let ciphertext = CryptoJS.AES.encrypt(text, secretKey).toString();
+  return ciphertext;
+};
 
-    var questionn = new Question({
-      questionNo: result.questionNo,
+const hashAnswer = (arrayOfPlainText) => {
+  let arrayOfHashes = [];
+  arrayOfPlainText.forEach((element) => {
+    let hashedValue = CryptoJS.SHA256(element).toString();
+    arrayOfHashes.push(hashedValue);
+  });
+  return arrayOfHashes;
+};
 
-      text: result.text,
-      media: result.media,
-      mediaType: result.mediaType,
-      answers: result.answers.split("||"),
-      closeAnswers: result.closeAnswers.split("||"),
-      hint: result.hint,
-      hangman: result.hangman,
-      doubleHint: result.doubleHint,
-      urlHint: result.urlHint,
-      javelin: result.javelin,
-      revealCipher: result.revealCipher,
-      newHieroglyphsCloseAnswer: result.newHieroglyphsCloseAnswer,
+const decryptWithAes = (encryptedText) => {
+  let originalText = CryptoJS.AES.decrypt(encryptedText, secretKey).toString(
+    CryptoJS.enc.Utf8
+  );
+  return originalText;
+};
+
+const addQuestion = async () => {
+  const qNo = "102";
+  const text = "lmao text";
+  const media = "https://image.com/lmao.png";
+  const mediaType = "image/png";
+  const hint = "ahaha";
+  const hangman = "aajsccs";
+  const doubleHint = "cvsdfvs";
+  const urlHint = "sfvgdfgb";
+  const javelin = "bfdgrbdfgb";
+  const revealCipher = "fsgvsg";
+  const newHieroglyphsCloseAnswer = "gsrgbdgd";
+  const answers = ["a1", "A1", "ans1"];
+  const closeAnswers = ["ca1", "CA1", "closeans1"];
+
+  await Question.create({
+    questionNo: qNo,
+    text: encryptWithAes(text),
+    media: encryptWithAes(media),
+    mediaType: encryptWithAes(mediaType),
+    answers: hashAnswer(answers),
+    closeAnswers: hashAnswer(closeAnswers),
+    solvedCount: 0,
+    hint: encryptWithAes(hint),
+    hangman: encryptWithAes(hangman),
+    doubleHint: encryptWithAes(doubleHint),
+    urlHint: encryptWithAes(urlHint),
+    javelin: encryptWithAes(javelin),
+    revealCipher: encryptWithAes(revealCipher),
+    newHieroglyphsCloseAnswer: encryptWithAes(newHieroglyphsCloseAnswer),
+  })
+    .then((ques) => {
+      console.log(ques);
+    })
+    .catch((err) => {
+      console.log(err);
     });
+};
 
-    try {
-      await questionn.save();
-      console.log("question added");
-    } catch (e) {
-      console.log("error updating question");
-    }
+// let hashedAns = [];
+// let hashedCls = [];
+
+const getDecryptedQuestion = async () => {
+  let decryptedQuestion = {};
+  await Question.findOne({ questionNo: 102 })
+    .then((ques) => {
+      decryptedQuestion.questionNo = ques.questionNo;
+      decryptedQuestion.roomId = ques.roomId;
+
+      decryptedQuestion.text = decryptWithAes(ques.text);
+      decryptedQuestion.media = decryptWithAes(ques.media);
+      decryptedQuestion.mediaType = decryptWithAes(ques.mediaType);
+      decryptedQuestion.hint = decryptWithAes(ques.hint);
+      decryptedQuestion.hangman = decryptWithAes(ques.hangman);
+      decryptedQuestion.doubleHint = decryptWithAes(ques.doubleHint);
+      decryptedQuestion.urlHint = decryptWithAes(ques.urlHint);
+      decryptedQuestion.javelin = decryptWithAes(ques.javelin);
+      decryptedQuestion.revealCipher = decryptWithAes(ques.revealCipher);
+      decryptedQuestion.newHieroglyphsCloseAnswer = decryptWithAes(
+        ques.newHieroglyphsCloseAnswer
+      );
+      hashedAns = ques.answers;
+      hashedCls = ques.closeAnswers;
+      console.log(decryptedQuestion);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+const checkIfHashExistsInArray = (userAnswer, hashedArray) => {
+  const hashedAnswer = CryptoJS.SHA256(userAnswer).toString();
+  if (hashedArray.includes(hashedAnswer)) {
+    console.log(true);
+    return true;
   }
-);
+  console.log(false);
+  return false;
+};
+
+// addQuestion();
+getDecryptedQuestion();
+
+// checkIfHashExistsInArray("a1", hashedAns);
+// checkIfHashExistsInArray("a2", hashedAns);
+// checkIfHashExistsInArray("A1", hashedAns);

@@ -12,13 +12,11 @@ const questionSchema = new mongoose.Schema({
   },
 
   media: {
-    type: mongoose.SchemaTypes.Url,
+    type: String,
   },
 
   mediaType: {
     type: String,
-    enum: ["img", "vid"],
-    default: ["img"],
   },
 
   answers: [{ type: String, required: true }],
@@ -42,7 +40,7 @@ const questionSchema = new mongoose.Schema({
     required: true,
   },
   urlHint: {
-    type: mongoose.SchemaTypes.Url,
+    type: String,
     required: true,
   },
   javelin: {

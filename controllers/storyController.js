@@ -7,20 +7,30 @@ const logger = require("../config/logger");
 exports.story = async (req, res) => {
   try {
     const currentRoomId = req.user.currentRoomId;
+    if (!currentRoomId) {
+      throw new Error("Please start playing Enigma first!");
+    }
+
+    const { roomId } = await getStorySchema.validateAsync(req.query);
     if (!req.query.roomId) {
       throw new Error("Please select a room");
     }
-    const { roomId } = await getStorySchema.validateAsync(req.query);
 
     const roomData = await Room.findOne({ _id: roomId });
     const currentRoomData = await Room.findOne({ _id: currentRoomId });
 
-    if (roomData.roomNo > currentRoomData.roomNo)
+    if (parseInt(roomData.roomNo, 10) > parseInt(currentRoomData.roomNo, 10)) {
       throw new Error("Requested story is not from current room");
+    }
 
     let data = [];
     Story.forEach((item) => {
-      if (item.roomNo === roomData.roomNo) {
+      if (parseInt(roomData.roomNo, 10) === 1) {
+        if (parseInt(item.roomNo, 10) <= parseInt(roomData.roomNo, 10)) {
+          data.push(item);
+        }
+      }
+      else if (parseInt(item.roomNo, 10) === parseInt(roomData.roomNo, 10)) {
         data.push(item);
       }
     });
@@ -33,21 +43,17 @@ exports.story = async (req, res) => {
 exports.fullStory = async (req, res) => {
   try {
     const currentRoomId = req.user.currentRoomId;
-    if (!req.query.roomId) {
-      throw new Error("Please select a room");
+    if (!currentRoomId) {
+      throw new Error("Please start playing Enigma first!");
     }
-    const { roomId } = await getStorySchema.validateAsync(req.query);
 
-    const roomData = await Room.findOne({ _id: roomId });
     const currentRoomData = await Room.findOne({ _id: currentRoomId });
-
-    if (roomData.roomNo > currentRoomData.roomNo) {
-      throw new Error("requested story is not from current room");
-    }
+    const currRoomNo = parseInt(currentRoomData.roomNo, 10);
 
     let data = [];
     Story.forEach((item) => {
-      if (item.roomNo <= roomData.roomNo) {
+      const objRoomNo = parseInt(item.roomNo, 10);
+      if (objRoomNo <= currRoomNo) {
         data.push(item);
       }
     });

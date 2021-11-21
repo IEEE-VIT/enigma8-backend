@@ -165,7 +165,7 @@ exports.startJourney = async (req, res) => {
             roomUnlocked: true,
             powerupId: powerupId,
             questionsStatus: ["unlocked", "locked", "locked"],
-            powerupSet: true,
+            powerupSet: "yes",
           },
         ],
         { session }
@@ -179,9 +179,8 @@ exports.startJourney = async (req, res) => {
         throw new Error("you have already selected powerup");
 
       const updatedJourney = await Journey.findOneAndUpdate(
-        { userId: userId, roomId },
-        { powerupId: powerupId },
-        { powerupSet: true },
+        { userId, roomId },
+        { powerupId: powerupId, powerupSet: "yes" },
         { session }
       );
       if (!updatedJourney) throw new Error("error updating journey");
@@ -208,11 +207,15 @@ exports.startJourney = async (req, res) => {
 exports.addFCM = async (req, res) => {
   try {
     const { id, username } = req.user;
-    const { token } = req.body;
+    const { token, os } = req.body;
+    if (!token) throw new Error("Please add token");
+    if (!os) throw new Error("Please add os");
+    const possibleOs = new Set(["android", "ios", "web"]);
+    if (!possibleOs.has(os)) throw new Error("invalid os");
 
     const user = await User.findOneAndUpdate(
       { _id: id },
-      { $addToSet: { fcmToken: token } }
+      { $addToSet: { fcmToken: { token, os } } }
     );
 
     response(res, {
