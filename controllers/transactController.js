@@ -11,7 +11,10 @@ require("dotenv").config();
 const logger = require("../config/logger");
 
 const { response } = require("../config/responseSchema");
-const { getDecryptedQuestion, hashAnswer } = require("../config/decryptAndHash"); 
+const {
+  getDecryptedQuestion,
+  hashAnswer,
+} = require("../config/decryptAndHash");
 
 const mongoose = require("mongoose");
 
@@ -39,7 +42,7 @@ exports.getQuestion = async (req, res) => {
         const questionId = currentRoom.questionId[i];
         let hint = null;
         const encryptedQuestion = await Question.findOne({ _id: questionId });
-        const decryptedQues=await getDecryptedQuestion(encryptedQuestion);
+        const decryptedQues = await getDecryptedQuestion(encryptedQuestion);
 
         const question = {
           _id: decryptedQues.id,
@@ -92,7 +95,7 @@ exports.useHint = async (req, res) => {
         const currentRoom = await Room.findOne({ _id: roomId });
         const questionId = currentRoom.questionId[i];
         const encryptedQuestion = await Question.findOne({ _id: questionId });
-        const decryptedQues=await getDecryptedQuestion(encryptedQuestion);
+        const decryptedQues = await getDecryptedQuestion(encryptedQuestion);
         const hint = decryptedQues.hint;
         const currentUserUsedHints = req.user.usedHints.map((id) =>
           id.toHexString()
@@ -123,7 +126,7 @@ exports.submitAnswer = async (req, res) => {
   const session = await mongoose.startSession();
   try {
     const { id: userId, usedHints, stars } = req.user;
-
+    console.log(`UserId ${userId} , usedHints ${usedHints} stars: ${stars}`);
     if (!req.body.userAnswer) {
       throw new Error("Please enter an Answer");
     } else if (!req.body.roomId) {
@@ -133,6 +136,7 @@ exports.submitAnswer = async (req, res) => {
     const { userAnswer, roomId } = await submitAnswerSchema.validateAsync(
       req.body
     );
+    console.log(`userAnswer:${userAnswer} roomId:${roomId}`);
     let responseJson = {
       correctAnswer: false,
       closeAnswer: false,
@@ -146,6 +150,7 @@ exports.submitAnswer = async (req, res) => {
     if (!currentJourney) throw new Error("journey does not exist");
     if (!currentJourney.powerupId)
       throw new Error("please set room powerup before submiting an answer");
+    console.log("Current journey obj:", currentJourney);
     let flag = false;
     currentJourney.questionsStatus.map(async (status, i) => {
       if (status === "unlocked" && !flag) {
@@ -156,12 +161,17 @@ exports.submitAnswer = async (req, res) => {
         const questionId = currentRoom.questionId[i];
         responseJson["questionId"] = questionId.toHexString();
 
-        const encryptedCurrentQuestion = await Question.findOne({ _id: questionId });
-        if (!encryptedCurrentQuestion) throw new Error("couldn't fetch the question");
+        const encryptedCurrentQuestion = await Question.findOne({
+          _id: questionId,
+        });
+        if (!encryptedCurrentQuestion)
+          throw new Error("couldn't fetch the question");
         const hashOfCorrectAnswers = new Set(encryptedCurrentQuestion.answers);
-        const hashOfCloseAnswers = new Set(encryptedCurrentQuestion.closeAnswers);
+        const hashOfCloseAnswers = new Set(
+          encryptedCurrentQuestion.closeAnswers
+        );
 
-        const hashedInputAnswer=hashAnswer(userAnswerLower);
+        const hashedInputAnswer = hashAnswer(userAnswerLower);
 
         if (hashOfCorrectAnswers.has(hashedInputAnswer)) {
           //userAnswer is correct
@@ -177,6 +187,9 @@ exports.submitAnswer = async (req, res) => {
               currentJourney.id,
               session
             );
+            console.log(
+              `$UserId:${userId} -> Correct answer submitted. Effective Score:${effectiveScore}`
+            );
             logger.info(
               `$UserId:${userId} -> Correct answer submitted. Effective Score:${effectiveScore}`
             );
@@ -186,6 +199,7 @@ exports.submitAnswer = async (req, res) => {
 
             await incrementQuestionModelSolvedCount(questionId, session);
             const nextRoomId = await getNextRoomId(stars);
+            console.log("NExt room id", nextRoomId);
             await unlockNextRoom(userId, nextRoomId, session);
 
             await session.commitTransaction();
@@ -193,7 +207,9 @@ exports.submitAnswer = async (req, res) => {
             responseJson.scoreEarned = effectiveScore;
             responseJson.nextRoomUnlocked = nextRoomId ? true : false; //if next room id exist and if answer is correct then next room is unlocked
             responseJson.nextRoomId = nextRoomId || null;
+            console.log("json:", responseJson);
           } catch (err) {
+            console.log(req.user.email + "-> " + err);
             logger.error(req.user.email + "-> " + err);
             await session.abortTransaction();
           } finally {
@@ -202,11 +218,13 @@ exports.submitAnswer = async (req, res) => {
         }
         //check if its a close answer
         else if (hashOfCloseAnswers.has(hashedInputAnswer)) {
+          console.log("close answer");
           responseJson.closeAnswer = true;
         }
         //incorrect answer
         else {
         }
+        console.log("Final response:");
         response(res, responseJson);
       }
     });
@@ -280,6 +298,7 @@ const updateScoreStar = async (userId, effectiveScore, session) => {
     { session }
   );
   if (!addStarAndScore) throw new Error("error updating stars and score");
+  console.log("star and score", addStarAndScore);
 };
 
 const updateCurrentQstnStatus = async (
@@ -382,7 +401,9 @@ exports.utilisePowerup = async (req, res) => {
         questionFound = true;
         const questionId = currentRoom.questionId[i];
         currentEncryptedQuestion = await Question.findOne({ _id: questionId });
-        currentDecryptedQuestion= await getDecryptedQuestion(currentEncryptedQuestion);
+        currentDecryptedQuestion = await getDecryptedQuestion(
+          currentEncryptedQuestion
+        );
       }
     }
     if (!questionFound) throw new Error("entire room is solved");
