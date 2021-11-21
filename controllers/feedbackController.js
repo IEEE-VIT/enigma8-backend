@@ -5,9 +5,7 @@ const { response } = require("../config/responseSchema");
 const logger = require("../config/logger");
 exports.getFeedback = async (req, res) => {
   try {
-    const id = req.user.id;
-    const userData = await User.findOne({ _id: id });
-    const email = userData.email;
+    const email = req.user.email;
 
     const {
       isVITStudent,
@@ -35,6 +33,30 @@ exports.getFeedback = async (req, res) => {
 
     data.save();
     response(res, { message: "feedback Sent" });
+  } catch (err) {
+    logger.error(req.user.email + "-> " + err);
+    response(res, {}, 400, err.message, false);
+  }
+};
+
+
+exports.feedbackFilled = async (req, res) => {
+   try {
+    const email = req.user.email;
+
+    let data;
+    const doesFeedbackExist = await Feedback.findOne({ email });
+    if (doesFeedbackExist) {
+      data = {
+        feedbackFilled: true
+      }
+    }
+    else {
+      data = {
+        feedbackFilled: false
+      }
+    }
+    response(res, { data });
   } catch (err) {
     logger.error(req.user.email + "-> " + err);
     response(res, {}, 400, err.message, false);
