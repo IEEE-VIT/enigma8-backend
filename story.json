@@ -205,7 +205,7 @@
         "message": "(Swooshing sound)"
     },
     {
-        "roomNo": 3,
+        "roomNo": "3",
         "sender": "Voice",
         "message": "“To find your way out, you must first look to the past, understanding the past helps us understand our future”"
     },

@@ -7,10 +7,14 @@ const logger = require("../config/logger");
 exports.story = async (req, res) => {
   try {
     const currentRoomId = req.user.currentRoomId;
+    if (!currentRoomId) {
+      throw new Error("Please start playing Enigma first!");
+    }
+
+    const { roomId } = await getStorySchema.validateAsync(req.query);
     if (!req.query.roomId) {
       throw new Error("Please select a room");
     }
-    const { roomId } = await getStorySchema.validateAsync(req.query);
 
     const roomData = await Room.findOne({ id: roomId });
     const currentRoomData = await Room.findOne({ _id: currentRoomId });
