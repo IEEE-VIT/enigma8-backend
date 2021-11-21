@@ -1,24 +1,22 @@
 const express = require("express");
 const router = express.Router();
+const isEnigmaActive = require("../middleware/enigmaActive");
+const usernameCheck = require("../middleware/usernameCheck");
 
 const Joi = require("joi");
 
 const {
   createUser,
   getPowerups,
-  consumePowerup,
   getUser,
   startJourney,
   addFCM,
 } = require("../controllers/userController");
 
 router.post("/create", createUser);
-
-router.get("/getPowerups", getPowerups);
-
-router.post("/selectPowerup", startJourney);
 router.post("/addFCM", addFCM);
-
-router.get("/getDetails", getUser);
+router.get("/getDetails", usernameCheck, getUser);
+router.get("/getPowerups", isEnigmaActive, usernameCheck, getPowerups);
+router.post("/selectPowerup", isEnigmaActive, usernameCheck, startJourney);
 
 module.exports = router;

@@ -133,6 +133,12 @@ exports.submitAnswer = async (req, res) => {
       throw new Error("Please select a Room");
     }
 
+    if (!req.body.userAnswer) {
+      throw new Error("Please enter an Answer");
+    } else if (!req.body.roomId) {
+      throw new Error("Please select a Room");
+    }
+
     const { userAnswer, roomId } = await submitAnswerSchema.validateAsync(
       req.body
     );
@@ -150,7 +156,6 @@ exports.submitAnswer = async (req, res) => {
     if (!currentJourney) throw new Error("journey does not exist");
     if (!currentJourney.powerupId)
       throw new Error("please set room powerup before submiting an answer");
-    console.log("Current journey obj:", currentJourney);
     let flag = false;
     currentJourney.questionsStatus.map(async (status, i) => {
       if (status === "unlocked" && !flag) {
@@ -187,9 +192,6 @@ exports.submitAnswer = async (req, res) => {
               currentJourney.id,
               session
             );
-            console.log(
-              `$UserId:${userId} -> Correct answer submitted. Effective Score:${effectiveScore}`
-            );
             logger.info(
               `$UserId:${userId} -> Correct answer submitted. Effective Score:${effectiveScore}`
             );
@@ -199,7 +201,6 @@ exports.submitAnswer = async (req, res) => {
 
             await incrementQuestionModelSolvedCount(questionId, session);
             const nextRoomId = await getNextRoomId(stars);
-            console.log("NExt room id", nextRoomId);
             await unlockNextRoom(userId, nextRoomId, session);
 
             await session.commitTransaction();
@@ -209,7 +210,6 @@ exports.submitAnswer = async (req, res) => {
             responseJson.nextRoomId = nextRoomId || null;
             console.log("json:", responseJson);
           } catch (err) {
-            console.log(req.user.email + "-> " + err);
             logger.error(req.user.email + "-> " + err);
             await session.abortTransaction();
           } finally {
@@ -298,7 +298,6 @@ const updateScoreStar = async (userId, effectiveScore, session) => {
     { session }
   );
   if (!addStarAndScore) throw new Error("error updating stars and score");
-  console.log("star and score", addStarAndScore);
 };
 
 const updateCurrentQstnStatus = async (
