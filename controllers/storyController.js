@@ -12,7 +12,7 @@ exports.story = async (req, res) => {
     }
     const { roomId } = await getStorySchema.validateAsync(req.query);
 
-    const roomData = await Room.findOne({ id: roomId });
+    const roomData = await Room.findOne({ _id: roomId });
     const currentRoomData = await Room.findOne({ _id: currentRoomId });
 
     if (roomData.roomNo > currentRoomData.roomNo)
@@ -20,7 +20,7 @@ exports.story = async (req, res) => {
 
     let data = [];
     Story.forEach((item) => {
-      if (item.roomNo === roomData.roomNo) {
+      if (item.roomNo === roomData.roomNo || item.roomNo === "0") {
         data.push(item);
       }
     });
