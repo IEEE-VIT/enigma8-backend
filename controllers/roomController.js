@@ -22,29 +22,32 @@ const checkIfRoomUnlocked = async (req, res) => {
 
     //if its the first room and the journey exist, means that the powerup is selected
     if (room.roomNo === "1") {
-      if (!currentJourney) status = "canUnlock";
-      else if (currentJourney) {
-        if (currentJourney.questionsStatus[2] === "solved") status = "complete";
-        else status = "unlocked";
+      if (!currentJourney) {
+        status = "canUnlock";
+      } else if (currentJourney) {
+        if (currentJourney.questionsStatus[2] === "solved") {
+          status = "complete";
+        } else {
+          status = "unlocked";
+        }
       }
-      response(res, { status, starsNeeded });
-      return;
-    }
-
-    if (!currentJourney) {
-      status = "locked";
       response(res, { status, starsNeeded });
     } else {
-      if (currentJourney.questionsStatus[2] === "solved") {
+      if (!currentJourney) {
+        status = "locked";
+      } else if (!currentJourney.powerupId) {
+        status = "canUnlock";
+      } else if (
+        currentJourney.powerupId &&
+        currentJourney.questionsStatus[2] != "solved"
+      ) {
+        status = "unlocked";
+      } else if (
+        currentJourney.powerupId &&
+        currentJourney.questionsStatus[2] === "solved"
+      ) {
         status = "complete";
       }
-      //journey will only exist if room is unlocked
-      if (!currentJourney.powerupId) {
-        status = "canUnlock";
-      } else {
-        status = "unlocked";
-      }
-
       response(res, { status, starsNeeded });
     }
   } catch (err) {
