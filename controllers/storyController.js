@@ -16,15 +16,21 @@ exports.story = async (req, res) => {
       throw new Error("Please select a room");
     }
 
-    const roomData = await Room.findOne({ id: roomId });
+    const roomData = await Room.findOne({ _id: roomId });
     const currentRoomData = await Room.findOne({ _id: currentRoomId });
 
-    if (roomData.roomNo > currentRoomData.roomNo)
+    if (parseInt(roomData.roomNo, 10) > parseInt(currentRoomData.roomNo, 10)) {
       throw new Error("Requested story is not from current room");
+    }
 
     let data = [];
     Story.forEach((item) => {
-      if (item.roomNo === roomData.roomNo) {
+      if (parseInt(roomData.roomNo, 10) === 1) {
+        if (parseInt(item.roomNo, 10) <= parseInt(roomData.roomNo, 10)) {
+          data.push(item);
+        }
+      }
+      else if (parseInt(item.roomNo, 10) === parseInt(roomData.roomNo, 10)) {
         data.push(item);
       }
     });
