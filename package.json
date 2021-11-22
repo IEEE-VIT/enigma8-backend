@@ -5,10 +5,10 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon",
+    "dev": "nodemon index.js",
     "prettier-format": "prettier --config .prettierrc '*.js' --write",
     "lint": "eslint . --ext .js",
-    "start": "node app.js"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
