@@ -8,7 +8,7 @@ connectToMongo().on("connected", () => {});
 
 //use || operator to enter multiple values
 
-const secretKey = "glfyle";
+const secretKey = process.env.ENCRPYTION_SECRET_KEY;
 
 const encryptWithAes = (text) => {
   let ciphertext = CryptoJS.AES.encrypt(text, secretKey).toString();
