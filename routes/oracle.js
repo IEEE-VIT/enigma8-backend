@@ -21,31 +21,40 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 const messaging = admin.messaging();
+
 router.get("/all", async (req, res) => {
   if (req.query.key !== process.env.ORACLE) {
-    res.status(500).send("fail");
+    res.status(500).send("auth fail");
     return;
   }
+
   if (req.query.type && !req.query.body) {
     res.status(500).send("Meta data has to be present if type is specified");
   }
-  await new Notification({
-    text: req.query.title,
-    timestamp: new Date(),
-    metadata: req.query.body,
-    type: req.query.type,
-  }).save();
+
+  if (!req.query.delivery) {
+    res.status(500).send("specify delivery mode");
+  }
+
+  if (req.query.delivery === "push|save") {
+    await sendPush(req, res);
+    await saveToDB(req, res);
+  } else if (req.query.delivery === "push") {
+    await sendPush(req, res);
+  } else if (req.query.delivery === "save") {
+    await saveToDB(req, res);
+  }
+});
+
+async function sendPush(req, res) {
   const user = await User.find({ fcmToken: { $ne: [] } });
-
   const token = user.map(({ fcmToken }) => fcmToken);
-
   const fcm = [];
   for (var a in token) {
     if (token[a]) {
       fcm.push(...token[a]);
     }
   }
-
   const registrationTokens = fcm.map(({ token }) => token);
   const message = {
     notification: {
@@ -58,6 +67,14 @@ router.get("/all", async (req, res) => {
   messaging.sendMulticast(message).then((response) => {
     res.status(200).json({ status: "success", response });
   });
-});
+}
 
+async function saveToDB(req, res) {
+  await new Notification({
+    text: req.query.title,
+    timestamp: new Date(),
+    metadata: req.query.body,
+    type: req.query.type,
+  }).save();
+}
 module.exports = router;
