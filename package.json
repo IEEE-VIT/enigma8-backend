@@ -2,13 +2,13 @@
   "name": "enigma8-backend",
   "version": "1.0.0",
   "description": "Backend for enigma 8",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon",
+    "dev": "nodemon index.js",
     "prettier-format": "prettier --config .prettierrc '*.js' --write",
     "lint": "eslint . --ext .js",
-    "start": "node app.js"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
