@@ -21,7 +21,6 @@ const gameRoutes = require("./routes/game");
 const storyRoutes = require("./routes/story");
 const notifRoutes = require("./routes/notifications");
 const feedRoutes = require("./routes/feedback");
-const oracleRoutes = require("./routes/oracle");
 
 const app = express();
 const DB_URL = process.env.DB_URI;
@@ -48,7 +47,6 @@ app.use("/game", authorized, isEnigmaActive, usernameCheck, gameRoutes);
 app.use("/story", authorized, isEnigmaActive, usernameCheck, storyRoutes);
 app.use("/notifs", authorized, isEnigmaActive, usernameCheck, notifRoutes);
 app.use("/feedback", authorized, isEnigmaActive, usernameCheck, feedRoutes);
-app.use("/oracle", oracleRoutes);
 
 app.get("/", (req, res) => {
   res.send("The server is running!");
