@@ -22,26 +22,26 @@ admin.initializeApp({
 });
 const messaging = admin.messaging();
 
-router.get("/all", async (req, res) => {
-  if (req.query.key !== process.env.ORACLE) {
+router.post("/all", async (req, res) => {
+  if (req.body.key !== process.env.ORACLE) {
     res.status(500).send("auth fail");
     return;
   }
 
-  if (req.query.type && !req.query.body) {
+  if (req.body.type && !req.body.body) {
     res.status(500).send("Meta data has to be present if type is specified");
   }
 
-  if (!req.query.delivery) {
+  if (!req.body.delivery) {
     res.status(500).send("specify delivery mode");
   }
 
-  if (req.query.delivery === "push|save") {
+  if (req.body.delivery === "push|save") {
     await sendPush(req, res);
     await saveToDB(req, res);
-  } else if (req.query.delivery === "push") {
+  } else if (req.body.delivery === "push") {
     await sendPush(req, res);
-  } else if (req.query.delivery === "save") {
+  } else if (req.body.delivery === "save") {
     await saveToDB(req, res);
   }
 });
@@ -58,8 +58,8 @@ async function sendPush(req, res) {
   const registrationTokens = fcm.map(({ token }) => token);
   const message = {
     notification: {
-      title: req.query.title,
-      body: req.query.body,
+      title: req.body.title,
+      body: req.body.body,
     },
     tokens: registrationTokens,
   };
@@ -71,10 +71,10 @@ async function sendPush(req, res) {
 
 async function saveToDB(req, res) {
   await new Notification({
-    text: req.query.title,
+    text: req.body.title,
     timestamp: new Date(),
-    metadata: req.query.body,
-    type: req.query.type,
+    metadata: req.body.body,
+    type: req.body.type,
   }).save();
 }
 module.exports = router;
