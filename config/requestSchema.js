@@ -35,5 +35,5 @@ exports.getFeedbackSchema = Joi.object({
 });
 exports.submitAnswerSchema = Joi.object({
   roomId: Joi.objectId().required(),
-  userAnswer: Joi.string().required(),
+  userAnswer: Joi.string().required().trim(),
 });
