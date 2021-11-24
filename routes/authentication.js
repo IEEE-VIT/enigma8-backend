@@ -11,7 +11,7 @@ router.get(
 );
 
 router.get(
-  "/web/google/redirect",
+  "/web/auth/web/google/redirect",
   passport.authenticate("google", {
     failureRedirect: "/failed",
     session: false,
