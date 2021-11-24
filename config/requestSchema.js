@@ -29,7 +29,7 @@ exports.getFeedbackSchema = Joi.object({
   isVITStudent: Joi.boolean().required(),
   regNo: Joi.string(),
   vitEmail: Joi.string(),
-  gameRating: Joi.number().required(),
+  gameRating: Joi.number().required().min(1).max(5),
   userExperience: Joi.string().required(),
   featureIdeas: Joi.string().required(),
 });
