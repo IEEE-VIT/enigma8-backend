@@ -2,6 +2,7 @@ require("dotenv").config();
 const cors = require("cors");
 const logger = require("./config/logger");
 logger.info("Server started");
+const compression = require("compression");
 
 const express = require("express");
 
@@ -18,6 +19,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors());
+app.use(compression());
 
 require("./config/passport");
 
