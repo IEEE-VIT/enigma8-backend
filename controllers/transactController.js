@@ -9,6 +9,7 @@ const { submitAnswerSchema } = require("../config/requestSchema");
 const constants = require("../config/constants");
 require("dotenv").config();
 const logger = require("../config/logger");
+const answerLogger = require("../config/answerLogger");
 
 const { response } = require("../config/responseSchema");
 const {
@@ -126,7 +127,7 @@ exports.submitAnswer = async (req, res) => {
   const session = await mongoose.startSession();
   try {
     const { id: userId, usedHints, stars } = req.user;
-    console.log(`UserId ${userId} , usedHints ${usedHints} stars: ${stars}`);
+
     if (!req.body.userAnswer) {
       throw new Error("Please enter an Answer");
     } else if (!req.body.roomId) {
@@ -142,7 +143,7 @@ exports.submitAnswer = async (req, res) => {
     const { userAnswer, roomId } = await submitAnswerSchema.validateAsync(
       req.body
     );
-    console.log(`userAnswer:${userAnswer} roomId:${roomId}`);
+
     let responseJson = {
       correctAnswer: false,
       closeAnswer: false,
@@ -192,6 +193,9 @@ exports.submitAnswer = async (req, res) => {
               currentJourney.id,
               session
             );
+            answerLogger.info(
+              `✅ CORRECT UserID: ${userId},QID:${questionId}, roomId:${roomId}, Answer:${userAnswer}, score:${effectiveScore}`
+            );
             logger.info(
               `$UserId:${userId} -> Correct answer submitted. Effective Score:${effectiveScore}`
             );
@@ -208,7 +212,6 @@ exports.submitAnswer = async (req, res) => {
             responseJson.scoreEarned = effectiveScore;
             responseJson.nextRoomUnlocked = nextRoomId ? true : false; //if next room id exist and if answer is correct then next room is unlocked
             responseJson.nextRoomId = nextRoomId || null;
-            console.log("json:", responseJson);
           } catch (err) {
             logger.error(req.user.email + "-> " + err);
             await session.abortTransaction();
@@ -218,11 +221,17 @@ exports.submitAnswer = async (req, res) => {
         }
         //check if its a close answer
         else if (hashOfCloseAnswers.has(hashedInputAnswer)) {
+          answerLogger.info(
+            `🏹 CLOSE UserID: ${userId},QID:${questionId}, roomId:${roomId}, Answer:${userAnswer}`
+          );
           console.log("close answer");
           responseJson.closeAnswer = true;
         }
         //incorrect answer
         else {
+          answerLogger.info(
+            `⭕ FAIL UserID: ${userId},QID:${questionId}, roomId:${roomId}, Answer:${userAnswer}`
+          );
         }
         console.log("Final response:");
         response(res, responseJson);
