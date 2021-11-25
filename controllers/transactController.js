@@ -199,6 +199,14 @@ exports.submitAnswer = async (req, res) => {
             logger.info(
               `$UserId:${userId} -> Correct answer submitted. Effective Score:${effectiveScore}`
             );
+            // check for race condition!
+            const getJourneyStatusToVerify = await Journey.findOne({
+              roomId,
+              userId,
+            }).session(session);
+            if(getJourneyStatusToVerify.questionsStatus[i]!=="unlocked"){
+              throw new Error("The answer for this question has already been submitted!");
+            }
             await updateScoreStar(userId, effectiveScore, session);
             await updateCurrentQstnStatus(userId, roomId, i, session);
             await updateNextQstnStatus(userId, roomId, i, session);
@@ -224,7 +232,6 @@ exports.submitAnswer = async (req, res) => {
           answerLogger.info(
             `🏹 CLOSE UserID: ${userId},QID:${questionId}, roomId:${roomId}, Answer:${userAnswer}`
           );
-          console.log("close answer");
           responseJson.closeAnswer = true;
         }
         //incorrect answer
@@ -233,7 +240,6 @@ exports.submitAnswer = async (req, res) => {
             `⭕ FAIL UserID: ${userId},QID:${questionId}, roomId:${roomId}, Answer:${userAnswer}`
           );
         }
-        console.log("Final response:");
         response(res, responseJson);
       }
     });
