@@ -23,7 +23,7 @@ exports.getFeedback = async (req, res) => {
 
     if( isVITStudent && !regNo ) throw new Error("Please enter VIT registration number");
     if( isVITStudent && !vitEmail ) throw new Error("Please enter VIT email id");
-    if(!(vitEmail.split('@')[1] === 'vitstudent.ac.in')) throw new Error("not a vit email");
+    if(vitEmail.split('@')[1] !== 'vitstudent.ac.in') throw new Error("not a vit email");
 
     const data = new Feedback({
       email,
