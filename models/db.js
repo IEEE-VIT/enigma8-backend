@@ -11,6 +11,7 @@ module.exports = () => {
   } catch (e) {
     console.log("Could not connect");
   }
+  mongoose.set("debug", true);
 
   const dbConnection = mongoose.connection;
 

@@ -160,6 +160,7 @@ exports.submitAnswer = async (req, res) => {
     let flag = false;
     currentJourney.questionsStatus.map(async (status, i) => {
       if (status === "unlocked" && !flag) {
+        console.log("found unlocked question");
         flag = true;
         const currentRoom = await Room.findOne({ _id: roomId });
         if (!currentRoom) throw new Error("couldn't find the room");
@@ -180,6 +181,7 @@ exports.submitAnswer = async (req, res) => {
         const hashedInputAnswer = hashAnswer(userAnswerLower);
 
         if (hashOfCorrectAnswers.has(hashedInputAnswer)) {
+          console.log("has correct anss ka if");
           //userAnswer is correct
           try {
             session.startTransaction();
@@ -301,6 +303,7 @@ const getEffectiveScore = async (
 
 const updateScoreStar = async (userId, effectiveScore, session) => {
   //update star and score
+  console.log("update score star called");
   const addStarAndScore = await User.findOneAndUpdate(
     { _id: userId },
     { $inc: { stars: 1, score: effectiveScore } },
