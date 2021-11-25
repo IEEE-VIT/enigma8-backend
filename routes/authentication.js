@@ -28,18 +28,21 @@ router.get(
   passport.authenticate('apple')
 );
 
-router.get(
-  "/web/apple/redirect",
-  passport.authenticate('apple', {
-    failureRedirect: "/failed",
-    session: false,
-  }),
-  function (req, res) {
-    res.redirect(
-      `${process.env.FRONTEND_URL}applesuccessfulAuth?token=${req.user.jwt}&isNew=${req.user.isNew}`
-    );
-  }
-);
+router.post("/web/apple/redirect", function(req, res, next) {
+  passport.authenticate('apple', function(err, user, info) {
+      if (err) {
+          if (err == "AuthorizationError") {
+              res.send("Oops! Looks like you didn't allow the app to proceed. Please sign in again! <br /> \
+              <a href=\"/login\">Sign in with Apple</a>");
+          } else if (err == "TokenError") {
+              res.send("Oops! Couldn't get a valid token from Apple's servers! <br /> \
+              <a href=\"/login\">Sign in with Apple</a>");
+          }
+      } else {
+          res.json(user);
+      }
+  })(req, res, next);
+});
 
 //generates a JWT
 router.post("/app/google", async (req, res) => {

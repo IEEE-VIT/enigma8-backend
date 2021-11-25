@@ -5,7 +5,7 @@ const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
-const AppleStrategy = require('passport-apple');
+const AppleStrategy = require('passport-apple').Strategy;
 
 passport.serializeUser(function (user, done) {
   done(null, user);
@@ -87,13 +87,16 @@ passport.use(
       {
         clientID: process.env.APPLE_CLIENT_ID,
         teamID: process.env.APPLE_TEAM_ID,
-        callbackURL: "web/auth/web/apple/redirect",
+        callbackURL: "/web/auth/web/apple/redirect",
         keyID: process.env.APPLE_KEY_ID,
         privateKeyLocation: '../config/AuthKey_LPJCCWULY8.p8',
         passReqToCallback: true
       },
       function (req, accessToken, refreshToken, idToken, profile, cb) {
-        profile = jwt.decode(idToken);
+        // profile = jwt.decode(idToken);
+        console.log("hello");
+        console.log(idToken);
+        console.log(profile);
         User.findOne({ email: profile._json.email }).then((currentUser) => {
           if (currentUser) {
             // already have this user
