@@ -79,4 +79,36 @@ const appleVerify = async (id_token) => {
   }
 };
 
-module.exports = { googleVerify, appleVerify };
+const appleVerifyWeb = async (id_token) => {
+  try {
+    const jwtClaims = await verifyAppleToken({
+      idToken: id_token,
+      clientId: "com.enigma7.0",
+    });
+    let isNew = false;
+    const email = jwtClaims.email;
+    const jwtToken = jwt.sign({ email: email }, process.env.TOKEN_SECRET);
+
+    const currentUser = await User.findOne({ email: email });
+
+    if (!currentUser) {
+      // if not, create user in our db
+      isNew = true;
+      await new User({
+        email: email,
+      }).save();
+      return { jwt: jwtToken, isNew: true };
+    }
+    logger.info(
+      `web/apple user. isNew:${currentUser.username ? false : true} username:${
+        currentUser.username
+      }`
+    );
+    return { jwt: jwtToken, isNew: currentUser.username ? false : true };
+  } catch (err) {
+    logger.error(err + "");
+    throw new Error("invalid Token");
+  }
+};
+
+module.exports = { googleVerify, appleVerify, appleVerifyWeb };
