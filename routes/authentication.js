@@ -23,6 +23,24 @@ router.get(
   }
 );
 
+router.get(
+  "/web/apple", 
+  passport.authenticate('apple')
+);
+
+router.get(
+  "/web/apple/redirect",
+  passport.authenticate('apple', {
+    failureRedirect: "/failed",
+    session: false,
+  }),
+  function (req, res) {
+    res.redirect(
+      `${process.env.FRONTEND_URL}applesuccessfulAuth?token=${req.user.jwt}&isNew=${req.user.isNew}`
+    );
+  }
+);
+
 //generates a JWT
 router.post("/app/google", async (req, res) => {
   try {
