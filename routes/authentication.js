@@ -43,8 +43,8 @@ router.post("/app/apple", async (req, res) => {
 });
 
 router.post("/web/apple", async (req, res) => {
-  try {
-    const { jwt, isNew } = await verify.appleVerifyWeb(req.body.token);
+  try {    
+    const { jwt, isNew } = await verify.appleVerifyWeb(req.body.id_token);
     response(res, { JWT: jwt, isNew: isNew });
   } catch (err) {
     response(res, {}, 400, JSON.stringify(err), false);
