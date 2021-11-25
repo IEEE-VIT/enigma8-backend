@@ -85,11 +85,11 @@ passport.use(
   new AppleStrategy
     (
       {
-        clientID: "placeholder",
-        teamID: "placeholder",
+        clientID: process.env.APPLE_CLIENT_ID,
+        teamID: process.env.APPLE_TEAM_ID,
         callbackURL: "web/auth/web/apple/redirect",
-        keyID: "placeholder",
-        privateKeyLocation: "placeholder",
+        keyID: process.env.APPLE_KEY_ID,
+        privateKeyLocation: '../config/AuthKey_LPJCCWULY8.p8',
         passReqToCallback: true
       },
       function (req, accessToken, refreshToken, idToken, profile, cb) {
