@@ -3,6 +3,7 @@ const Room = require("../models/roomModel");
 const User = require("../models/userModel");
 const Journey = require("../models/journeyModel");
 const Powerup = require("../models/powerupModel");
+const AnswerLog = require("../models/answerlogModel");
 const { getQuestionSchema } = require("../config/requestSchema");
 const { useHintSchema } = require("../config/requestSchema");
 const { submitAnswerSchema } = require("../config/requestSchema");
@@ -126,7 +127,7 @@ exports.useHint = async (req, res) => {
 exports.submitAnswer = async (req, res) => {
   const session = await mongoose.startSession();
   try {
-    const { id: userId, usedHints, stars } = req.user;
+    const { id: userId, usedHints, stars, username } = req.user;
 
     if (!req.body.userAnswer) {
       throw new Error("Please enter an Answer");
@@ -196,6 +197,7 @@ exports.submitAnswer = async (req, res) => {
             answerLogger.info(
               `✅ CORRECT UserID: ${userId},QID:${questionId}, roomId:${roomId}, Answer:${userAnswer}, score:${effectiveScore}`
             );
+
             logger.info(
               `$UserId:${userId} -> Correct answer submitted. Effective Score:${effectiveScore}`
             );
@@ -204,9 +206,12 @@ exports.submitAnswer = async (req, res) => {
               roomId,
               userId,
             }).session(session);
-            if(getJourneyStatusToVerify.questionsStatus[i]!=="unlocked"){
-              throw new Error("The answer for this question has already been submitted!");
+            if (getJourneyStatusToVerify.questionsStatus[i] !== "unlocked") {
+              throw new Error(
+                "The answer for this question has already been submitted!"
+              );
             }
+
             await updateScoreStar(userId, effectiveScore, session);
             await updateCurrentQstnStatus(userId, roomId, i, session);
             await updateNextQstnStatus(userId, roomId, i, session);
@@ -215,6 +220,14 @@ exports.submitAnswer = async (req, res) => {
             const nextRoomId = await getNextRoomId(stars);
             await unlockNextRoom(userId, nextRoomId, session);
 
+            await new AnswerLog({
+              username: username,
+              roomNo: currentRoom.roomNo,
+              check: "correct",
+              answer: userAnswer,
+              effectiveScore: effectiveScore,
+              QNo: encryptedCurrentQuestion.questionNo,
+            }).save();
             await session.commitTransaction();
             responseJson.correctAnswer = true;
             responseJson.scoreEarned = effectiveScore;
@@ -232,6 +245,15 @@ exports.submitAnswer = async (req, res) => {
           answerLogger.info(
             `🏹 CLOSE UserID: ${userId},QID:${questionId}, roomId:${roomId}, Answer:${userAnswer}`
           );
+          await new AnswerLog({
+            username: username,
+            roomNo: currentRoom.roomNo,
+            check: "close",
+            answer: userAnswer,
+            effectiveScore: 0,
+            QNo: encryptedCurrentQuestion.questionNo,
+          }).save();
+          console.log("close answer");
           responseJson.closeAnswer = true;
         }
         //incorrect answer
@@ -239,7 +261,16 @@ exports.submitAnswer = async (req, res) => {
           answerLogger.info(
             `⭕ FAIL UserID: ${userId},QID:${questionId}, roomId:${roomId}, Answer:${userAnswer}`
           );
+          await new AnswerLog({
+            username: username,
+            roomNo: currentRoom.roomNo,
+            check: "incorrect",
+            answer: userAnswer,
+            effectiveScore: 0,
+            QNo: encryptedCurrentQuestion.questionNo,
+          }).save();
         }
+        console.log("Final response:");
         response(res, responseJson);
       }
     });
