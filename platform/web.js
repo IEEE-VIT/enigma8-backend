@@ -18,6 +18,8 @@ const feedRoutes = require("../routes/feedback");
 
 const { getPowerups, startJourney } = require("../controllers/userController");
 
+const { getLogs } = require("../controllers/logsController");
+
 app.use("/auth", authRoutes);
 app.use("/authorized", authorized, authorizedRoutes);
 app.use("/static", staticRoutes);
@@ -31,5 +33,7 @@ app.use("/feedback", authorized, isEnigmaActive, usernameCheck, feedRoutes);
 
 app.get("/user/getPowerups", isEnigmaActive, usernameCheck, getPowerups);
 app.post("/user/selectPowerup", isEnigmaActive, usernameCheck, startJourney);
+
+app.get("/logs", getLogs);
 
 module.exports = app;
