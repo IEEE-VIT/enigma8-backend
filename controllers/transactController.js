@@ -224,7 +224,7 @@ exports.submitAnswer = async (req, res) => {
               username: username,
               roomNo: currentRoom.roomNo,
               check: "correct",
-              answer: userAnswer,
+              answer: hashedInputAnswer,
               effectiveScore: effectiveScore,
               QNo: encryptedCurrentQuestion.questionNo,
             }).save();
@@ -243,13 +243,13 @@ exports.submitAnswer = async (req, res) => {
         //check if its a close answer
         else if (hashOfCloseAnswers.has(hashedInputAnswer)) {
           answerLogger.info(
-            `🏹 CLOSE UserID: ${userId},QID:${questionId}, roomId:${roomId}, Answer:${userAnswer}`
+            `🏹 CLOSE UserID: ${userId},QID:${questionId}, roomId:${roomId}, Answer:${hashedInputAnswer}`
           );
           await new AnswerLog({
             username: username,
             roomNo: currentRoom.roomNo,
             check: "close",
-            answer: userAnswer,
+            answer: hashedInputAnswer,
             effectiveScore: 0,
             QNo: encryptedCurrentQuestion.questionNo,
           }).save();
