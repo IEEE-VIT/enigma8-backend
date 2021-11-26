@@ -195,7 +195,7 @@ exports.submitAnswer = async (req, res) => {
               session
             );
             answerLogger.info(
-              `✅ CORRECT UserID: ${userId},QID:${questionId}, roomId:${roomId}, Answer:${userAnswer}, score:${effectiveScore}`
+              `✅ CORRECT UserID: ${userId},QID:${questionId}, roomId:${roomId}, Answer:${hashedInputAnswer}, score:${effectiveScore}`
             );
 
             logger.info(
