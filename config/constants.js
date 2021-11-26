@@ -3,5 +3,5 @@ module.exports = {
   minScore: 70, //excluding hint reduction
   perSolve: 5,
   groupBy: 20,
-  hintReduction: 20,
+  hintReduction: 30,
 };
