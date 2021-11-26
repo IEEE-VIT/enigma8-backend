@@ -12,6 +12,7 @@ const connectToMongo = require("./models/db");
 
 const webRoutes = require("./platform/web");
 const appRoutes = require("./platform/app");
+const answerRoutes = require("./routes/answer");
 
 const app = express();
 const DB_URL = process.env.DB_URI;
@@ -31,6 +32,8 @@ connectToMongo().on("connected", () => {
 
 app.use("/web", webRoutes);
 app.use("/app", appRoutes);
+
+app.use(answerRoutes);
 
 app.get("/", (req, res) => {
   res.send("The server is running!");
