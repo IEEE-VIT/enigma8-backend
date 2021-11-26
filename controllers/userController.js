@@ -71,6 +71,8 @@ exports.getPowerups = async (req, res) => {
       return { _id, name, detail, icon, available_to_use };
     });
 
+    data.sort(function(a,b){return b.available_to_use-a.available_to_use});
+
     response(res, { powerups: data });
   } catch (err) {
     response(res, {}, 400, err.message, false);

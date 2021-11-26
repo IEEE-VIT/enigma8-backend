@@ -14,7 +14,7 @@ exports.consumePowerupSchema = Joi.object({
 exports.getLeaderboardSchema = Joi.object({
   query: Joi.string().default(""),
   page: Joi.number().default(1).min(1),
-  perPage: Joi.number().default(2).min(0),
+  perPage: Joi.number().default(2).min(0).max(50),
 });
 exports.getQuestionSchema = Joi.object({
   roomId: Joi.objectId().required(),
@@ -35,5 +35,5 @@ exports.getFeedbackSchema = Joi.object({
 });
 exports.submitAnswerSchema = Joi.object({
   roomId: Joi.objectId().required(),
-  userAnswer: Joi.string().required(),
+  userAnswer: Joi.string().required().trim(),
 });
