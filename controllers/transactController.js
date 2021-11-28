@@ -1,3 +1,4 @@
+const moment = require("moment-timezone");
 const Question = require("../models/questionModel");
 const Room = require("../models/roomModel");
 const User = require("../models/userModel");
@@ -194,13 +195,6 @@ exports.submitAnswer = async (req, res) => {
               currentJourney.id,
               session
             );
-            answerLogger.info(
-              `✅ CORRECT UserID: ${userId},QID:${questionId}, roomId:${roomId}, Answer:${hashedInputAnswer}, score:${effectiveScore}`
-            );
-
-            logger.info(
-              `$UserId:${userId} -> Correct answer submitted. Effective Score:${effectiveScore}`
-            );
             // check for race condition!
             const getJourneyStatusToVerify = await Journey.findOne({
               roomId,
@@ -212,7 +206,18 @@ exports.submitAnswer = async (req, res) => {
               );
             }
 
-            await updateScoreStar(userId, effectiveScore, session);
+            const leaderboardFreezeTime = moment.tz(
+              Date.parse(process.env.FREEZE_LEADERBOARD_TIME),
+              "Asia/Calcutta"
+            );
+            const currentTime = moment.tz("Asia/Calcutta");
+
+            if (currentTime < leaderboardFreezeTime) {
+              await updateScoreStar(userId, effectiveScore, session);
+            } else {
+              await updateStar(userId, session);
+            }
+
             await updateCurrentQstnStatus(userId, roomId, i, session);
             await updateNextQstnStatus(userId, roomId, i, session);
 
@@ -228,9 +233,19 @@ exports.submitAnswer = async (req, res) => {
               effectiveScore: effectiveScore,
               QNo: encryptedCurrentQuestion.questionNo,
             }).save();
+            if (currentTime < leaderboardFreezeTime) {
+              responseJson.scoreEarned = effectiveScore;
+            } else {
+              responseJson.scoreEarned = 0;
+            }
+            logger.info(
+              `$UserId:${userId} -> Correct answer submitted. Effective Score:${effectiveScore}`
+            );
+            answerLogger.info(
+              `✅ CORRECT UserID: ${userId},QID:${questionId}, roomId:${roomId}, Answer:${hashedInputAnswer}, score:${effectiveScore}`
+            );
             await session.commitTransaction();
             responseJson.correctAnswer = true;
-            responseJson.scoreEarned = effectiveScore;
             responseJson.nextRoomUnlocked = nextRoomId ? true : false; //if next room id exist and if answer is correct then next room is unlocked
             responseJson.nextRoomId = nextRoomId || null;
           } catch (err) {
@@ -344,6 +359,16 @@ const updateScoreStar = async (userId, effectiveScore, session) => {
     { session }
   );
   if (!addStarAndScore) throw new Error("error updating stars and score");
+};
+
+const updateStar = async (userId, session) => {
+  //update star and score
+  const addStarAndScore = await User.findOneAndUpdate(
+    { _id: userId },
+    { $inc: { stars: 1 } },
+    { session }
+  );
+  if (!addStarAndScore) throw new Error("error updating stars");
 };
 
 const updateCurrentQstnStatus = async (
