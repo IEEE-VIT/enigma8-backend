@@ -16,10 +16,10 @@ exports.getFeedback = async (req, res) => {
       featureIdeas,
     } = await getFeedbackSchema.validateAsync(req.body);
 
-    const doesFeedbackExist = await Feedback.findOne({ email });
-    if (doesFeedbackExist) {
-      throw new Error("You have already given feedback");
-    }
+    // const doesFeedbackExist = await Feedback.findOne({ email });
+    // if (doesFeedbackExist) {
+    //   throw new Error("You have already given feedback");
+    // }
 
     const data = new Feedback({
       email,
@@ -39,22 +39,20 @@ exports.getFeedback = async (req, res) => {
   }
 };
 
-
 exports.feedbackFilled = async (req, res) => {
-   try {
+  try {
     const email = req.user.email;
 
     let data;
     const doesFeedbackExist = await Feedback.findOne({ email });
     if (doesFeedbackExist) {
       data = {
-        feedbackFilled: true
-      }
-    }
-    else {
+        feedbackFilled: true,
+      };
+    } else {
       data = {
-        feedbackFilled: false
-      }
+        feedbackFilled: false,
+      };
     }
     response(res, { data });
   } catch (err) {
