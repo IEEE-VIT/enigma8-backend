@@ -15,7 +15,7 @@
     "url": "git+https://github.com/IEEE-VIT/enigma8-backend.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/IEEE-VIT/enigma8-backend/issues"
   },
