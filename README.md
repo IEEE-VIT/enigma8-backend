@@ -12,7 +12,9 @@ A cryptic hunt with a compelling storyline that you have to navigate skillfully 
 We aim to create a platform where people from all over the world come together and battle for points using their problem-solving skills and out-of-the-box methodologies to crack the code. Only the best will grace the topmost spots on the leaderboard!
 
 You can check out the postman documentation here.
-![Postman](https://documenter.getpostman.com/view/11026000/UUy1fT2c])
+<br>
+<br>
+[![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)](https://documenter.getpostman.com/view/11026000/UUy1fT2c)
 
 ## Tools and technology used
 
