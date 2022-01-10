@@ -1,4 +1,4 @@
-
+## Backend for Enigma 8.0
 <p align="center"><img src="https://github.com/IEEE-VIT/enigma8-backend/blob/master/banner.png"/></p>
 
 <br/>
@@ -11,7 +11,8 @@ A cryptic hunt with a compelling storyline that you have to navigate skillfully 
 
 We aim to create a platform where people from all over the world come together and battle for points using their problem-solving skills and out-of-the-box methodologies to crack the code. Only the best will grace the topmost spots on the leaderboard!
 
-You can check out the postman documentation [https://documenter.getpostman.com/view/11026000/UUy1fT2c](here).
+You can check out the postman documentation here.
+![Postman](https://documenter.getpostman.com/view/11026000/UUy1fT2c])
 
 ## Tools and technology used
 
@@ -19,7 +20,7 @@ You can check out the postman documentation [https://documenter.getpostman.com/v
 - Express
 - MongoDB
 - PassportJS
-- winston
+- Winston
 - AWS Elastic Beanstalk
 
 
